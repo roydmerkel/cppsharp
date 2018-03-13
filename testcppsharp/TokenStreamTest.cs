@@ -632,5 +632,209 @@ int main(void)
 
             Assert.AreEqual(ch, 'a');
         }
+
+        [Test]
+        public void TestTrigraphStreamNewlines5()
+        {
+            // test broken line endings (linux file opened on old mac.)
+            String code = "s\r\n\r\na";
+            char ch;
+
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TrigraphStream ts = new TrigraphStream(ms);
+
+            IEnumerable<char> enumerable = ts.GetCharEnumerable();
+            IEnumerator<char> i = enumerable.GetEnumerator();
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, 's');
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, '\n');
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, '\n');
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, 'a');
+        }
+
+        [Test]
+        public void TestTrigraphStreamNewlines6()
+        {
+            // test broken line endings (linux file opened on old mac.)
+            String code = "s\r\n\n\ra";
+            char ch;
+
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TrigraphStream ts = new TrigraphStream(ms);
+
+            IEnumerable<char> enumerable = ts.GetCharEnumerable();
+            IEnumerator<char> i = enumerable.GetEnumerator();
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, 's');
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, '\n');
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, '\n');
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, 'a');
+        }
+
+        [Test]
+        public void TestTrigraphStreamNewlines7()
+        {
+            // test broken line endings (linux file opened on old mac.)
+            String code = "s\r\n\na";
+            char ch;
+
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TrigraphStream ts = new TrigraphStream(ms);
+
+            IEnumerable<char> enumerable = ts.GetCharEnumerable();
+            IEnumerator<char> i = enumerable.GetEnumerator();
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, 's');
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, '\n');
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, '\n');
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, 'a');
+        }
+
+        [Test]
+        public void TestTrigraphStreamNewlines8()
+        {
+            // test broken line endings (linux file opened on old mac.)
+            String code = "s\n\r\n\ra";
+            char ch;
+
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TrigraphStream ts = new TrigraphStream(ms);
+
+            IEnumerable<char> enumerable = ts.GetCharEnumerable();
+            IEnumerator<char> i = enumerable.GetEnumerator();
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, 's');
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, '\n');
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, '\n');
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, 'a');
+        }
+
+        [Test]
+        public void TestTrigraphStreamNewlines9()
+        {
+            // test broken line endings (linux file opened on old mac.)
+            String code = "s\r\ra";
+            char ch;
+
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TrigraphStream ts = new TrigraphStream(ms);
+
+            IEnumerable<char> enumerable = ts.GetCharEnumerable();
+            IEnumerator<char> i = enumerable.GetEnumerator();
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, 's');
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, '\n');
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, '\n');
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, 'a');
+        }
+
+        [Test]
+        public void TestTrigraphStreamNewlines10()
+        {
+            // test broken line endings (linux file opened on old mac.)
+            String code = "s\n\r\r\na";
+            char ch;
+
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TrigraphStream ts = new TrigraphStream(ms);
+
+            IEnumerable<char> enumerable = ts.GetCharEnumerable();
+            IEnumerator<char> i = enumerable.GetEnumerator();
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, 's');
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, '\n');
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, '\n');
+
+            i.MoveNext();
+            ch = i.Current;
+
+            Assert.AreEqual(ch, 'a');
+        }
     }
 }

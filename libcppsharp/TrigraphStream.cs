@@ -46,7 +46,6 @@ namespace libcppsharp
         private Encoder encoder;
         private const string TrigraphChars = "=/'()!<>-";
         private const string TrigraphStandins = "#\\^[]|{}~";
-        private bool processingNewLine;
 
         public TrigraphStream(Stream inStream, bool handleTrigraphs = false, bool handleDigraphs = false)
         {
@@ -62,7 +61,6 @@ namespace libcppsharp
             trigraphCharsBufData = 0;
             readResult = 0;
             encoding = null;
-            processingNewLine = false;
         }
 
         private int RefillByteArray()
@@ -215,6 +213,8 @@ namespace libcppsharp
         public IEnumerable<char> GetCharEnumerable()
         {
             bool refillBuffer = false;
+            bool processingNewLine = false;
+            char lastNewLineChar = '\0';
 
             readResult = RefillByteArray();
 
@@ -331,6 +331,7 @@ namespace libcppsharp
                     {
                         yield return '\n';
                         processingNewLine = false;
+                        lastNewLineChar = '\0';
                     }
 
                     switch (ch)
@@ -340,8 +341,28 @@ namespace libcppsharp
                             break;
                         case '\r':
                         case '\n':
+                            // all \r\n combos need to be in pairs otherwise
+                            // we return \n and start again.
+                            if ((lastNewLineChar == '\r' && ch == '\n')
+                               || (lastNewLineChar == '\n' && ch == '\r'))
+                            {
+                                yield return '\n';
+                                processingNewLine = false;
+                                lastNewLineChar = '\0';
+                            }
+                            else if (lastNewLineChar == ch)
+                            {
+                                yield return '\n';
+                                processingNewLine = true;
+                                lastNewLineChar = '\0';
+                            }
+                            else
+                            {
+                                lastNewLineChar = ch;
+                                processingNewLine = true;
+                            }
+
                             charBufPtr++;
-                            processingNewLine = true;
                             break;
                         case '?':
                             if (!trigraphs)
