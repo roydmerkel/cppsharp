@@ -46,6 +46,7 @@ namespace libcppsharp
         private Encoder encoder;
         private const string TrigraphChars = "=/'()!<>-";
         private const string TrigraphStandins = "#\\^[]|{}~";
+        private bool processingNewLine;
 
         public TrigraphStream(Stream inStream, bool handleTrigraphs = false, bool handleDigraphs = false)
         {
@@ -61,6 +62,7 @@ namespace libcppsharp
             trigraphCharsBufData = 0;
             readResult = 0;
             encoding = null;
+            processingNewLine = false;
         }
 
         private int RefillByteArray()
@@ -325,10 +327,21 @@ namespace libcppsharp
                     }
 
 
+                    if (processingNewLine && ch != '\r' && ch != '\n')
+                    {
+                        yield return '\n';
+                        processingNewLine = false;
+                    }
+
                     switch (ch)
                     {
                         case '\xFEFF':
                             charBufPtr++;
+                            break;
+                        case '\r':
+                        case '\n':
+                            charBufPtr++;
+                            processingNewLine = true;
                             break;
                         case '?':
                             if (!trigraphs)
