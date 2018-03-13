@@ -29,6 +29,14 @@ namespace libcppsharp
         HASH,
         QUESTION_MARK,
         EQUAL_SIGN,
+        LESS_THEN,
+        GREATER_THEN,
+        COLON,
+        PERCENT,
+        L_CURLY_BRACE,
+        R_CURLY_BRACE,
+        L_SQ_BRACKET,
+        R_SQ_BRACKET,
         EOF
     }
 }

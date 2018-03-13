@@ -36,14 +36,15 @@ namespace libcppsharp
         private StringBuilder curTokVal;
         private bool digraphs;
         private int readResult;
-        ulong column;
-        ulong line;
+        private ulong column;
+        private ulong line;
+        private char digraphCh;
 
         private TrigraphStream charStream;
         private IEnumerable<char> charEnumerable;
         private IEnumerator<char> charEnumerator;
         private bool eofEncountered;
-
+ 
         public TokenStream(Stream inStream, bool handleTrigraphs = false, bool handleDigraphs = false)
         {
             charStream = new TrigraphStream(inStream, handleTrigraphs, handleDigraphs);
@@ -291,6 +292,348 @@ namespace libcppsharp
                             charBufPtr++;
                         }
                         break;
+                    case '<':
+                        if (digraphs)
+                        {
+                            //charReadBuffer[charBufPtr]
+                            if (charBufPtr + 1 < charBufDatSize)
+                            {
+                                if (charReadBuffer[charBufPtr + 1] == ':')
+                                {
+                                    if (lastTok.tokenType != TokenType.UNKNOWN)
+                                    {
+                                        if (curTokVal.Length > 0)
+                                        {
+                                            lastTok.value = curTokVal.ToString();
+                                            curTokVal.Clear();
+                                        }
+                                        else
+                                        {
+                                            lastTok.value = "";
+                                        }
+
+                                        yield return lastTok;
+                                        lastTok.tokenType = TokenType.UNKNOWN;
+                                    }
+
+                                    lastTok.tokenType = TokenType.L_SQ_BRACKET;
+                                    lastTok.column = column;
+                                    lastTok.line = line;
+
+                                    column += 2;
+                                    charBufPtr += 2;
+                                }
+                                else if (charReadBuffer[charBufPtr + 1] == '%')
+                                {
+                                    if (lastTok.tokenType != TokenType.UNKNOWN)
+                                    {
+                                        if (curTokVal.Length > 0)
+                                        {
+                                            lastTok.value = curTokVal.ToString();
+                                            curTokVal.Clear();
+                                        }
+                                        else
+                                        {
+                                            lastTok.value = "";
+                                        }
+
+                                        yield return lastTok;
+                                        lastTok.tokenType = TokenType.UNKNOWN;
+                                    }
+
+                                    lastTok.tokenType = TokenType.L_CURLY_BRACE;
+                                    lastTok.column = column;
+                                    lastTok.line = line;
+
+                                    column += 2;
+                                    charBufPtr += 2;
+                                }
+                                else
+                                {
+                                    if (lastTok.tokenType != TokenType.UNKNOWN)
+                                    {
+                                        if (curTokVal.Length > 0)
+                                        {
+                                            lastTok.value = curTokVal.ToString();
+                                            curTokVal.Clear();
+                                        }
+                                        else
+                                        {
+                                            lastTok.value = "";
+                                        }
+
+                                        yield return lastTok;
+                                        lastTok.tokenType = TokenType.UNKNOWN;
+                                    }
+
+                                    lastTok.tokenType = TokenType.LESS_THEN;
+                                    lastTok.column = column;
+                                    lastTok.line = line;
+
+                                    column++;
+                                    charBufPtr++;
+                                }
+                            }
+                            else
+                            {
+                                digraphCh = ch;
+                                refillBuffer = true;
+                            }
+                        }
+                        else
+                        {
+                            if (lastTok.tokenType != TokenType.UNKNOWN)
+                            {
+                                if (curTokVal.Length > 0)
+                                {
+                                    lastTok.value = curTokVal.ToString();
+                                    curTokVal.Clear();
+                                }
+                                else
+                                {
+                                    lastTok.value = "";
+                                }
+
+                                yield return lastTok;
+                                lastTok.tokenType = TokenType.UNKNOWN;
+                            }
+
+                            lastTok.tokenType = TokenType.LESS_THEN;
+                            lastTok.column = column;
+                            lastTok.line = line;
+
+                            column++;
+                            charBufPtr++;
+                        }
+                        break;
+                    case ':':
+                        if (digraphs)
+                        {
+                            //charReadBuffer[charBufPtr]
+                            if (charBufPtr + 1 < charBufDatSize)
+                            {
+                                if (charReadBuffer[charBufPtr + 1] == '>')
+                                {
+                                    if (lastTok.tokenType != TokenType.UNKNOWN)
+                                    {
+                                        if (curTokVal.Length > 0)
+                                        {
+                                            lastTok.value = curTokVal.ToString();
+                                            curTokVal.Clear();
+                                        }
+                                        else
+                                        {
+                                            lastTok.value = "";
+                                        }
+
+                                        yield return lastTok;
+                                        lastTok.tokenType = TokenType.UNKNOWN;
+                                    }
+
+                                    lastTok.tokenType = TokenType.R_SQ_BRACKET;
+                                    lastTok.column = column;
+                                    lastTok.line = line;
+
+                                    column += 2;
+                                    charBufPtr += 2;
+                                }
+                                else
+                                {
+                                    if (lastTok.tokenType != TokenType.UNKNOWN)
+                                    {
+                                        if (curTokVal.Length > 0)
+                                        {
+                                            lastTok.value = curTokVal.ToString();
+                                            curTokVal.Clear();
+                                        }
+                                        else
+                                        {
+                                            lastTok.value = "";
+                                        }
+
+                                        yield return lastTok;
+                                        lastTok.tokenType = TokenType.UNKNOWN;
+                                    }
+
+                                    lastTok.tokenType = TokenType.COLON;
+                                    lastTok.column = column;
+                                    lastTok.line = line;
+
+                                    column++;
+                                    charBufPtr++;
+                                }
+                            }
+                            else
+                            {
+                                digraphCh = ch;
+                                refillBuffer = true;
+                            }
+                        }
+                        else
+                        {
+                            if (lastTok.tokenType != TokenType.UNKNOWN)
+                            {
+                                if (curTokVal.Length > 0)
+                                {
+                                    lastTok.value = curTokVal.ToString();
+                                    curTokVal.Clear();
+                                }
+                                else
+                                {
+                                    lastTok.value = "";
+                                }
+
+                                yield return lastTok;
+                                lastTok.tokenType = TokenType.UNKNOWN;
+                            }
+
+                            lastTok.tokenType = TokenType.COLON;
+                            lastTok.column = column;
+                            lastTok.line = line;
+
+                            column++;
+                            charBufPtr++;
+                        }
+                        break;
+                    case '%':
+                        if (digraphs)
+                        {
+                            if (charBufPtr + 1 < charBufDatSize)
+                            {
+                                if (charReadBuffer[charBufPtr + 1] == '>')
+                                {
+                                    if (lastTok.tokenType != TokenType.UNKNOWN)
+                                    {
+                                        if (curTokVal.Length > 0)
+                                        {
+                                            lastTok.value = curTokVal.ToString();
+                                            curTokVal.Clear();
+                                        }
+                                        else
+                                        {
+                                            lastTok.value = "";
+                                        }
+
+                                        yield return lastTok;
+                                        lastTok.tokenType = TokenType.UNKNOWN;
+                                    }
+
+                                    lastTok.tokenType = TokenType.R_CURLY_BRACE;
+                                    lastTok.column = column;
+                                    lastTok.line = line;
+
+                                    column += 2;
+                                    charBufPtr += 2;
+                                }
+                                else if (charReadBuffer[charBufPtr + 1] == ':')
+                                {
+                                    if (lastTok.tokenType != TokenType.UNKNOWN)
+                                    {
+                                        if (curTokVal.Length > 0)
+                                        {
+                                            lastTok.value = curTokVal.ToString();
+                                            curTokVal.Clear();
+                                        }
+                                        else
+                                        {
+                                            lastTok.value = "";
+                                        }
+
+                                        yield return lastTok;
+                                        lastTok.tokenType = TokenType.UNKNOWN;
+                                    }
+
+                                    lastTok.tokenType = TokenType.HASH;
+                                    lastTok.column = column;
+                                    lastTok.line = line;
+
+                                    column += 2;
+                                    charBufPtr += 2;
+                                }
+                                else
+                                {
+                                    if (lastTok.tokenType != TokenType.UNKNOWN)
+                                    {
+                                        if (curTokVal.Length > 0)
+                                        {
+                                            lastTok.value = curTokVal.ToString();
+                                            curTokVal.Clear();
+                                        }
+                                        else
+                                        {
+                                            lastTok.value = "";
+                                        }
+
+                                        yield return lastTok;
+                                        lastTok.tokenType = TokenType.UNKNOWN;
+                                    }
+
+                                    lastTok.tokenType = TokenType.PERCENT;
+                                    lastTok.column = column;
+                                    lastTok.line = line;
+
+                                    column ++;
+                                    charBufPtr ++;
+                                }
+                            }
+                            else
+                            {
+                                digraphCh = ch;
+                                refillBuffer = true;
+                            }
+                        }
+                        else
+                        {
+                            if (lastTok.tokenType != TokenType.UNKNOWN)
+                            {
+                                if (curTokVal.Length > 0)
+                                {
+                                    lastTok.value = curTokVal.ToString();
+                                    curTokVal.Clear();
+                                }
+                                else
+                                {
+                                    lastTok.value = "";
+                                }
+
+                                yield return lastTok;
+                                lastTok.tokenType = TokenType.UNKNOWN;
+                            }
+
+                            lastTok.tokenType = TokenType.PERCENT;
+                            lastTok.column = column;
+                            lastTok.line = line;
+
+                            column++;
+                            charBufPtr++;
+                        }
+                        break;
+                    case '>':
+                        {
+                            if (lastTok.tokenType != TokenType.UNKNOWN)
+                            {
+                                if (curTokVal.Length > 0)
+                                {
+                                    lastTok.value = curTokVal.ToString();
+                                    curTokVal.Clear();
+                                }
+                                else
+                                {
+                                    lastTok.value = "";
+                                }
+
+                                yield return lastTok;
+                                lastTok.tokenType = TokenType.UNKNOWN;
+                            }
+
+                            lastTok.tokenType = TokenType.GREATER_THEN;
+                            lastTok.column = column;
+                            lastTok.line = line;
+
+                            column++;
+                            charBufPtr++;
+                        }
+                        break;
                     default:
                         if (lastTok.tokenType != TokenType.UNKNOWN)
                         {
@@ -307,7 +650,7 @@ namespace libcppsharp
                             yield return lastTok;
                         }
 
-                        throw new NotImplementedException(new String(new char[] { charReadBuffer[charBufPtr] }) + " not yet handled.");
+                        throw new NotImplementedException(new String(new char[] { ch }) + " not yet handled.");
                 }
             }
         }
