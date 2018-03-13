@@ -107,6 +107,38 @@ int main(void)
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
         }
 
+        [Test]
+        public void TestBasicTrigraph2()
+        {
+            // test basic trigraph code.
+            //string oneThousandTwentyFourBlanks = 
+            string code = @"??=include <stdio.h>
+
+int main(void)
+{
+    return 0;
+}";
+
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms);
+
+            IEnumerable<Token> enumerable = ts.GetNextToken();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.EQUAL_SIGN);
+        }
 
         [Test]
         public void TestBoundryTrigraph1()

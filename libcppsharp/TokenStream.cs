@@ -36,9 +36,6 @@ namespace libcppsharp
         private StringBuilder curTokVal;
         private bool digraphs;
         private int readResult;
-        private Encoding encoding;
-        private Decoder decoder;
-        private Encoder encoder;
         ulong column;
         ulong line;
 
@@ -168,6 +165,22 @@ namespace libcppsharp
                             questionToken.line = line;
 
                             yield return questionToken;
+
+                            column++;
+                            charBufPtr++;
+                        }
+                        break;
+                    case '=':
+                        {
+                            Token equalSignToken;
+                            equalSignToken.tokenType = TokenType.EQUAL_SIGN;
+                            equalSignToken.isDigraph = false;
+                            equalSignToken.isTrigraph = false;
+                            equalSignToken.value = null;
+                            equalSignToken.column = column;
+                            equalSignToken.line = line;
+
+                            yield return equalSignToken;
 
                             column++;
                             charBufPtr++;
