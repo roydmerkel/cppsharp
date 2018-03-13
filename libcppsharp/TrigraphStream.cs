@@ -250,7 +250,16 @@ namespace libcppsharp
                         refillBuffer = false;
                         readResult = RefillByteArray();
 
-                        if (readResult <= 0)
+                        if (readResult <= 0 && trigraphCharsBufData > 0)
+                        {
+                            for (int i = 0; i < trigraphCharsBufData; i++)
+                            {
+                                yield return trigraphCharsBuf[i];
+                            }
+
+                            break;
+                        }
+                        else if (readResult <= 0)
                         {
                             break;
                         }

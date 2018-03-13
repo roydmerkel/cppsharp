@@ -599,6 +599,82 @@ int main(void)
         }
 
         [Test]
+        public void TestBoundryTrigraph13()
+        {
+            // test unfinished trigraph at the end of input, after a buffer.
+            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            string bufSizeStr = field.GetRawConstantValue().ToString();
+            int bufSize = int.Parse(bufSizeStr);
+
+            //string oneThousandTwentyFourBlanks = 
+            string code = @"?";
+
+            code = new string(' ', bufSize - 1) + "?" + code;
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.EOF);
+        }
+
+        [Test]
+        public void TestBoundryTrigraph14()
+        {
+            // test unfinished trigraph at the end of input, after a buffer.
+            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            string bufSizeStr = field.GetRawConstantValue().ToString();
+            int bufSize = int.Parse(bufSizeStr);
+
+            //string oneThousandTwentyFourBlanks = 
+            string code;
+
+            code = new string(' ', bufSize - 2) + "??";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.EOF);
+        }
+
+        [Test]
         public void TestTrigraphStreamNewlines()
         {
             // test Windows/Mac OSX line endings.
