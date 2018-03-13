@@ -675,6 +675,39 @@ int main(void)
         }
 
         [Test]
+        public void TestBoundryTrigraph15()
+        {
+            // test unfinished trigraph at the end of input, after a buffer.
+            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            string bufSizeStr = field.GetRawConstantValue().ToString();
+            int bufSize = int.Parse(bufSizeStr);
+
+            //string oneThousandTwentyFourBlanks = 
+            string code;
+
+            code = new string(' ', bufSize - 1) + "?";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.EOF);
+        }
+
+        [Test]
         public void TestTrigraphStreamNewlines()
         {
             // test Windows/Mac OSX line endings.
@@ -1024,382 +1057,6 @@ int main(void)
             Assert.AreEqual(t.value, "       \t");
             Assert.AreEqual(t.column, 1);
             Assert.AreEqual(t.line, 2);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-        }
-
-        [Test]
-        public void TestDigram1()
-        {
-            // test # digram.
-            string code = @"%:#include <stdio.h>
-
-int main(void)
-{
-    return 0;
-}";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
-
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
-            IEnumerator<Token> i = enumerable.GetEnumerator();
-            i.MoveNext();
-            Token t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-        }
-
-        [Test]
-        public void TestDigram2()
-        {
-            // test %: with digrams turned off.
-            string code = @"%:#include <stdio.h>
-
-int main(void)
-{
-    return 0;
-}";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, false);
-
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
-            IEnumerator<Token> i = enumerable.GetEnumerator();
-            i.MoveNext();
-            Token t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.PERCENT);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.COLON);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-        }
-
-        [Test]
-        public void TestDigram3()
-        {
-            // test [ digram.
-            string code = @"<:#include <stdio.h>
-
-int main(void)
-{
-    return 0;
-}";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
-
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
-            IEnumerator<Token> i = enumerable.GetEnumerator();
-            i.MoveNext();
-            Token t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.L_SQ_BRACKET);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-        }
-
-        [Test]
-        public void TestDigram4()
-        {
-            // test ] digram.
-            string code = @":>#include <stdio.h>
-
-int main(void)
-{
-    return 0;
-}";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
-
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
-            IEnumerator<Token> i = enumerable.GetEnumerator();
-            i.MoveNext();
-            Token t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.R_SQ_BRACKET);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-        }
-
-        [Test]
-        public void TestDigram5()
-        {
-            // test { digram.
-            string code = @"<%#include <stdio.h>
-
-int main(void)
-{
-    return 0;
-}";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
-
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
-            IEnumerator<Token> i = enumerable.GetEnumerator();
-            i.MoveNext();
-            Token t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.L_CURLY_BRACE);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-        }
-
-        [Test]
-        public void TestDigram6()
-        {
-            // test } digram.
-            string code = @"%>#include <stdio.h>
-
-int main(void)
-{
-    return 0;
-}";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
-
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
-            IEnumerator<Token> i = enumerable.GetEnumerator();
-            i.MoveNext();
-            Token t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.R_CURLY_BRACE);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-        }
-
-        [Test]
-        public void TestDigram7()
-        {
-            // test <: with digrams turned off.
-            string code = @"<:#include <stdio.h>
-
-int main(void)
-{
-    return 0;
-}";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, false);
-
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
-            IEnumerator<Token> i = enumerable.GetEnumerator();
-            i.MoveNext();
-            Token t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.LESS_THEN);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.COLON);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-        }
-
-        [Test]
-        public void TestDigram8()
-        {
-            // test :> with digrams turned off.
-            string code = @":>#include <stdio.h>
-
-int main(void)
-{
-    return 0;
-}";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, false);
-
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
-            IEnumerator<Token> i = enumerable.GetEnumerator();
-            i.MoveNext();
-            Token t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.COLON);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.GREATER_THEN);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-        }
-
-        [Test]
-        public void TestDigram9()
-        {
-            // test <% with digrams turned off.
-            string code = @"<%#include <stdio.h>
-
-int main(void)
-{
-    return 0;
-}";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, false);
-
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
-            IEnumerator<Token> i = enumerable.GetEnumerator();
-            i.MoveNext();
-            Token t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.LESS_THEN);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.PERCENT);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-        }
-
-        [Test]
-        public void TestDigram10()
-        {
-            // test %> with digrams turned off.
-            string code = @"%>#include <stdio.h>
-
-int main(void)
-{
-    return 0;
-}";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, false);
-
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
-            IEnumerator<Token> i = enumerable.GetEnumerator();
-            i.MoveNext();
-            Token t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.PERCENT);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.GREATER_THEN);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-        }
-
-        [Test]
-        public void TestDigram11()
-        {
-            // test incomplete < digram.
-            string code = @"<##include <stdio.h>
-
-int main(void)
-{
-    return 0;
-}";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, false);
-
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
-            IEnumerator<Token> i = enumerable.GetEnumerator();
-            i.MoveNext();
-            Token t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.LESS_THEN);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-        }
-
-        public void TestDigram12()
-        {
-            // test incomplete : digram.
-            string code = @":##include <stdio.h>
-
-int main(void)
-{
-    return 0;
-}";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, false);
-
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
-            IEnumerator<Token> i = enumerable.GetEnumerator();
-            i.MoveNext();
-            Token t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.COLON);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-        }
-
-        public void TestDigram13()
-        {
-            // test incomplete % digram.
-            string code = @"%##include <stdio.h>
-
-int main(void)
-{
-    return 0;
-}";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, false);
-
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
-            IEnumerator<Token> i = enumerable.GetEnumerator();
-            i.MoveNext();
-            Token t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.PERCENT);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
 
             i.MoveNext();
             t = i.Current;

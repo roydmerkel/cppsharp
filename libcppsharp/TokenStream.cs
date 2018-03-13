@@ -38,7 +38,6 @@ namespace libcppsharp
         private int readResult;
         private ulong column;
         private ulong line;
-        private char digraphCh;
 
         private TrigraphStream charStream;
         private IEnumerable<char> charEnumerable;
@@ -82,6 +81,7 @@ namespace libcppsharp
 
         public System.Collections.Generic.IEnumerable<Token> GetTokenEnumerable()
         {
+            char digraphCh = '\0';
             bool refillBuffer = false;
             Token lastTok;
             lastTok.tokenType = TokenType.UNKNOWN;
@@ -93,6 +93,76 @@ namespace libcppsharp
 
             if (readResult <= 0)
             {
+                if (digraphCh != '\0')
+                {
+                    switch (digraphCh)
+                    {
+                        case '<':
+                            if (lastTok.tokenType != TokenType.UNKNOWN)
+                            {
+                                if (curTokVal.Length > 0)
+                                {
+                                    lastTok.value = curTokVal.ToString();
+                                    curTokVal.Clear();
+                                }
+                                else
+                                {
+                                    lastTok.value = "";
+                                }
+
+                                yield return lastTok;
+                            }
+
+                            lastTok.tokenType = TokenType.LESS_THEN;
+                            lastTok.column = column;
+                            lastTok.line = line;
+                            column++;
+                            break;
+                        case ':':
+                            if (lastTok.tokenType != TokenType.UNKNOWN)
+                            {
+                                if (curTokVal.Length > 0)
+                                {
+                                    lastTok.value = curTokVal.ToString();
+                                    curTokVal.Clear();
+                                }
+                                else
+                                {
+                                    lastTok.value = "";
+                                }
+
+                                yield return lastTok;
+                            }
+
+                            lastTok.tokenType = TokenType.COLON;
+                            lastTok.column = column;
+                            lastTok.line = line;
+                            column++;
+                            break;
+                        case '%':
+                            if (lastTok.tokenType != TokenType.UNKNOWN)
+                            {
+                                if (curTokVal.Length > 0)
+                                {
+                                    lastTok.value = curTokVal.ToString();
+                                    curTokVal.Clear();
+                                }
+                                else
+                                {
+                                    lastTok.value = "";
+                                }
+
+                                yield return lastTok;
+                            }
+
+                            lastTok.tokenType = TokenType.PERCENT;
+                            lastTok.column = column;
+                            lastTok.line = line;
+                            column++;
+                            break;
+                    }
+                }
+
                 if (lastTok.tokenType != TokenType.UNKNOWN)
                 {
                     if (curTokVal.Length > 0)
@@ -129,6 +199,76 @@ namespace libcppsharp
 
                     if (readResult <= 0)
                     {
+                        if (digraphCh != '\0')
+                        {
+                            switch (digraphCh)
+                            {
+                                case '<':
+                                    if (lastTok.tokenType != TokenType.UNKNOWN)
+                                    {
+                                        if (curTokVal.Length > 0)
+                                        {
+                                            lastTok.value = curTokVal.ToString();
+                                            curTokVal.Clear();
+                                        }
+                                        else
+                                        {
+                                            lastTok.value = "";
+                                        }
+
+                                        yield return lastTok;
+                                    }
+
+                                    lastTok.tokenType = TokenType.LESS_THEN;
+                                    lastTok.column = column;
+                                    lastTok.line = line;
+                                    column++;
+                                    break;
+                                case ':':
+                                    if (lastTok.tokenType != TokenType.UNKNOWN)
+                                    {
+                                        if (curTokVal.Length > 0)
+                                        {
+                                            lastTok.value = curTokVal.ToString();
+                                            curTokVal.Clear();
+                                        }
+                                        else
+                                        {
+                                            lastTok.value = "";
+                                        }
+
+                                        yield return lastTok;
+                                    }
+
+                                    lastTok.tokenType = TokenType.COLON;
+                                    lastTok.column = column;
+                                    lastTok.line = line;
+                                    column++;
+                                    break;
+                                case '%':
+                                    if (lastTok.tokenType != TokenType.UNKNOWN)
+                                    {
+                                        if (curTokVal.Length > 0)
+                                        {
+                                            lastTok.value = curTokVal.ToString();
+                                            curTokVal.Clear();
+                                        }
+                                        else
+                                        {
+                                            lastTok.value = "";
+                                        }
+
+                                        yield return lastTok;
+                                    }
+
+                                    lastTok.tokenType = TokenType.PERCENT;
+                                    lastTok.column = column;
+                                    lastTok.line = line;
+                                    column++;
+                                    break;
+                            }
+                        }
+
                         if (lastTok.tokenType != TokenType.UNKNOWN)
                         {
                             if (curTokVal.Length > 0)
@@ -155,6 +295,221 @@ namespace libcppsharp
                 }
 
                 char ch = charReadBuffer[charBufPtr];
+
+                if (digraphCh != '\0')
+                {
+                    switch (digraphCh)
+                    {
+                        case '<':
+                            if (ch == ':')
+                            {
+                                if (lastTok.tokenType != TokenType.UNKNOWN)
+                                {
+                                    if (curTokVal.Length > 0)
+                                    {
+                                        lastTok.value = curTokVal.ToString();
+                                        curTokVal.Clear();
+                                    }
+                                    else
+                                    {
+                                        lastTok.value = "";
+                                    }
+
+                                    yield return lastTok;
+                                    lastTok.tokenType = TokenType.UNKNOWN;
+                                }
+
+                                lastTok.tokenType = TokenType.L_SQ_BRACKET;
+                                lastTok.column = column;
+                                lastTok.line = line;
+
+                                column += 2;
+                                charBufPtr++;
+                            }
+                            else if (ch == '%')
+                            {
+                                if (lastTok.tokenType != TokenType.UNKNOWN)
+                                {
+                                    if (curTokVal.Length > 0)
+                                    {
+                                        lastTok.value = curTokVal.ToString();
+                                        curTokVal.Clear();
+                                    }
+                                    else
+                                    {
+                                        lastTok.value = "";
+                                    }
+
+                                    yield return lastTok;
+                                    lastTok.tokenType = TokenType.UNKNOWN;
+                                }
+
+                                lastTok.tokenType = TokenType.L_CURLY_BRACE;
+                                lastTok.column = column;
+                                lastTok.line = line;
+
+                                column += 2;
+                                charBufPtr++;
+                            }
+                            else
+                            {
+                                if (lastTok.tokenType != TokenType.UNKNOWN)
+                                {
+                                    if (curTokVal.Length > 0)
+                                    {
+                                        lastTok.value = curTokVal.ToString();
+                                        curTokVal.Clear();
+                                    }
+                                    else
+                                    {
+                                        lastTok.value = "";
+                                    }
+
+                                    yield return lastTok;
+                                    lastTok.tokenType = TokenType.UNKNOWN;
+                                }
+
+                                lastTok.tokenType = TokenType.LESS_THEN;
+                                lastTok.column = column;
+                                lastTok.line = line;
+
+                                column++;
+                            }
+
+                            break;
+                        case ':':
+                            if (ch == '>')
+                            {
+                                if (lastTok.tokenType != TokenType.UNKNOWN)
+                                {
+                                    if (curTokVal.Length > 0)
+                                    {
+                                        lastTok.value = curTokVal.ToString();
+                                        curTokVal.Clear();
+                                    }
+                                    else
+                                    {
+                                        lastTok.value = "";
+                                    }
+
+                                    yield return lastTok;
+                                    lastTok.tokenType = TokenType.UNKNOWN;
+                                }
+
+                                lastTok.tokenType = TokenType.R_SQ_BRACKET;
+                                lastTok.column = column;
+                                lastTok.line = line;
+
+                                column += 2;
+                                charBufPtr ++;
+                            }
+                            else
+                            {
+                                if (lastTok.tokenType != TokenType.UNKNOWN)
+                                {
+                                    if (curTokVal.Length > 0)
+                                    {
+                                        lastTok.value = curTokVal.ToString();
+                                        curTokVal.Clear();
+                                    }
+                                    else
+                                    {
+                                        lastTok.value = "";
+                                    }
+
+                                    yield return lastTok;
+                                    lastTok.tokenType = TokenType.UNKNOWN;
+                                }
+
+                                lastTok.tokenType = TokenType.COLON;
+                                lastTok.column = column;
+                                lastTok.line = line;
+
+                                column++;
+                            }
+                            break;
+                        case '%':
+                            if (ch == '>')
+                            {
+                                if (lastTok.tokenType != TokenType.UNKNOWN)
+                                {
+                                    if (curTokVal.Length > 0)
+                                    {
+                                        lastTok.value = curTokVal.ToString();
+                                        curTokVal.Clear();
+                                    }
+                                    else
+                                    {
+                                        lastTok.value = "";
+                                    }
+
+                                    yield return lastTok;
+                                    lastTok.tokenType = TokenType.UNKNOWN;
+                                }
+
+                                lastTok.tokenType = TokenType.R_CURLY_BRACE;
+                                lastTok.column = column;
+                                lastTok.line = line;
+
+                                column += 2;
+                                charBufPtr++;
+                            }
+                            else if (ch == ':')
+                            {
+                                if (lastTok.tokenType != TokenType.UNKNOWN)
+                                {
+                                    if (curTokVal.Length > 0)
+                                    {
+                                        lastTok.value = curTokVal.ToString();
+                                        curTokVal.Clear();
+                                    }
+                                    else
+                                    {
+                                        lastTok.value = "";
+                                    }
+
+                                    yield return lastTok;
+                                    lastTok.tokenType = TokenType.UNKNOWN;
+                                }
+
+                                lastTok.tokenType = TokenType.HASH;
+                                lastTok.column = column;
+                                lastTok.line = line;
+
+                                column += 2;
+                                charBufPtr++;
+                            }
+                            else
+                            {
+                                if (lastTok.tokenType != TokenType.UNKNOWN)
+                                {
+                                    if (curTokVal.Length > 0)
+                                    {
+                                        lastTok.value = curTokVal.ToString();
+                                        curTokVal.Clear();
+                                    }
+                                    else
+                                    {
+                                        lastTok.value = "";
+                                    }
+
+                                    yield return lastTok;
+                                    lastTok.tokenType = TokenType.UNKNOWN;
+                                }
+
+                                lastTok.tokenType = TokenType.PERCENT;
+                                lastTok.column = column;
+                                lastTok.line = line;
+
+                                column++;
+                            }
+                            break;
+                    }
+
+                    digraphCh = '\0';
+                    continue;
+                }
+
                 switch (ch)
                 {
                     case ' ':
