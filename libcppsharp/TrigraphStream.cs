@@ -216,7 +216,14 @@ namespace libcppsharp
 
             readResult = RefillByteArray();
 
-            if (readResult > 0)
+            if (readResult <= 0 && trigraphCharsBufData > 0)
+            {
+                for (int i = 0; i < trigraphCharsBufData; i++)
+                {
+                    yield return trigraphCharsBuf[i];
+                }
+            }
+            else if (readResult > 0)
             {
                 if (!SetEncoder())
                 {
@@ -255,8 +262,69 @@ namespace libcppsharp
                         }
                     }
 
-                    Console.WriteLine(charReadBuffer[charBufPtr]);
                     char ch = charReadBuffer[charBufPtr];
+
+                    if (trigraphCharsBufData == 1)
+                    {
+                        if (ch == '?')
+                        {
+                            if (charBufPtr + 1 < charBufDatSize)
+                            {
+                                int index = TrigraphChars.IndexOf(charReadBuffer[charBufPtr + 1]);
+                                if (index >= 0)
+                                {
+                                    ch = TrigraphStandins[index];
+                                    yield return ch;
+                                    charBufPtr += 2;
+                                    trigraphCharsBufData = 0;
+                                }
+                                else
+                                {
+                                    // handle ??? as ? + ??<ch> as per cpp standard.
+                                    yield return '?';
+                                    trigraphCharsBufData = 0;
+                                }
+                            }
+                            else
+                            {
+                                trigraphCharsBuf[1] = '?';
+                                trigraphCharsBufData = 2;
+                                refillBuffer = true;
+                            }
+                        }
+                        else
+                        {
+                            trigraphCharsBufData = 0;
+
+                            // handle ??? as ? + ??<ch> as per cpp standard.
+                            yield return trigraphCharsBuf[0];
+                            yield return ch;
+                        }
+
+                        continue;  
+                    }
+                    else if (trigraphCharsBufData == 2)
+                    {
+                        int index = TrigraphChars.IndexOf(ch);
+                        if (index >= 0)
+                        {
+                            ch = TrigraphStandins[index];
+                            yield return ch;
+                            charBufPtr++;
+                            trigraphCharsBufData = 0;
+                        }
+                        else
+                        {
+                            // handle ??? as ? + ??<ch> as per cpp standard.
+                            yield return '?';
+                            trigraphCharsBuf[0] = trigraphCharsBuf[1];
+                            trigraphCharsBufData = 1;
+                        }
+
+                        continue;
+                    }
+
+
                     switch (ch)
                     {
                         case '\xFEFF':

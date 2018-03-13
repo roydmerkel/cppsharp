@@ -128,12 +128,8 @@ namespace libcppsharp
                     }
                 }
 
-                Console.WriteLine(charReadBuffer[charBufPtr]);
                 switch (charReadBuffer[charBufPtr])
                 {
-                    case '\xFEFF':
-                        charBufPtr++;
-                        break;
                     case ' ':
                     case '\t':
                         column++;
@@ -156,6 +152,22 @@ namespace libcppsharp
                             hashToken.line = line;
 
                             yield return hashToken;
+
+                            column++;
+                            charBufPtr++;
+                        }
+                        break;
+                    case '?':
+                        {
+                            Token questionToken;
+                            questionToken.tokenType = TokenType.QUESTION_MARK;
+                            questionToken.isDigraph = false;
+                            questionToken.isTrigraph = false;
+                            questionToken.value = null;
+                            questionToken.column = column;
+                            questionToken.line = line;
+
+                            yield return questionToken;
 
                             column++;
                             charBufPtr++;
