@@ -89,8 +89,6 @@ namespace libcppsharp
             {
                 Token eofTok;
                 eofTok.tokenType = TokenType.EOF;
-                eofTok.isDigraph = false;
-                eofTok.isTrigraph = false;
                 eofTok.value = null;
                 eofTok.column = column;
                 eofTok.line = line;
@@ -114,8 +112,6 @@ namespace libcppsharp
                     {
                         Token eofTok;
                         eofTok.tokenType = TokenType.EOF;
-                        eofTok.isDigraph = false;
-                        eofTok.isTrigraph = false;
                         eofTok.value = null;
                         eofTok.column = column;
                         eofTok.line = line;
@@ -142,8 +138,6 @@ namespace libcppsharp
                         {
                             Token hashToken;
                             hashToken.tokenType = TokenType.HASH;
-                            hashToken.isDigraph = false;
-                            hashToken.isTrigraph = false;
                             hashToken.value = null;
                             hashToken.column = column;
                             hashToken.line = line;
@@ -158,8 +152,6 @@ namespace libcppsharp
                         {
                             Token questionToken;
                             questionToken.tokenType = TokenType.QUESTION_MARK;
-                            questionToken.isDigraph = false;
-                            questionToken.isTrigraph = false;
                             questionToken.value = null;
                             questionToken.column = column;
                             questionToken.line = line;
@@ -174,8 +166,6 @@ namespace libcppsharp
                         {
                             Token equalSignToken;
                             equalSignToken.tokenType = TokenType.EQUAL_SIGN;
-                            equalSignToken.isDigraph = false;
-                            equalSignToken.isTrigraph = false;
                             equalSignToken.value = null;
                             equalSignToken.column = column;
                             equalSignToken.line = line;

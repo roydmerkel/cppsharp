@@ -24,8 +24,6 @@ namespace libcppsharp
     public struct Token
     {
         public TokenType tokenType;
-        public bool isDigraph;
-        public bool isTrigraph;
         public String value;
         public ulong column;
         public ulong line;
