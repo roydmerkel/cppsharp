@@ -96,7 +96,7 @@ int main(void)
 }";
 
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms);
+            TokenStream ts = new TokenStream(ms, true);
 
             IEnumerable<Token> enumerable = ts.GetNextToken();
             IEnumerator<Token> i = enumerable.GetEnumerator();

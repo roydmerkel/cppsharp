@@ -35,6 +35,9 @@ namespace libcppsharp
         private char[] charReadBuffer;
         private int charBufDatSize;
         private int charBufPtr;
+        private char[] trigraphCharsBuf;
+        private int trigraphCharsBufData;
+        private const int trigraphCharsBufSize = 2;
         private Stream inStr;
         private bool trigraphs;
         private int readResult;
@@ -42,6 +45,7 @@ namespace libcppsharp
         private Decoder decoder;
         private Encoder encoder;
         private const string TrigraphChars = "=/'()!<>-";
+        private const string TrigraphStandins = "#\\^[]|{}~";
 
         public TrigraphStream(Stream inStream, bool handleTrigraphs = false, bool handleDigraphs = false)
         {
@@ -49,10 +53,12 @@ namespace libcppsharp
             trigraphs = handleTrigraphs;
             byteReadBuffer = new byte[bufSize];
             charReadBuffer = new char[bufSize];
+            trigraphCharsBuf = new char[trigraphCharsBufSize];
             bufPtr = 0;
             bufDatSize = 0;
             charBufPtr = 0;
             charBufDatSize = 0;
+            trigraphCharsBufData = 0;
             readResult = 0;
             encoding = null;
         }
@@ -256,11 +262,59 @@ namespace libcppsharp
                         case '\xFEFF':
                             charBufPtr++;
                             break;
-                        case '\r':
-                        case '\n':
-                            charBufPtr++;
-                            yield return ch;
+                        case '?':
+                            if (!trigraphs)
+                            {
+                                charBufPtr++;
+                                yield return ch;
+                            }
+                            else
+                            {
+                                if (charBufPtr + 1 < charBufDatSize)
+                                {
+                                    if (charReadBuffer[charBufPtr + 1] != '?')
+                                    {
+                                        // handle ??? as ? + ??<ch> as per cpp standard.
+                                        yield return ch;
 
+                                        charBufPtr++;
+                                    }
+                                    else
+                                    {
+                                        if (charBufPtr + 2 < charBufDatSize)
+                                        {
+                                            int index = TrigraphChars.IndexOf(charReadBuffer[charBufPtr + 2]);
+                                            if (index >= 0)
+                                            {
+                                                ch = TrigraphStandins[index];
+                                                yield return ch;
+                                                charBufPtr += 3;
+                                            }
+                                            else
+                                            {
+                                                // handle ??? as ? + ??<ch> as per cpp standard.
+                                                yield return ch;
+                                                charBufPtr++;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            trigraphCharsBuf[0] = ch;
+                                            trigraphCharsBuf[1] = charReadBuffer[charBufPtr + 1];
+                                            trigraphCharsBufData = 2;
+
+                                            refillBuffer = true;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    trigraphCharsBuf[0] = ch;
+                                    trigraphCharsBufData = 1;
+
+                                    refillBuffer = true;
+                                }
+                            }
                             break;
                         default:
                             charBufPtr++;
