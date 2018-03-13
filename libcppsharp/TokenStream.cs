@@ -77,8 +77,10 @@ namespace libcppsharp
 
             if (readResult > 0)
             {
-                bufDatSize = readResult;
+                bufDatSize = readResult + i;
             }
+
+            bufPtr = 0;
 
             return readResult;
         }
@@ -229,16 +231,15 @@ namespace libcppsharp
             }
             else
             {
-                bufPtr = 0;
-                bufDatSize = readResult;
-
                 if (!SetEncoder())
                 {
                     throw new ArgumentException("Encoding of stream is not supported by C#.");
                 }
 
-                charBufDatSize = decoder.GetChars(byteReadBuffer, 0, bufDatSize, charReadBuffer, 0, true);
-                bufPtr = encoder.GetByteCount(charReadBuffer, 0, charBufDatSize, true);
+                charBufDatSize = decoder.GetChars(byteReadBuffer, 0, bufDatSize, charReadBuffer, 0, false);
+                bufPtr = encoder.GetByteCount(charReadBuffer, 0, charBufDatSize, false);
+                decoder.Reset();
+                encoder.Reset();
             }
 
             do
@@ -256,6 +257,7 @@ namespace libcppsharp
 
                 if (refillBuffer)
                 {
+                    refillBuffer = false;
                     readResult = RefillByteArray();
 
                     if (readResult <= 0)
@@ -273,15 +275,20 @@ namespace libcppsharp
                     }
                     else
                     {
-                        bufDatSize = readResult;
-
-                        charBufDatSize = decoder.GetChars(byteReadBuffer, 0, bufDatSize, charReadBuffer, 0, true);
-                        bufPtr = encoder.GetByteCount(charReadBuffer, 0, charBufDatSize, true);
+                        charBufDatSize = decoder.GetChars(byteReadBuffer, 0, bufDatSize, charReadBuffer, 0, false);
+                        bufPtr = encoder.GetByteCount(charReadBuffer, 0, charBufDatSize, false);
+                        decoder.Reset();
+                        encoder.Reset();
+                        charBufPtr = 0;
                     }
                 }
 
+                Console.WriteLine(charReadBuffer[charBufPtr]);
                 switch (charReadBuffer[charBufPtr])
                 {
+                    case '\xFEFF':
+                        charBufPtr++;
+                        break;
                     case ' ':
                     case '\t':
                         column++;

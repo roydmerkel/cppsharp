@@ -21,8 +21,10 @@
 using libcppsharp;
 using System;
 using System.IO;
+using System.Text;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace testcppsharp
 {
@@ -53,5 +55,34 @@ int main(void)
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
         }
+
+        [Test]
+        public void TestByteRefill()
+        {
+            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            string bufSizeStr = field.GetRawConstantValue().ToString();
+            int bufSize = int.Parse(bufSizeStr);
+
+            //string oneThousandTwentyFourBlanks = 
+            string code = @"#include <stdio.h>
+
+int main(void)
+{
+    return 0;
+}";
+            code = "\xFEFF" + new string(' ', bufSize) + code;
+
+            Encoding utf16 = new UnicodeEncoding(false, true);
+            MemoryStream ms = new MemoryStream(utf16.GetBytes(code));
+            TokenStream ts = new TokenStream(ms);
+
+            IEnumerable<Token> enumerable = ts.GetNextToken();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+        }
+
     }
 }
