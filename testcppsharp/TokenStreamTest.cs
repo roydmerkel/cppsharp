@@ -84,5 +84,27 @@ int main(void)
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
         }
 
+        [Test]
+        public void TestBasicTrigraph()
+        {
+            //string oneThousandTwentyFourBlanks = 
+            string code = @"??=include <stdio.h>
+
+int main(void)
+{
+    return 0;
+}";
+
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms);
+
+            IEnumerable<Token> enumerable = ts.GetNextToken();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+        }
+
     }
 }

@@ -25,6 +25,7 @@ namespace libcppsharp
     {
         UNKNOWN = 0,
         HASH,
+        QUESTION_MARK,
         EOF
     }
 }

@@ -95,6 +95,7 @@
     <Compile Include="Token.cs" />
     <Compile Include="TokenType.cs" />
     <Compile Include="TokenStream.cs" />
+    <Compile Include="TrigraphStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
