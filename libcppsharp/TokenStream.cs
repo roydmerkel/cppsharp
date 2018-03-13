@@ -79,24 +79,42 @@ namespace libcppsharp
             return read;
         }
 
-        public System.Collections.Generic.IEnumerable<Token>  GetNextToken()
+        public System.Collections.Generic.IEnumerable<Token> GetTokenEnumerable()
         {
             bool refillBuffer = false;
+            Token lastTok;
+            lastTok.tokenType = TokenType.UNKNOWN;
+            lastTok.value = null;
+            lastTok.column = 0;
+            lastTok.line = 0;
 
             readResult = RefillCharArray();
 
             if (readResult <= 0)
             {
-                Token eofTok;
-                eofTok.tokenType = TokenType.EOF;
-                eofTok.value = null;
-                eofTok.column = column;
-                eofTok.line = line;
+                if (lastTok.tokenType != TokenType.UNKNOWN)
+                {
+                    if (curTokVal.Length > 0)
+                    {
+                        lastTok.value = curTokVal.ToString();
+                        curTokVal.Clear();
+                    }
+                    else
+                    {
+                        lastTok.value = "";
+                    }
 
-                yield return eofTok;
+                    yield return lastTok;
+                }
+
+                lastTok.tokenType = TokenType.EOF;
+                lastTok.column = column;
+                lastTok.line = line;
+
+                yield return lastTok;
             }
 
-            while(readResult > 0)
+            while (readResult > 0)
             {
                 if (charBufPtr >= charBufDatSize)
                 {
@@ -110,39 +128,112 @@ namespace libcppsharp
 
                     if (readResult <= 0)
                     {
-                        Token eofTok;
-                        eofTok.tokenType = TokenType.EOF;
-                        eofTok.value = null;
-                        eofTok.column = column;
-                        eofTok.line = line;
+                        if (lastTok.tokenType != TokenType.UNKNOWN)
+                        {
+                            if (curTokVal.Length > 0)
+                            {
+                                lastTok.value = curTokVal.ToString();
+                                curTokVal.Clear();
+                            }
+                            else
+                            {
+                                lastTok.value = "";
+                            }
 
-                        yield return eofTok;
+                            yield return lastTok;
+                            lastTok.tokenType = TokenType.UNKNOWN;
+                        }
+
+                        lastTok.tokenType = TokenType.EOF;
+                        lastTok.column = column;
+                        lastTok.line = line;
+
+                        yield return lastTok;
                         break;
                     }
                 }
 
-                switch (charReadBuffer[charBufPtr])
+                char ch = charReadBuffer[charBufPtr];
+                switch (ch)
                 {
                     case ' ':
                     case '\t':
+                    case '\v':
+                    case '\f':
+                        if (lastTok.tokenType != TokenType.WHITESPACE)
+                        {
+                            if (lastTok.tokenType != TokenType.UNKNOWN)
+                            {
+                                if (curTokVal.Length > 0)
+                                {
+                                    lastTok.value = curTokVal.ToString();
+                                    curTokVal.Clear();
+                                }
+                                else
+                                {
+                                    lastTok.value = "";
+                                }
+
+                                yield return lastTok;
+                                lastTok.tokenType = TokenType.UNKNOWN;
+                            }
+
+                            lastTok.tokenType = TokenType.WHITESPACE;
+                            lastTok.column = column;
+                            lastTok.line = line;
+                        }
+
+                        curTokVal.Append(ch);
                         column++;
                         charBufPtr++;
                         break;
                     case '\r':
                     case '\n':
+                        if (lastTok.tokenType != TokenType.UNKNOWN)
+                        {
+                            if (curTokVal.Length > 0)
+                            {
+                                lastTok.value = curTokVal.ToString();
+                                curTokVal.Clear();
+                            }
+                            else
+                            {
+                                lastTok.value = "";
+                            }
+
+                            yield return lastTok;
+                            lastTok.tokenType = TokenType.UNKNOWN;
+                        }
+
+                        lastTok.tokenType = TokenType.NEWLINE;
+                        lastTok.column = column;
+                        lastTok.line = line;
+
                         column = 1;
                         line++;
                         charBufPtr++;
                         break;
                     case '#':
                         {
-                            Token hashToken;
-                            hashToken.tokenType = TokenType.HASH;
-                            hashToken.value = null;
-                            hashToken.column = column;
-                            hashToken.line = line;
+                            if (lastTok.tokenType != TokenType.UNKNOWN)
+                            {
+                                if (curTokVal.Length > 0)
+                                {
+                                    lastTok.value = curTokVal.ToString();
+                                    curTokVal.Clear();
+                                }
+                                else
+                                {
+                                    lastTok.value = "";
+                                }
 
-                            yield return hashToken;
+                                yield return lastTok;
+                                lastTok.tokenType = TokenType.UNKNOWN;
+                            }
+
+                            lastTok.tokenType = TokenType.HASH;
+                            lastTok.column = column;
+                            lastTok.line = line;
 
                             column++;
                             charBufPtr++;
@@ -150,13 +241,25 @@ namespace libcppsharp
                         break;
                     case '?':
                         {
-                            Token questionToken;
-                            questionToken.tokenType = TokenType.QUESTION_MARK;
-                            questionToken.value = null;
-                            questionToken.column = column;
-                            questionToken.line = line;
+                            if (lastTok.tokenType != TokenType.UNKNOWN)
+                            {
+                                if (curTokVal.Length > 0)
+                                {
+                                    lastTok.value = curTokVal.ToString();
+                                    curTokVal.Clear();
+                                }
+                                else
+                                {
+                                    lastTok.value = "";
+                                }
 
-                            yield return questionToken;
+                                yield return lastTok;
+                                lastTok.tokenType = TokenType.UNKNOWN;
+                            }
+
+                            lastTok.tokenType = TokenType.QUESTION_MARK;
+                            lastTok.column = column;
+                            lastTok.line = line;
 
                             column++;
                             charBufPtr++;
@@ -164,19 +267,46 @@ namespace libcppsharp
                         break;
                     case '=':
                         {
-                            Token equalSignToken;
-                            equalSignToken.tokenType = TokenType.EQUAL_SIGN;
-                            equalSignToken.value = null;
-                            equalSignToken.column = column;
-                            equalSignToken.line = line;
+                            if (lastTok.tokenType != TokenType.UNKNOWN)
+                            {
+                                if (curTokVal.Length > 0)
+                                {
+                                    lastTok.value = curTokVal.ToString();
+                                    curTokVal.Clear();
+                                }
+                                else
+                                {
+                                    lastTok.value = "";
+                                }
 
-                            yield return equalSignToken;
+                                yield return lastTok;
+                                lastTok.tokenType = TokenType.UNKNOWN;
+                            }
+
+                            lastTok.tokenType = TokenType.EQUAL_SIGN;
+                            lastTok.column = column;
+                            lastTok.line = line;
 
                             column++;
                             charBufPtr++;
                         }
                         break;
                     default:
+                        if (lastTok.tokenType != TokenType.UNKNOWN)
+                        {
+                            if (curTokVal.Length > 0)
+                            {
+                                lastTok.value = curTokVal.ToString();
+                                curTokVal.Clear();
+                            }
+                            else
+                            {
+                                lastTok.value = "";
+                            }
+
+                            yield return lastTok;
+                        }
+
                         throw new NotImplementedException(new String(new char[] { charReadBuffer[charBufPtr] }) + " not yet handled.");
                 }
             }

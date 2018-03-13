@@ -24,6 +24,8 @@ namespace libcppsharp
     public enum TokenType
     {
         UNKNOWN = 0,
+        WHITESPACE,
+        NEWLINE,
         HASH,
         QUESTION_MARK,
         EQUAL_SIGN,

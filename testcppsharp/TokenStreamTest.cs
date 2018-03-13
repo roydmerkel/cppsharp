@@ -38,8 +38,7 @@ namespace testcppsharp
         [Test]
         public void CanGetToken()
         {
-            string code = @"
-#include <stdio.h>
+            string code = @"#include <stdio.h>
 
 int main(void)
 {
@@ -48,7 +47,7 @@ int main(void)
             MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms);
 
-            IEnumerable<Token> enumerable = ts.GetNextToken();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -76,10 +75,15 @@ int main(void)
             MemoryStream ms = new MemoryStream(utf16.GetBytes(code));
             TokenStream ts = new TokenStream(ms);
 
-            IEnumerable<Token> enumerable = ts.GetNextToken();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+
+            i.MoveNext();
+            t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
         }
@@ -99,7 +103,7 @@ int main(void)
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true);
 
-            IEnumerable<Token> enumerable = ts.GetNextToken();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -122,7 +126,7 @@ int main(void)
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms);
 
-            IEnumerable<Token> enumerable = ts.GetNextToken();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -160,10 +164,15 @@ int main(void)
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true);
 
-            IEnumerable<Token> enumerable = ts.GetNextToken();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+
+            i.MoveNext();
+            t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
 
@@ -193,10 +202,15 @@ int main(void)
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true);
 
-            IEnumerable<Token> enumerable = ts.GetNextToken();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+
+            i.MoveNext();
+            t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
 
@@ -220,7 +234,7 @@ int main(void)
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true);
 
-            IEnumerable<Token> enumerable = ts.GetNextToken();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -258,7 +272,7 @@ int main(void)
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true);
 
-            IEnumerable<Token> enumerable = ts.GetNextToken();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -290,7 +304,7 @@ int main(void)
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true);
 
-            IEnumerable<Token> enumerable = ts.GetNextToken();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -323,10 +337,15 @@ int main(void)
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true);
 
-            IEnumerable<Token> enumerable = ts.GetNextToken();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+
+            i.MoveNext();
+            t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
 
@@ -367,10 +386,15 @@ int main(void)
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true);
 
-            IEnumerable<Token> enumerable = ts.GetNextToken();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+
+            i.MoveNext();
+            t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
 
@@ -405,10 +429,15 @@ int main(void)
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true);
 
-            IEnumerable<Token> enumerable = ts.GetNextToken();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+
+            i.MoveNext();
+            t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
 
@@ -449,10 +478,15 @@ int main(void)
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true);
 
-            IEnumerable<Token> enumerable = ts.GetNextToken();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+
+            i.MoveNext();
+            t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
 
@@ -480,10 +514,15 @@ int main(void)
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true);
 
-            IEnumerable<Token> enumerable = ts.GetNextToken();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+
+            i.MoveNext();
+            t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
 
@@ -508,10 +547,15 @@ int main(void)
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true);
 
-            IEnumerable<Token> enumerable = ts.GetNextToken();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+
+            i.MoveNext();
+            t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
 
@@ -536,10 +580,15 @@ int main(void)
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true);
 
-            IEnumerable<Token> enumerable = ts.GetNextToken();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+
+            i.MoveNext();
+            t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
 
@@ -867,6 +916,43 @@ int main(void)
             ch = i.Current;
 
             Assert.AreEqual(ch, 'a');
+        }
+
+        [Test]
+        public void TestWhitespaceToken()
+        {
+            string code = @"
+       	#include <stdio.h>
+
+int main(void)
+{
+    return 0;
+}";
+            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NEWLINE);
+            Assert.AreEqual(t.value, "");
+            Assert.AreEqual(t.column, 1);
+            Assert.AreEqual(t.line, 1);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+            Assert.AreEqual(t.value, "       \t");
+            Assert.AreEqual(t.column, 1);
+            Assert.AreEqual(t.line, 2);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
         }
     }
 }

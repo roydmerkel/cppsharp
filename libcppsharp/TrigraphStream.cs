@@ -303,7 +303,7 @@ namespace libcppsharp
                             yield return ch;
                         }
 
-                        continue;  
+                        continue;
                     }
                     else if (trigraphCharsBufData == 2)
                     {
