@@ -57,7 +57,7 @@ namespace libcppsharp
             { '=', TokenType.EQUAL_SIGN },
             { '{', TokenType.L_CURLY_BRACE },
             { '}', TokenType.R_CURLY_BRACE },
-            { '|', TokenType.PIPE }, 
+            { '|', TokenType.PIPE },
             { '~', TokenType.TILDE },
             { '[', TokenType.L_SQ_BRACKET },
             { ']', TokenType.R_SQ_BRACKET },
@@ -70,7 +70,7 @@ namespace libcppsharp
             { '`', TokenType.GRAVE },
             { '@', TokenType.AT },
         };
- 
+
         public TokenStream(Stream inStream, bool handleTrigraphs = false, bool handleDigraphs = false)
         {
             charStream = new TrigraphStream(inStream, handleTrigraphs, handleDigraphs);
@@ -112,7 +112,6 @@ namespace libcppsharp
             bool escaped = false;
             char digraphCh = '\0';
             bool refillBuffer = false;
-            bool printBackslash = false;
             Token lastTok;
             lastTok.tokenType = TokenType.UNKNOWN;
             lastTok.value = null;
@@ -387,7 +386,7 @@ namespace libcppsharp
                 char ch = charReadBuffer[charBufPtr];
 
                 if (digraphCh != '\0')
-               {
+                {
                     switch (digraphCh)
                     {
                         case '<':
@@ -491,7 +490,7 @@ namespace libcppsharp
                                 lastTok.line = line;
 
                                 column += 2;
-                                charBufPtr ++;
+                                charBufPtr++;
                             }
                             else
                             {
@@ -608,33 +607,30 @@ namespace libcppsharp
                 {
                     escaped = false;
 
-                    if (printBackslash)
+                    if (lastTok.tokenType != TokenType.UNKNOWN)
                     {
-                        if (lastTok.tokenType != TokenType.UNKNOWN)
+                        if (curTokVal.Length > 0)
                         {
-                            if (curTokVal.Length > 0)
-                            {
-                                lastTok.value = curTokVal.ToString();
-                                curTokVal.Clear();
-                            }
-                            else
-                            {
-                                lastTok.value = "";
-                            }
-
-                            yield return lastTok;
-                            lastTok.tokenType = TokenType.UNKNOWN;
+                            lastTok.value = curTokVal.ToString();
+                            curTokVal.Clear();
+                        }
+                        else
+                        {
+                            lastTok.value = "";
                         }
 
-                        lastTok.tokenType = TokenType.BACK_SLASH;
-                        lastTok.column = column;
-                        lastTok.line = line;
+                        yield return lastTok;
+                        lastTok.tokenType = TokenType.UNKNOWN;
                     }
+
+                    lastTok.tokenType = TokenType.BACK_SLASH;
+                    lastTok.column = column;
+                    lastTok.line = line;
+
                     column++;
                 }
                 else if (escaped)
                 {
-                    printBackslash = false;
                     column++;
                 }
 
@@ -1003,8 +999,8 @@ namespace libcppsharp
                                     lastTok.column = column;
                                     lastTok.line = line;
 
-                                    column ++;
-                                    charBufPtr ++;
+                                    column++;
+                                    charBufPtr++;
                                 }
                             }
                             else
@@ -1042,7 +1038,6 @@ namespace libcppsharp
                     case '\\':
                         {
                             escaped = true;
-                            printBackslash = true;
                             charBufPtr++;
                         }
                         break;

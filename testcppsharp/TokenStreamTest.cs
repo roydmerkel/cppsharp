@@ -260,6 +260,11 @@ int main(void)
             i.MoveNext();
             t = i.Current;
 
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.BACK_SLASH);
+
+            i.MoveNext();
+            t = i.Current;
+
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
 
             i.MoveNext();
