@@ -33,6 +33,7 @@ namespace libcppsharp
         GREATER_THEN,
         COLON,
         PERCENT,
+        FORWARD_SLASH,
         L_CURLY_BRACE,
         R_CURLY_BRACE,
         L_SQ_BRACKET,

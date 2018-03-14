@@ -46,6 +46,7 @@ namespace libcppsharp
         private Encoder encoder;
         private const string TrigraphChars = "=/'()!<>-";
         private const string TrigraphStandins = "#\\^[]|{}~";
+        private bool escaped = false;
 
         public TrigraphStream(Stream inStream, bool handleTrigraphs = false, bool handleDigraphs = false)
         {
@@ -285,6 +286,10 @@ namespace libcppsharp
                                 if (index >= 0)
                                 {
                                     ch = TrigraphStandins[index];
+                                    if (ch == '\\')
+                                    {
+                                        escaped = true;
+                                    }
                                     yield return ch;
                                     charBufPtr += 2;
                                     trigraphCharsBufData = 0;
@@ -320,6 +325,10 @@ namespace libcppsharp
                         if (index >= 0)
                         {
                             ch = TrigraphStandins[index];
+                            if (ch == '\\')
+                            {
+                                escaped = true;
+                            }
                             yield return ch;
                             charBufPtr++;
                             trigraphCharsBufData = 0;
@@ -346,10 +355,17 @@ namespace libcppsharp
                     switch (ch)
                     {
                         case '\xFEFF':
+                            escaped = false;
+                            charBufPtr++;
+                            break;
+                        case '\\':
+                            escaped = true;
+                            yield return '\\';
                             charBufPtr++;
                             break;
                         case '\r':
                         case '\n':
+                            escaped = false;
                             // all \r\n combos need to be in pairs otherwise
                             // we return \n and start again.
                             if ((lastNewLineChar == '\r' && ch == '\n')
@@ -374,8 +390,9 @@ namespace libcppsharp
                             charBufPtr++;
                             break;
                         case '?':
-                            if (!trigraphs)
+                            if (!trigraphs || escaped)
                             {
+                                escaped = false;
                                 charBufPtr++;
                                 yield return ch;
                             }
@@ -398,6 +415,10 @@ namespace libcppsharp
                                             if (index >= 0)
                                             {
                                                 ch = TrigraphStandins[index];
+                                                if (ch == '\\')
+                                                {
+                                                    escaped = true;
+                                                }
                                                 yield return ch;
                                                 charBufPtr += 3;
                                             }
@@ -428,6 +449,7 @@ namespace libcppsharp
                             }
                             break;
                         default:
+                            escaped = false;
                             charBufPtr++;
                             yield return ch;
 

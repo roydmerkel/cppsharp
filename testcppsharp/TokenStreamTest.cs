@@ -145,6 +145,174 @@ int main(void)
         }
 
         [Test]
+        public void TestBasicTrigraph3()
+        {
+            // test basic trigraph code.
+            //string oneThousandTwentyFourBlanks = 
+            string code = @"\??=#include <stdio.h>
+
+int main(void)
+{
+    return 0;
+}";
+
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.FORWARD_SLASH);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.EQUAL_SIGN);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+        }
+
+        [Test]
+        public void TestBasicTrigraph4()
+        {
+            // test basic trigraph code.
+            //string oneThousandTwentyFourBlanks = 
+            string code = @"?\?=#include <stdio.h>
+
+int main(void)
+{
+    return 0;
+}";
+
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.FORWARD_SLASH);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.EQUAL_SIGN);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+        }
+
+        [Test]
+        public void TestBasicTrigraph5()
+        {
+            // test basic trigraph code.
+            //string oneThousandTwentyFourBlanks = 
+            string code = @"\   ??=#include <stdio.h>
+
+int main(void)
+{
+    return 0;
+}";
+
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.FORWARD_SLASH);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+        }
+
+        [Test]
+        public void TestBasicTrigraph6()
+        {
+            // test basic trigraph code.
+            //string oneThousandTwentyFourBlanks = 
+            string code = @"??/??=??=include <stdio.h>
+
+int main(void)
+{
+    return 0;
+}";
+
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.FORWARD_SLASH);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.EQUAL_SIGN);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+        }
+
+        [Test]
         public void TestBoundryTrigraph1()
         {
             // testcppsharp 1 question mark before buffer boundry.

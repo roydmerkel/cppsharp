@@ -989,6 +989,32 @@ namespace libcppsharp
                             charBufPtr++;
                         }
                         break;
+                    case '\\':
+                        {
+                            if (lastTok.tokenType != TokenType.UNKNOWN)
+                            {
+                                if (curTokVal.Length > 0)
+                                {
+                                    lastTok.value = curTokVal.ToString();
+                                    curTokVal.Clear();
+                                }
+                                else
+                                {
+                                    lastTok.value = "";
+                                }
+
+                                yield return lastTok;
+                                lastTok.tokenType = TokenType.UNKNOWN;
+                            }
+
+                            lastTok.tokenType = TokenType.FORWARD_SLASH;
+                            lastTok.column = column;
+                            lastTok.line = line;
+
+                            column++;
+                            charBufPtr++;
+                        }
+                        break;
                     default:
                         if (lastTok.tokenType != TokenType.UNKNOWN)
                         {
