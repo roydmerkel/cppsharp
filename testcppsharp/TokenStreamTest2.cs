@@ -736,6 +736,37 @@ int main(void)
         }
 
         [Test]
+        public void TestDigram22()
+        {
+            // test incomplete % digram.
+            string code = @"%\
+:#include <stdio.h>
+
+int main(void)
+{
+    return 0;
+}";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+            Assert.AreEqual(t.column, 1);
+            Assert.AreEqual(t.line, 1);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+            Assert.AreEqual(t.column, 2);
+            Assert.AreEqual(t.line, 2);
+        }
+
+        [Test]
         public void TestPunctuation()
         {
             string code = "!^&*()-+={}|~[];>,./#@`";

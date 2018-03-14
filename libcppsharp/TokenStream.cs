@@ -62,6 +62,8 @@ namespace libcppsharp
         private int readResult;
         private ulong column;
         private ulong line;
+        private ulong endcolumn;
+        private ulong endline;
 
         private TrigraphStream charStream;
         private IEnumerable<char> charEnumerable;
@@ -280,6 +282,9 @@ namespace libcppsharp
                         curTokVal.Clear();
                         curTokVal.Append('<');
 
+                        endcolumn = column + 1;
+                        endline = line;
+
                         this.state = State.DIGRAPH;
                     }
                     else
@@ -309,6 +314,9 @@ namespace libcppsharp
                         curTokVal.Clear();
                         curTokVal.Append(':');
 
+                        endcolumn = column + 1;
+                        endline = line;
+
                         this.state = State.DIGRAPH;
                     }
                     else
@@ -337,6 +345,9 @@ namespace libcppsharp
                     {
                         curTokVal.Clear();
                         curTokVal.Append('%');
+
+                        endcolumn = column + 1;
+                        endline = line;
 
                         this.state = State.DIGRAPH;
                     }
@@ -445,8 +456,38 @@ namespace libcppsharp
             }
             else
             {
+                if (state.escaped && ch != '\n')
+                {
+                    throw new InvalidDataException("Stray \\ at column " + endcolumn.ToString() + ", line " + endline.ToString());
+                }
+
                 switch (ch)
                 {
+                    case '\n':
+                        if (state.escaped)
+                        {
+                            endcolumn = 1;
+                            endline++;
+                            state.escaped = false;
+                            charBufPtr++;
+                        }
+                        else
+                        {
+                            invalidDigram = true;
+                        }
+                        break;
+                    case '\\':
+                        if (state.escaped)
+                        {
+                            throw new InvalidDataException("Stray \\ at column " + endcolumn.ToString() + ", line " + endline.ToString());
+                        }
+                        else
+                        {
+                            state.escaped = true;
+                            endcolumn++;
+                            charBufPtr++;
+                        }
+                        break;
                     case ':':
                         switch (curTokVal[0])
                         {
@@ -457,7 +498,6 @@ namespace libcppsharp
                                 lastTok.tokenType = TokenType.HASH;
                                 break;
                             default:
-                                curTokVal.Append(ch);
                                 invalidDigram = true;
                                 break;
                         }
@@ -472,7 +512,6 @@ namespace libcppsharp
                                 lastTok.tokenType = TokenType.R_CURLY_BRACE;
                                 break;
                             default:
-                                curTokVal.Append(ch);
                                 invalidDigram = true;
                                 break;
                         }
@@ -484,44 +523,65 @@ namespace libcppsharp
                                 lastTok.tokenType = TokenType.L_CURLY_BRACE;
                                 break;
                             default:
-                                curTokVal.Append(ch);
                                 invalidDigram = true;
                                 break;
                         }
                         break;
                     default:
-                        curTokVal.Append(ch);
                         invalidDigram = true;
                         break;
                 }
 
-                charBufPtr++;
-                if (!invalidDigram)
+                if (ch != '\\' && ch != '\n')
                 {
-                    lastTok.column = column;
-                    lastTok.line = line;
-                    lastTok.value = "";
-                    ret.Add(lastTok);
-
-                    column += 2;
-                }
-                else
-                {
-                    lastTok.line = line;
-                    lastTok.value = "";
-
-                    foreach (char c in curTokVal.ToString())
+                    if (!invalidDigram)
                     {
                         lastTok.column = column;
-                        punctuation.TryGetValue(c, out lastTok.tokenType);
+                        lastTok.line = line;
+                        lastTok.value = "";
                         ret.Add(lastTok);
 
-                        column++;
-                    }
-                }
+                        endcolumn++;
+                        column = endcolumn;
+                        line = endline;
 
-                lastTok.tokenType = TokenType.UNKNOWN;
-                this.state = State.DEFAULT;
+                        charBufPtr++;
+                    }
+                    else
+                    {
+                        lastTok.line = line;
+                        lastTok.value = "";
+
+                        lastTok.column = column;
+                        punctuation.TryGetValue(curTokVal[0], out lastTok.tokenType);
+                        ret.Add(lastTok);
+
+                        column = endcolumn;
+                        line = endline;
+
+                        if (state.escaped)
+                        {
+                            lastTok.line = line;
+                            lastTok.value = "";
+
+                            if (ignoreStrayBackslash)
+                            {
+                                lastTok.column = column;
+                                lastTok.tokenType = TokenType.BACK_SLASH;
+                                ret.Add(lastTok);
+                            }
+                            else
+                            {
+                                throw new InvalidDataException("Stray backslash found at " + column.ToString());
+                            }
+
+                            column++;
+                        }
+                    }
+
+                    lastTok.tokenType = TokenType.UNKNOWN;
+                    this.state = State.DEFAULT;
+                }
             }
 
             return ret;
