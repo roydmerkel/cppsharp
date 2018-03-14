@@ -1283,5 +1283,25 @@ int main(void)
                 Assert.Pass();
             }
         }
+
+        [Test]
+        public void TestStrayBackslash3()
+        {
+            string code = @"\";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            try
+            {
+                i.MoveNext();
+                Assert.Fail();
+            }
+            catch (InvalidDataException)
+            {
+                Assert.Pass();
+            }
+        }
     }
 }
