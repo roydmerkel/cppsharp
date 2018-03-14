@@ -742,5 +742,128 @@ int main(void)
             Assert.AreEqual((int)t.tokenType, (int)TokenType.EOF);
             Assert.AreEqual(bufSize + 2, t.column);
         }
+
+        [Test]
+        public void TestPunctuation()
+        {
+            string code = "!^&*()-+={}|~[];>,./#";
+            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+
+            Token t;
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.EXCLAIMATION_MARK);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.CARROT);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.AMPERSTAND);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.ASTERISK);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.L_PAREN);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.R_PAREN);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.MINUS_SIGN);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.PLUS_SIGN);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.EQUAL_SIGN);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.L_CURLY_BRACE);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.R_CURLY_BRACE);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.PIPE);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.TILDE);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.L_SQ_BRACKET);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.R_SQ_BRACKET);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.SEMI_COLON);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.GREATER_THEN);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.COMMA);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.PERIOD);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.FORWARD_SLASH);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.EOF);
+        }
     }
 }

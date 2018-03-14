@@ -164,8 +164,7 @@ int main(void)
             i.MoveNext();
             Token t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.FORWARD_SLASH);
-
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.BACK_SLASH);
             i.MoveNext();
             t = i.Current;
 
@@ -212,7 +211,7 @@ int main(void)
             i.MoveNext();
             t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.FORWARD_SLASH);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.BACK_SLASH);
 
             i.MoveNext();
             t = i.Current;
@@ -250,7 +249,7 @@ int main(void)
             i.MoveNext();
             Token t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.FORWARD_SLASH);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.BACK_SLASH);
 
             i.MoveNext();
             t = i.Current;
@@ -288,7 +287,7 @@ int main(void)
             i.MoveNext();
             Token t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.FORWARD_SLASH);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.BACK_SLASH);
 
             i.MoveNext();
             t = i.Current;
@@ -500,7 +499,7 @@ int main(void)
 {
     return 0;
 }";
-            
+
             code = new string(' ', bufSize - 1) + "?" + code;
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true);

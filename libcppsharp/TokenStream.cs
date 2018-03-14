@@ -43,6 +43,30 @@ namespace libcppsharp
         private IEnumerable<char> charEnumerable;
         private IEnumerator<char> charEnumerator;
         private bool eofEncountered;
+
+        private readonly Dictionary<char, TokenType> punctuation = new Dictionary<char, TokenType>() {
+            { '!', TokenType.EXCLAIMATION_MARK },
+            { '^', TokenType.CARROT },
+            { '&', TokenType.AMPERSTAND },
+            { '*', TokenType.ASTERISK },
+            { '(', TokenType.L_PAREN },
+            { ')', TokenType.R_PAREN },
+            { '-', TokenType.MINUS_SIGN },
+            { '+', TokenType.PLUS_SIGN },
+            { '=', TokenType.EQUAL_SIGN },
+            { '{', TokenType.L_CURLY_BRACE },
+            { '}', TokenType.R_CURLY_BRACE },
+            { '|', TokenType.PIPE }, 
+            { '~', TokenType.TILDE },
+            { '[', TokenType.L_SQ_BRACKET },
+            { ']', TokenType.R_SQ_BRACKET },
+            { ';', TokenType.SEMI_COLON },
+            { '>', TokenType.GREATER_THEN },
+            { ',', TokenType.COMMA },
+            { '.', TokenType.PERIOD },
+            { '/', TokenType.FORWARD_SLASH },
+            { '#', TokenType.HASH }
+        };
  
         public TokenStream(Stream inStream, bool handleTrigraphs = false, bool handleDigraphs = false)
         {
@@ -569,32 +593,6 @@ namespace libcppsharp
                         line++;
                         charBufPtr++;
                         break;
-                    case '#':
-                        {
-                            if (lastTok.tokenType != TokenType.UNKNOWN)
-                            {
-                                if (curTokVal.Length > 0)
-                                {
-                                    lastTok.value = curTokVal.ToString();
-                                    curTokVal.Clear();
-                                }
-                                else
-                                {
-                                    lastTok.value = "";
-                                }
-
-                                yield return lastTok;
-                                lastTok.tokenType = TokenType.UNKNOWN;
-                            }
-
-                            lastTok.tokenType = TokenType.HASH;
-                            lastTok.column = column;
-                            lastTok.line = line;
-
-                            column++;
-                            charBufPtr++;
-                        }
-                        break;
                     case '?':
                         {
                             if (lastTok.tokenType != TokenType.UNKNOWN)
@@ -614,32 +612,6 @@ namespace libcppsharp
                             }
 
                             lastTok.tokenType = TokenType.QUESTION_MARK;
-                            lastTok.column = column;
-                            lastTok.line = line;
-
-                            column++;
-                            charBufPtr++;
-                        }
-                        break;
-                    case '=':
-                        {
-                            if (lastTok.tokenType != TokenType.UNKNOWN)
-                            {
-                                if (curTokVal.Length > 0)
-                                {
-                                    lastTok.value = curTokVal.ToString();
-                                    curTokVal.Clear();
-                                }
-                                else
-                                {
-                                    lastTok.value = "";
-                                }
-
-                                yield return lastTok;
-                                lastTok.tokenType = TokenType.UNKNOWN;
-                            }
-
-                            lastTok.tokenType = TokenType.EQUAL_SIGN;
                             lastTok.column = column;
                             lastTok.line = line;
 
@@ -963,32 +935,6 @@ namespace libcppsharp
                             charBufPtr++;
                         }
                         break;
-                    case '>':
-                        {
-                            if (lastTok.tokenType != TokenType.UNKNOWN)
-                            {
-                                if (curTokVal.Length > 0)
-                                {
-                                    lastTok.value = curTokVal.ToString();
-                                    curTokVal.Clear();
-                                }
-                                else
-                                {
-                                    lastTok.value = "";
-                                }
-
-                                yield return lastTok;
-                                lastTok.tokenType = TokenType.UNKNOWN;
-                            }
-
-                            lastTok.tokenType = TokenType.GREATER_THEN;
-                            lastTok.column = column;
-                            lastTok.line = line;
-
-                            column++;
-                            charBufPtr++;
-                        }
-                        break;
                     case '\\':
                         {
                             if (lastTok.tokenType != TokenType.UNKNOWN)
@@ -1007,7 +953,53 @@ namespace libcppsharp
                                 lastTok.tokenType = TokenType.UNKNOWN;
                             }
 
-                            lastTok.tokenType = TokenType.FORWARD_SLASH;
+                            lastTok.tokenType = TokenType.BACK_SLASH;
+                            lastTok.column = column;
+                            lastTok.line = line;
+
+                            column++;
+                            charBufPtr++;
+                        }
+                        break;
+                    case '!':
+                    case '^':
+                    case '&':
+                    case '*':
+                    case '(':
+                    case ')':
+                    case '-':
+                    case '+':
+                    case '=':
+                    case '{':
+                    case '}':
+                    case '|':
+                    case '~':
+                    case '[':
+                    case ']':
+                    case ';':
+                    case '>':
+                    case ',':
+                    case '.':
+                    case '/':
+                    case '#':
+                        {
+                            if (lastTok.tokenType != TokenType.UNKNOWN)
+                            {
+                                if (curTokVal.Length > 0)
+                                {
+                                    lastTok.value = curTokVal.ToString();
+                                    curTokVal.Clear();
+                                }
+                                else
+                                {
+                                    lastTok.value = "";
+                                }
+
+                                yield return lastTok;
+                                lastTok.tokenType = TokenType.UNKNOWN;
+                            }
+
+                            punctuation.TryGetValue(ch, out lastTok.tokenType);
                             lastTok.column = column;
                             lastTok.line = line;
 
