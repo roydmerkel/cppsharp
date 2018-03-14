@@ -1233,5 +1233,55 @@ int main(void)
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
         }
+
+        [Test]
+        public void TestStrayBackslash()
+        {
+            string code = @"\#include <stdio.h>
+
+int main(void)
+{
+    return 0;
+}";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            try
+            {
+                i.MoveNext();
+                Assert.Fail();
+            }
+            catch (InvalidDataException)
+            {
+                Assert.Pass();
+            }
+        }
+
+        [Test]
+        public void TestStrayBackslash2()
+        {
+            string code = @"\??=include <stdio.h>
+
+int main(void)
+{
+    return 0;
+}";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            try
+            {
+                i.MoveNext();
+                Assert.Fail();
+            }
+            catch (InvalidDataException)
+            {
+                Assert.Pass();
+            }
+        }
     }
 }
