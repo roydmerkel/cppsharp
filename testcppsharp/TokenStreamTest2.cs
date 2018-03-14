@@ -45,7 +45,7 @@ int main(void)
 {
     return 0;
 }";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -71,7 +71,7 @@ int main(void)
 {
     return 0;
 }";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, false);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -102,7 +102,7 @@ int main(void)
 {
     return 0;
 }";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -128,7 +128,7 @@ int main(void)
 {
     return 0;
 }";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -154,7 +154,7 @@ int main(void)
 {
     return 0;
 }";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -180,7 +180,7 @@ int main(void)
 {
     return 0;
 }";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -206,7 +206,7 @@ int main(void)
 {
     return 0;
 }";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, false);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -237,7 +237,7 @@ int main(void)
 {
     return 0;
 }";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, false);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -268,7 +268,7 @@ int main(void)
 {
     return 0;
 }";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, false);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -299,7 +299,7 @@ int main(void)
 {
     return 0;
 }";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, false);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -330,7 +330,7 @@ int main(void)
 {
     return 0;
 }";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -361,7 +361,7 @@ int main(void)
 {
     return 0;
 }";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -392,7 +392,7 @@ int main(void)
 {
     return 0;
 }";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -423,7 +423,7 @@ int main(void)
 
             //string oneThousandTwentyFourBlanks = 
             string code = new string('#', bufSize - 1) + "<:";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -462,7 +462,7 @@ int main(void)
 
             //string oneThousandTwentyFourBlanks = 
             string code = new string('#', bufSize - 1) + ":>";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -501,7 +501,7 @@ int main(void)
 
             //string oneThousandTwentyFourBlanks = 
             string code = new string('#', bufSize - 1) + "<%";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -540,7 +540,7 @@ int main(void)
 
             //string oneThousandTwentyFourBlanks = 
             string code = new string('#', bufSize - 1) + "%>";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -579,7 +579,7 @@ int main(void)
 
             //string oneThousandTwentyFourBlanks = 
             string code = new string('#', bufSize - 1) + "%>";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -618,7 +618,7 @@ int main(void)
 
             //string oneThousandTwentyFourBlanks = 
             string code = new string('#', bufSize - 1) + "<#";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -663,7 +663,7 @@ int main(void)
 
             //string oneThousandTwentyFourBlanks = 
             string code = new string('#', bufSize - 1) + ":#";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -708,7 +708,7 @@ int main(void)
 
             //string oneThousandTwentyFourBlanks = 
             string code = new string('#', bufSize - 1) + "%#";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -747,7 +747,7 @@ int main(void)
         public void TestPunctuation()
         {
             string code = "!^&*()-+={}|~[];>,./#";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();

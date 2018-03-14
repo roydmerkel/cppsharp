@@ -44,7 +44,7 @@ int main(void)
 {
     return 0;
 }";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
@@ -1204,7 +1204,7 @@ int main(void)
 {
     return 0;
 }";
-            MemoryStream ms = new MemoryStream(System.Text.Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
