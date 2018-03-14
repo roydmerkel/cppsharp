@@ -44,6 +44,8 @@ namespace libcppsharp
         AMPERSTAND,
         CARROT,
         EXCLAIMATION_MARK,
+        GRAVE,
+        AT,
         BACK_SLASH,
         FORWARD_SLASH,
         L_CURLY_BRACE,

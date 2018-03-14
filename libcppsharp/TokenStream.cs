@@ -66,7 +66,9 @@ namespace libcppsharp
             { ',', TokenType.COMMA },
             { '.', TokenType.PERIOD },
             { '/', TokenType.FORWARD_SLASH },
-            { '#', TokenType.HASH }
+            { '#', TokenType.HASH },
+            { '`', TokenType.GRAVE },
+            { '@', TokenType.AT },
         };
  
         public TokenStream(Stream inStream, bool handleTrigraphs = false, bool handleDigraphs = false)
@@ -1065,6 +1067,8 @@ namespace libcppsharp
                     case '.':
                     case '/':
                     case '#':
+                    case '`':
+                    case '@':
                         {
                             if (lastTok.tokenType != TokenType.UNKNOWN)
                             {

@@ -746,7 +746,7 @@ int main(void)
         [Test]
         public void TestPunctuation()
         {
-            string code = "!^&*()-+={}|~[];>,./#";
+            string code = "!^&*()-+={}|~[];>,./#@`";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
 
@@ -859,6 +859,18 @@ int main(void)
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.AT);
+
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.GRAVE);
 
             i.MoveNext();
             t = i.Current;
