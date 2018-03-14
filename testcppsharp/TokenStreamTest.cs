@@ -62,7 +62,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code = @"#include <stdio.h>
 
 int main(void)
@@ -92,7 +91,6 @@ int main(void)
         public void TestBasicTrigraph()
         {
             // test basic trigraph code.
-            //string oneThousandTwentyFourBlanks = 
             string code = @"??=include <stdio.h>
 
 int main(void)
@@ -115,7 +113,6 @@ int main(void)
         public void TestBasicTrigraph2()
         {
             // test basic trigraph code.
-            //string oneThousandTwentyFourBlanks = 
             string code = @"??=include <stdio.h>
 
 int main(void)
@@ -148,7 +145,6 @@ int main(void)
         public void TestBasicTrigraph3()
         {
             // test basic trigraph code.
-            //string oneThousandTwentyFourBlanks = 
             string code = @"\??=#include <stdio.h>
 
 int main(void)
@@ -192,7 +188,6 @@ int main(void)
         public void TestBasicTrigraph4()
         {
             // test basic trigraph code.
-            //string oneThousandTwentyFourBlanks = 
             string code = @"?\?=#include <stdio.h>
 
 int main(void)
@@ -237,7 +232,6 @@ int main(void)
         public void TestBasicTrigraph5()
         {
             // test basic trigraph code.
-            //string oneThousandTwentyFourBlanks = 
             string code = @"\   ??=#include <stdio.h>
 
 int main(void)
@@ -277,7 +271,6 @@ int main(void)
         public void TestBasicTrigraph6()
         {
             // test basic trigraph code.
-            //string oneThousandTwentyFourBlanks = 
             string code = @"??/??=??=include <stdio.h>
 
 int main(void)
@@ -327,7 +320,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code = @"?=#include <stdio.h>
 
 int main(void)
@@ -365,7 +357,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code = @"=#include <stdio.h>
 
 int main(void)
@@ -399,7 +390,6 @@ int main(void)
         public void TestBoundryTrigraph3()
         {
             // test triple question mark.
-            //string oneThousandTwentyFourBlanks = 
             string code = @"????=#include <stdio.h>
 
 int main(void)
@@ -437,7 +427,6 @@ int main(void)
         public void TestBoundryTrigraph4()
         {
             // test bad trigraph
-            //string oneThousandTwentyFourBlanks = 
             string code = @"??#include <stdio.h>
 
 int main(void)
@@ -469,7 +458,6 @@ int main(void)
         public void TestBoundryTrigraph5()
         {
             // test bad trigraph at char 2.
-            //string oneThousandTwentyFourBlanks = 
             string code = @"?#include <stdio.h>
 
 int main(void)
@@ -500,7 +488,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code = @"?##include <stdio.h>
 
 int main(void)
@@ -549,7 +536,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code = @"##include <stdio.h>
 
 int main(void)
@@ -592,7 +578,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code = @"##include <stdio.h>
 
 int main(void)
@@ -641,7 +626,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code = @"#include <stdio.h>
 
 int main(void)
@@ -684,7 +668,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code = new string(' ', bufSize - 3) + "??=";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true);
@@ -715,7 +698,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code = @"=";
 
             code = new string(' ', bufSize - 2) + "??" + code;
@@ -748,7 +730,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code = @"?=";
 
             code = new string(' ', bufSize - 1) + "?" + code;
@@ -781,7 +762,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code = @"?";
 
             code = new string(' ', bufSize - 1) + "?" + code;
@@ -819,7 +799,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code;
 
             code = new string(' ', bufSize - 2) + "??";
@@ -857,7 +836,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code;
 
             code = new string(' ', bufSize - 1) + "?";

@@ -421,7 +421,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code = new string('#', bufSize - 1) + "<:";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
@@ -460,7 +459,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code = new string('#', bufSize - 1) + ":>";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
@@ -499,7 +497,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code = new string('#', bufSize - 1) + "<%";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
@@ -538,7 +535,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code = new string('#', bufSize - 1) + "%>";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
@@ -577,7 +573,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code = new string('#', bufSize - 1) + "%>";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
@@ -616,7 +611,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code = new string('#', bufSize - 1) + "<#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
@@ -661,7 +655,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code = new string('#', bufSize - 1) + ":#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
@@ -706,7 +699,6 @@ int main(void)
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
-            //string oneThousandTwentyFourBlanks = 
             string code = new string('#', bufSize - 1) + "%#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true, true);
