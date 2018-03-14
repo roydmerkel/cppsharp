@@ -43,6 +43,7 @@ namespace libcppsharp
         private IEnumerable<char> charEnumerable;
         private IEnumerator<char> charEnumerator;
         private bool eofEncountered;
+        private bool ignoreStrayBackslash;
 
         private readonly Dictionary<char, TokenType> punctuation = new Dictionary<char, TokenType>() {
             { '!', TokenType.EXCLAIMATION_MARK },
@@ -74,6 +75,7 @@ namespace libcppsharp
             charEnumerable = charStream.GetCharEnumerable();
             charEnumerator = charEnumerable.GetEnumerator();
             eofEncountered = !charEnumerator.MoveNext();
+            ignoreStrayBackslash = false;
 
             inStr = inStream;
             digraphs = handleDigraphs;
@@ -105,8 +107,10 @@ namespace libcppsharp
 
         public System.Collections.Generic.IEnumerable<Token> GetTokenEnumerable()
         {
+            bool escaped = false;
             char digraphCh = '\0';
             bool refillBuffer = false;
+            bool printBackslash = false;
             Token lastTok;
             lastTok.tokenType = TokenType.UNKNOWN;
             lastTok.value = null;
@@ -117,6 +121,36 @@ namespace libcppsharp
 
             if (readResult <= 0)
             {
+                if (escaped && !ignoreStrayBackslash)
+                {
+                    throw new InvalidDataException("Stray \\ in source, at column " + column.ToString() + " line " + line.ToString());
+                }
+                else if (escaped)
+                {
+                    escaped = false;
+                    if (lastTok.tokenType != TokenType.UNKNOWN)
+                    {
+                        if (curTokVal.Length > 0)
+                        {
+                            lastTok.value = curTokVal.ToString();
+                            curTokVal.Clear();
+                        }
+                        else
+                        {
+                            lastTok.value = "";
+                        }
+
+                        yield return lastTok;
+                        lastTok.tokenType = TokenType.UNKNOWN;
+                    }
+
+                    lastTok.tokenType = TokenType.BACK_SLASH;
+                    lastTok.column = column;
+                    lastTok.line = line;
+
+                    column++;
+                }
+
                 if (digraphCh != '\0')
                 {
                     switch (digraphCh)
@@ -223,6 +257,36 @@ namespace libcppsharp
 
                     if (readResult <= 0)
                     {
+                        if (escaped && !ignoreStrayBackslash)
+                        {
+                            throw new InvalidDataException("Stray \\ in source, at column " + column.ToString() + " line " + line.ToString());
+                        }
+                        else if (escaped)
+                        {
+                            escaped = false;
+                            if (lastTok.tokenType != TokenType.UNKNOWN)
+                            {
+                                if (curTokVal.Length > 0)
+                                {
+                                    lastTok.value = curTokVal.ToString();
+                                    curTokVal.Clear();
+                                }
+                                else
+                                {
+                                    lastTok.value = "";
+                                }
+
+                                yield return lastTok;
+                                lastTok.tokenType = TokenType.UNKNOWN;
+                            }
+
+                            lastTok.tokenType = TokenType.BACK_SLASH;
+                            lastTok.column = column;
+                            lastTok.line = line;
+
+                            column++;
+                        }
+
                         if (digraphCh != '\0')
                         {
                             switch (digraphCh)
@@ -321,7 +385,7 @@ namespace libcppsharp
                 char ch = charReadBuffer[charBufPtr];
 
                 if (digraphCh != '\0')
-                {
+               {
                     switch (digraphCh)
                     {
                         case '<':
@@ -532,6 +596,44 @@ namespace libcppsharp
 
                     digraphCh = '\0';
                     continue;
+                }
+
+                if (" \t\v\f\r\n".IndexOf(ch) < 0 && escaped && !ignoreStrayBackslash)
+                {
+                    throw new InvalidDataException("Stray \\ in source, at column " + column.ToString() + " line " + line.ToString());
+                }
+                else if (" \t\v\f\r\n".IndexOf(ch) < 0 && escaped)
+                {
+                    escaped = false;
+
+                    if (printBackslash)
+                    {
+                        if (lastTok.tokenType != TokenType.UNKNOWN)
+                        {
+                            if (curTokVal.Length > 0)
+                            {
+                                lastTok.value = curTokVal.ToString();
+                                curTokVal.Clear();
+                            }
+                            else
+                            {
+                                lastTok.value = "";
+                            }
+
+                            yield return lastTok;
+                            lastTok.tokenType = TokenType.UNKNOWN;
+                        }
+
+                        lastTok.tokenType = TokenType.BACK_SLASH;
+                        lastTok.column = column;
+                        lastTok.line = line;
+                    }
+                    column++;
+                }
+                else if (escaped)
+                {
+                    printBackslash = false;
+                    column++;
                 }
 
                 switch (ch)
@@ -937,27 +1039,8 @@ namespace libcppsharp
                         break;
                     case '\\':
                         {
-                            if (lastTok.tokenType != TokenType.UNKNOWN)
-                            {
-                                if (curTokVal.Length > 0)
-                                {
-                                    lastTok.value = curTokVal.ToString();
-                                    curTokVal.Clear();
-                                }
-                                else
-                                {
-                                    lastTok.value = "";
-                                }
-
-                                yield return lastTok;
-                                lastTok.tokenType = TokenType.UNKNOWN;
-                            }
-
-                            lastTok.tokenType = TokenType.BACK_SLASH;
-                            lastTok.column = column;
-                            lastTok.line = line;
-
-                            column++;
+                            escaped = true;
+                            printBackslash = true;
                             charBufPtr++;
                         }
                         break;

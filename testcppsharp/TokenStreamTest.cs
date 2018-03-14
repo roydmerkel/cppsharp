@@ -158,6 +158,8 @@ int main(void)
 
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true);
+            FieldInfo fieldInfo = ts.GetType().GetField("ignoreStrayBackslash", BindingFlags.NonPublic | BindingFlags.Instance);
+            fieldInfo.SetValue(ts, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
             IEnumerator<Token> i = enumerable.GetEnumerator();
@@ -200,6 +202,8 @@ int main(void)
 
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true);
+            FieldInfo fieldInfo = ts.GetType().GetField("ignoreStrayBackslash", BindingFlags.NonPublic | BindingFlags.Instance);
+            fieldInfo.SetValue(ts, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
             IEnumerator<Token> i = enumerable.GetEnumerator();
@@ -243,16 +247,13 @@ int main(void)
 
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true);
+            FieldInfo fieldInfo = ts.GetType().GetField("ignoreStrayBackslash", BindingFlags.NonPublic | BindingFlags.Instance);
+            fieldInfo.SetValue(ts, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.BACK_SLASH);
-
-            i.MoveNext();
-            t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
 
@@ -281,6 +282,8 @@ int main(void)
 
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
             TokenStream ts = new TokenStream(ms, true);
+            FieldInfo fieldInfo = ts.GetType().GetField("ignoreStrayBackslash", BindingFlags.NonPublic | BindingFlags.Instance);
+            fieldInfo.SetValue(ts, true);
 
             IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
             IEnumerator<Token> i = enumerable.GetEnumerator();
