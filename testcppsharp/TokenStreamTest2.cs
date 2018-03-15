@@ -435,20 +435,17 @@ int main(void)
                 Assert.IsTrue(i.MoveNext());
                 t = i.Current;
                 Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-                Assert.AreEqual(iter + 1, t.column);
             }
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.L_SQ_BRACKET);
-            Assert.AreEqual(bufSize, t.column);
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.EOF);
-            Assert.AreEqual(bufSize + 2, t.column);
         }
 
         [Test]
@@ -473,20 +470,17 @@ int main(void)
                 Assert.IsTrue(i.MoveNext());
                 t = i.Current;
                 Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-                Assert.AreEqual(iter + 1, t.column);
             }
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.R_SQ_BRACKET);
-            Assert.AreEqual(bufSize, t.column);
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.EOF);
-            Assert.AreEqual(bufSize + 2, t.column);
         }
 
         [Test]
@@ -511,20 +505,17 @@ int main(void)
                 Assert.IsTrue(i.MoveNext());
                 t = i.Current;
                 Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-                Assert.AreEqual(iter + 1, t.column);
             }
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.L_CURLY_BRACE);
-            Assert.AreEqual(bufSize, t.column);
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.EOF);
-            Assert.AreEqual(bufSize + 2, t.column);
         }
 
         [Test]
@@ -549,20 +540,17 @@ int main(void)
                 Assert.IsTrue(i.MoveNext());
                 t = i.Current;
                 Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-                Assert.AreEqual(iter + 1, t.column);
             }
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.R_CURLY_BRACE);
-            Assert.AreEqual(bufSize, t.column);
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.EOF);
-            Assert.AreEqual(bufSize + 2, t.column);
         }
 
         [Test]
@@ -587,20 +575,17 @@ int main(void)
                 Assert.IsTrue(i.MoveNext());
                 t = i.Current;
                 Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-                Assert.AreEqual(iter + 1, t.column);
             }
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.R_CURLY_BRACE);
-            Assert.AreEqual(bufSize, t.column);
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.EOF);
-            Assert.AreEqual(bufSize + 2, t.column);
         }
 
         [Test]
@@ -625,26 +610,22 @@ int main(void)
                 Assert.IsTrue(i.MoveNext());
                 t = i.Current;
                 Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-                Assert.AreEqual(iter + 1, t.column);
             }
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.LESS_THEN);
-            Assert.AreEqual(bufSize, t.column);
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-            Assert.AreEqual(bufSize + 1, t.column);
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.EOF);
-            Assert.AreEqual(bufSize + 2, t.column);
         }
 
         [Test]
@@ -669,26 +650,22 @@ int main(void)
                 Assert.IsTrue(i.MoveNext());
                 t = i.Current;
                 Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-                Assert.AreEqual(iter + 1, t.column);
             }
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.COLON);
-            Assert.AreEqual(bufSize, t.column);
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-            Assert.AreEqual(bufSize + 1, t.column);
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.EOF);
-            Assert.AreEqual(bufSize + 2, t.column);
         }
 
         [Test]
@@ -713,26 +690,22 @@ int main(void)
                 Assert.IsTrue(i.MoveNext());
                 t = i.Current;
                 Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-                Assert.AreEqual(iter + 1, t.column);
             }
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.PERCENT);
-            Assert.AreEqual(bufSize, t.column);
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-            Assert.AreEqual(bufSize + 1, t.column);
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.EOF);
-            Assert.AreEqual(bufSize + 2, t.column);
         }
 
         [Test]
@@ -755,15 +728,56 @@ int main(void)
             Token t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-            Assert.AreEqual(t.column, 1);
-            Assert.AreEqual(t.line, 1);
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-            Assert.AreEqual(t.column, 2);
-            Assert.AreEqual(t.line, 2);
+        }
+
+        [Test]
+        public void TestDigram23()
+        {
+            // test incomplete % digram.
+            string code = @"%\ :#include <stdio.h>
+
+int main(void)
+{
+    return 0;
+}";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true);
+            FieldInfo fieldInfo = ts.GetType().GetField("ignoreStrayBackslash", BindingFlags.NonPublic | BindingFlags.Instance);
+            fieldInfo.SetValue(ts, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.PERCENT);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+            Assert.AreEqual(t.value, " ");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.BACK_SLASH);
+            Assert.AreEqual(t.value, "");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.COLON);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
         }
 
         [Test]
@@ -899,6 +913,176 @@ int main(void)
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.EOF);
+        }
+
+        [Test]
+        public void TestPutBackQueuePush()
+        {
+            FieldInfo field = typeof(TokenStream).GetField("putBackBufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            string putBackBufSizeStr = field.GetRawConstantValue().ToString();
+            int putBackBufSize = int.Parse(putBackBufSizeStr);
+
+            String code = "#";
+
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, false, false);
+
+            MethodInfo PutBackArrayEmpty = ts.GetType().GetMethod("PutBackArrayEmpty", BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo PushPutBackArray = ts.GetType().GetMethod("PushPutBackArray", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            var isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
+
+            Assert.AreEqual(true, isEmpty);
+
+            for (int i = 1; i <= putBackBufSize; i++)
+            {
+                var pushSuccess = PushPutBackArray.Invoke(ts, new object[] { Convert.ToChar('a' + i) });
+
+                Assert.AreEqual(true, pushSuccess);
+
+                isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
+
+                Assert.AreEqual(false, isEmpty);
+            }
+
+            var finalPushSuccess = PushPutBackArray.Invoke(ts, new object[] { Convert.ToChar('a' + putBackBufSize + 1) });
+
+            Assert.AreEqual(false, finalPushSuccess);
+
+            isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
+
+            Assert.AreEqual(false, isEmpty);
+        }
+
+        [Test]
+        public void TestPutBackQueuePop()
+        {
+            FieldInfo field = typeof(TokenStream).GetField("putBackBufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            string putBackBufSizeStr = field.GetRawConstantValue().ToString();
+            int putBackBufSize = int.Parse(putBackBufSizeStr);
+
+            String code = "#";
+
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, false, false);
+
+            MethodInfo PutBackArrayEmpty = ts.GetType().GetMethod("PutBackArrayEmpty", BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo PushPutBackArray = ts.GetType().GetMethod("PushPutBackArray", BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo PopPutBackArray = ts.GetType().GetMethod("PopPutBackArray", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            var isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
+
+            Assert.AreEqual(true, isEmpty);
+
+            for (int i = 1; i <= putBackBufSize; i++)
+            {
+                var pushSuccess = PushPutBackArray.Invoke(ts, new object[] { Convert.ToChar('a' + i) });
+
+                Assert.AreEqual(true, pushSuccess);
+
+                isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
+
+                Assert.AreEqual(false, isEmpty);
+            }
+
+            var finalPushSuccess = PushPutBackArray.Invoke(ts, new object[] { Convert.ToChar('a' + putBackBufSize + 1) });
+
+            Assert.AreEqual(false, finalPushSuccess);
+
+            isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
+
+            Assert.AreEqual(false, isEmpty);
+
+            for (int i = 1; i < putBackBufSize; i++)
+            {
+                var ch = PopPutBackArray.Invoke(ts, new object[] { });
+
+                Assert.AreEqual(Convert.ToChar('a' + i), ch);
+
+                isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
+
+                Assert.AreEqual(false, isEmpty);
+            }
+
+            var ch2 = PopPutBackArray.Invoke(ts, new object[] { });
+
+            Assert.AreEqual(Convert.ToChar('a' + putBackBufSize), ch2);
+
+            isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
+
+            Assert.AreEqual(true, isEmpty);
+        }
+
+
+        [Test]
+        public void TestPutBackQueuePop2()
+        {
+            FieldInfo field = typeof(TokenStream).GetField("putBackBufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            string putBackBufSizeStr = field.GetRawConstantValue().ToString();
+            int putBackBufSize = int.Parse(putBackBufSizeStr);
+
+            String code = "#";
+
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, false, false);
+
+            MethodInfo PutBackArrayEmpty = ts.GetType().GetMethod("PutBackArrayEmpty", BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo PushPutBackArray = ts.GetType().GetMethod("PushPutBackArray", BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo PopPutBackArray = ts.GetType().GetMethod("PopPutBackArray", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            var isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
+
+            Assert.AreEqual(true, isEmpty);
+
+            for (int i = 1; i <= putBackBufSize; i++)
+            {
+                var pushSuccess = PushPutBackArray.Invoke(ts, new object[] { Convert.ToChar('a' + i) });
+
+                Assert.AreEqual(true, pushSuccess);
+
+                isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
+
+                Assert.AreEqual(false, isEmpty);
+            }
+
+            var finalPushSuccess = PushPutBackArray.Invoke(ts, new object[] { Convert.ToChar('a' + putBackBufSize + 1) });
+
+            Assert.AreEqual(false, finalPushSuccess);
+
+            isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
+
+            Assert.AreEqual(false, isEmpty);
+
+            var ch = PopPutBackArray.Invoke(ts, new object[] { });
+
+                Assert.AreEqual(Convert.ToChar('a' + 1), ch);
+
+                isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
+
+                Assert.AreEqual(false, isEmpty);
+
+            finalPushSuccess = PushPutBackArray.Invoke(ts, new object[] { Convert.ToChar('a' + putBackBufSize + 1) });
+
+            Assert.AreEqual(true, finalPushSuccess);
+
+            for (int i = 1; i < putBackBufSize; i++)
+            {
+                ch = PopPutBackArray.Invoke(ts, new object[] { });
+
+                Assert.AreEqual(Convert.ToChar('a' + i + 1), ch);
+
+                isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
+
+                Assert.AreEqual(false, isEmpty);
+            }
+
+            ch = PopPutBackArray.Invoke(ts, new object[] { });
+
+            Assert.AreEqual(Convert.ToChar('a' + putBackBufSize + 1), ch);
+
+            isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
+
+            Assert.AreEqual(true, isEmpty);
         }
     }
 }

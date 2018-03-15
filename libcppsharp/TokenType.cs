@@ -54,6 +54,7 @@ namespace libcppsharp
         R_SQ_BRACKET,
         L_PAREN,
         R_PAREN,
+        IDENTIFIER,
         EOF
     }
 }

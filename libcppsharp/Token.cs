@@ -25,7 +25,5 @@ namespace libcppsharp
     {
         public TokenType tokenType;
         public String value;
-        public ulong column;
-        public ulong line;
     }
 }

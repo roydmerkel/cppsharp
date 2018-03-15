@@ -1200,16 +1200,12 @@ int main(void)
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.NEWLINE);
             Assert.AreEqual(t.value, "");
-            Assert.AreEqual(t.column, 1);
-            Assert.AreEqual(t.line, 1);
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
             Assert.AreEqual(t.value, "       \t");
-            Assert.AreEqual(t.column, 1);
-            Assert.AreEqual(t.line, 2);
 
             i.MoveNext();
             t = i.Current;
