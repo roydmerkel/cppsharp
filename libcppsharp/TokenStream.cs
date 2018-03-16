@@ -70,6 +70,7 @@ namespace libcppsharp
         private int charBufPtr;
         private Stream inStr;
         private StringBuilder curTokVal;
+        private StringBuilder postfixVal;
         private bool digraphs;
         private int readResult;
 
@@ -124,6 +125,7 @@ namespace libcppsharp
             inStr = inStream;
             digraphs = handleDigraphs;
             curTokVal = new StringBuilder();
+            postfixVal = new StringBuilder();
             charReadBuffer = new char[bufSize];
             charBufPtr = 0;
             charBufDatSize = 0;
@@ -144,7 +146,6 @@ namespace libcppsharp
                 {State.IDENTIFIER, new StateCallbacks(HandleIdentifierStateEOFTokens, HandleIdentifiersNewChar) },
             };
         }
-
 
         private bool PutBackArrayEmpty()
         {
@@ -926,6 +927,7 @@ namespace libcppsharp
                     }
                     else
                     {
+                        postfixVal.Clear();
                         this.state = State.STRINGPOSTFIX;
                     }
 
@@ -953,18 +955,81 @@ namespace libcppsharp
 
             switch (ch)
             {
+                case '_':
+                case 'a':
+                case 'b':
+                case 'c':
+                case 'd':
+                case 'e':
+                case 'f':
+                case 'g':
+                case 'h':
+                case 'i':
+                case 'j':
+                case 'k':
+                case 'l':
+                case 'm':
+                case 'n':
+                case 'o':
+                case 'p':
+                case 'q':
+                case 'r':
                 case 's':
+                case 't':
+                case 'u':
+                case 'v':
+                case 'w':
+                case 'x':
+                case 'y':
+                case 'z':
+                case 'A':
+                case 'B':
+                case 'C':
+                case 'D':
+                case 'E':
+                case 'F':
+                case 'G':
+                case 'H':
+                case 'I':
+                case 'J':
+                case 'K':
+                case 'L':
+                case 'M':
+                case 'N':
+                case 'O':
+                case 'P':
+                case 'Q':
+                case 'R':
+                case 'S':
+                case 'T':
+                case 'U':
+                case 'V':
+                case 'W':
+                case 'X':
+                case 'Y':
+                case 'Z':
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
                     if (state.escaped)
                     {
                         tok.value = curTokVal.ToString();
                         tok.tokenType = TokenType.STRING;
                         ret.Add(tok);
 
+                        PushPutBackArray('\\');
                         this.state = State.DEFAULT;
                     }
                     else
                     {
-                        curTokVal.Append(ch);
+                        postfixVal.Append(ch);
                         MoveNextChar();
                     }
 
@@ -972,9 +1037,32 @@ namespace libcppsharp
                 case '\\':
                     if (state.escaped)
                     {
-                        tok.value = curTokVal.ToString();
-                        tok.tokenType = TokenType.STRING;
-                        ret.Add(tok);
+                        switch (postfixVal.ToString())
+                        {
+                            case "s":
+                                curTokVal.Append(postfixVal);
+
+                                tok.value = curTokVal.ToString();
+                                tok.tokenType = TokenType.STRING;
+                                ret.Add(tok);
+                                break;
+                            default:
+                                tok.value = curTokVal.ToString();
+                                tok.tokenType = TokenType.STRING;
+                                ret.Add(tok);
+
+                                curTokVal.Clear();
+
+                                if (postfixVal.Length > 0)
+                                {
+                                    curTokVal.Append(postfixVal);
+
+                                    tok.value = curTokVal.ToString();
+                                    tok.tokenType = TokenType.IDENTIFIER;
+                                    ret.Add(tok);
+                                }
+                                break;
+                        }
 
                         this.state = State.DEFAULT;
                     }
@@ -987,9 +1075,32 @@ namespace libcppsharp
                 case '\n':
                     if (!state.escaped)
                     {
-                        tok.value = curTokVal.ToString();
-                        tok.tokenType = TokenType.STRING;
-                        ret.Add(tok);
+                        switch (postfixVal.ToString())
+                        {
+                            case "s":
+                                curTokVal.Append(postfixVal);
+
+                                tok.value = curTokVal.ToString();
+                                tok.tokenType = TokenType.STRING;
+                                ret.Add(tok);
+                                break;
+                            default:
+                                tok.value = curTokVal.ToString();
+                                tok.tokenType = TokenType.STRING;
+                                ret.Add(tok);
+
+                                curTokVal.Clear();
+
+                                if (postfixVal.Length > 0)
+                                {
+                                    curTokVal.Append(postfixVal);
+
+                                    tok.value = curTokVal.ToString();
+                                    tok.tokenType = TokenType.IDENTIFIER;
+                                    ret.Add(tok);
+                                }
+                                break;
+                        }
 
                         this.state = State.DEFAULT;
                     }
@@ -999,9 +1110,32 @@ namespace libcppsharp
                     }
                     break;
                 default:
-                    tok.value = curTokVal.ToString();
-                    tok.tokenType = TokenType.STRING;
-                    ret.Add(tok);
+                    switch (postfixVal.ToString())
+                    {
+                        case "s":
+                            curTokVal.Append(postfixVal);
+
+                            tok.value = curTokVal.ToString();
+                            tok.tokenType = TokenType.STRING;
+                            ret.Add(tok);
+                            break;
+                        default:
+                            tok.value = curTokVal.ToString();
+                            tok.tokenType = TokenType.STRING;
+                            ret.Add(tok);
+
+                            curTokVal.Clear();
+
+                            if (postfixVal.Length > 0)
+                            {
+                                curTokVal.Append(postfixVal);
+
+                                tok.value = curTokVal.ToString();
+                                tok.tokenType = TokenType.IDENTIFIER;
+                                ret.Add(tok);
+                            }
+                            break;
+                    }
 
                     this.state = State.DEFAULT;
                     break;

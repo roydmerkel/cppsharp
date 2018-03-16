@@ -312,6 +312,40 @@ namespace testcppsharp
         }
 
         [Test]
+        public void TestString13()
+        {
+            // test # digram.
+            string code = "Lu\\\n8\"ABC\\\n123\"sa#";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.IDENTIFIER);
+            Assert.AreEqual(t.value, "Lu8");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.STRING);
+            Assert.AreEqual(t.value, "\"ABC123\"");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.IDENTIFIER);
+            Assert.AreEqual(t.value, "sa");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+        }
+
+        [Test]
         public void TestIdentifer()
         {
             // test # digram.
