@@ -408,5 +408,73 @@ int main(void)
             Assert.AreEqual((int)t.tokenType, (int)TokenType.GREATER_THEN);
             Assert.AreEqual(t.value, "");
         }
+
+        [Test]
+        public void TestRaeString1()
+        {
+            // test # digram.
+            string code = @"R""ABC(DEF)ABC""";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.STRING);
+            Assert.AreEqual(t.value, "R\"ABC(DEF)ABC\"");
+        }
+
+        [Test]
+        public void TestRaeString2()
+        {
+            // test # digram.
+            string code = @"R""ABC(DEF)ABC)ABC""";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.STRING);
+            Assert.AreEqual(t.value, "R\"ABC(DEF)ABC)ABC\"");
+        }
+
+        [Test]
+        public void TestRaeString3()
+        {
+            // test # digram.
+            string code = @"R""(DEF))""";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.STRING);
+            Assert.AreEqual(t.value, "R\"(DEF))\"");
+        }
+
+        [Test]
+        public void TestRaeString4()
+        {
+            // test # digram.
+            string code = @"R""(DEF))""s";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.STRING);
+            Assert.AreEqual(t.value, "R\"(DEF))\"s");
+        }
     }
 }

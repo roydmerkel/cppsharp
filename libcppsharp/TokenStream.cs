@@ -1248,7 +1248,7 @@ namespace libcppsharp
                 }
                 else
                 {
-                    state.prefixValIdx = -1;
+                    state.prefixValIdx = 0;
                 }
             }
             else if (ch == '"')
