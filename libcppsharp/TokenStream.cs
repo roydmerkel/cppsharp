@@ -36,7 +36,6 @@ namespace libcppsharp
             DEFAULT,
             WHITESPACE,
             DIGRAPH,
-            STRINGPREFIX,
             STRING,
             STRINGPOSTFIX,
             RAWSTRINGPREFIX,
@@ -140,9 +139,9 @@ namespace libcppsharp
                 {State.DEFAULT, new StateCallbacks(HandleDefaultStateEOFTokens, HandleDefaultNewChar) },
                 {State.WHITESPACE, new StateCallbacks(HandleWhiteSpaceStateEOFTokens, HandleWhiteSpaceNewChar) },
                 {State.DIGRAPH, new StateCallbacks(HandleDigraphStateEOFTokens, HandleDigraphNewChar) },
-                {State.STRINGPREFIX, new StateCallbacks(HandleStringPrefixStateEOFTokens, HandleStringPrefixNewChar) },
                 {State.STRING, new StateCallbacks(HandleStringStateEOFTokens, HandleStringNewChar) },
                 {State.STRINGPOSTFIX, new StateCallbacks(HandleStringPostfixStateEOFTokens, HandleStringPostfixNewChar) },
+                {State.IDENTIFIER, new StateCallbacks(HandleIdentifierStateEOFTokens, HandleIdentifiersNewChar) },
             };
         }
 
@@ -298,29 +297,6 @@ namespace libcppsharp
             return ret;
         }
 
-        private List<Token> HandleStringPrefixStateEOFTokens(ref EnumeratorState state)
-        {
-            List<Token> ret = new List<Token>();
-
-            if (curTokVal.Length > 0)
-            {
-                string value = curTokVal.ToString();
-
-                Token tok;
-                tok.tokenType = TokenType.IDENTIFIER;
-                tok.value = value;
-
-                ret.Add(tok);
-            }
-
-            if (state.escaped)
-            {
-                throw new InvalidDataException("stray \\ found at EOF.");
-            }
-
-            return ret;
-        }
-
         private List<Token> HandleStringStateEOFTokens(ref EnumeratorState state)
         {
             if (state.escaped)
@@ -334,7 +310,6 @@ namespace libcppsharp
         private List<Token> HandleStringPostfixStateEOFTokens(ref EnumeratorState state)
         {
             List<Token> ret = new List<Token>();
-            String val = curTokVal.ToString();
 
             if (state.escaped)
             {
@@ -343,7 +318,25 @@ namespace libcppsharp
 
             Token tok;
             tok.tokenType = TokenType.STRING;
-            tok.value = val;
+            tok.value = curTokVal.ToString();
+
+            ret.Add(tok);
+
+            return ret;
+        }
+
+        private List<Token> HandleIdentifierStateEOFTokens(ref EnumeratorState state)
+        {
+            List<Token> ret = new List<Token>();
+
+            if (state.escaped)
+            {
+                throw new InvalidDataException("stray \\ found at EOF.");
+            }
+
+            Token tok;
+            tok.tokenType = TokenType.IDENTIFIER;
+            tok.value = curTokVal.ToString();
 
             ret.Add(tok);
 
@@ -453,8 +446,6 @@ namespace libcppsharp
                             tok.value = "";
 
                             ret.Add(tok);
-
-                            tok.tokenType = TokenType.UNKNOWN;
                         }
 
                         MoveNextChar();
@@ -567,15 +558,63 @@ namespace libcppsharp
                             tok.value = "";
                             ret.Add(tok);
 
-                            tok.tokenType = TokenType.UNKNOWN;
-
                             MoveNextChar();
                         }
                     }
                     break;
+                case '_':
+                case 'a':
+                case 'b':
+                case 'c':
+                case 'd':
+                case 'e':
+                case 'f':
+                case 'g':
+                case 'h':
+                case 'i':
+                case 'j':
+                case 'k':
+                case 'l':
+                case 'm':
+                case 'n':
+                case 'o':
+                case 'p':
+                case 'q':
+                case 'r':
+                case 's':
+                case 't':
                 case 'u':
-                case 'U':
+                case 'v':
+                case 'w':
+                case 'x':
+                case 'y':
+                case 'z':
+                case 'A':
+                case 'B':
+                case 'C':
+                case 'D':
+                case 'E':
+                case 'F':
+                case 'G':
+                case 'H':
+                case 'I':
+                case 'J':
+                case 'K':
                 case 'L':
+                case 'M':
+                case 'N':
+                case 'O':
+                case 'P':
+                case 'Q':
+                case 'R':
+                case 'S':
+                case 'T':
+                case 'U':
+                case 'V':
+                case 'W':
+                case 'X':
+                case 'Y':
+                case 'Z':
                     if (state.escaped)
                     {
                         if (!ignoreStrayBackslash)
@@ -598,7 +637,7 @@ namespace libcppsharp
                         curTokVal.Append(ch);
 
                         MoveNextChar();
-                        this.state = State.STRINGPREFIX;
+                        this.state = State.IDENTIFIER;
                     }
                     break;
                 case '"':
@@ -839,106 +878,6 @@ namespace libcppsharp
             return ret;
         }
 
-        private List<Token> HandleStringPrefixNewChar(char ch, ref EnumeratorState state)
-        {
-            List<Token> ret = new List<Token>();
-
-            if (state.escaped && ch != '\n')
-            {
-                PushPutBackArray('\\');
-
-                if (curTokVal.Length > 0)
-                {
-                    string value = curTokVal.ToString();
-
-                    Token tok;
-                    tok.tokenType = TokenType.IDENTIFIER;
-                    tok.value = value;
-
-                    ret.Add(tok);
-                }
-
-                state.escaped = false;
-                this.state = State.DEFAULT;
-            }
-
-            switch (ch)
-            {
-                case '\\':
-                    if (state.escaped)
-                    {
-                        if (curTokVal.Length > 0)
-                        {
-                            string value = curTokVal.ToString();
-
-                            Token tok;
-                            tok.tokenType = TokenType.IDENTIFIER;
-                            tok.value = value;
-
-                            ret.Add(tok);
-                        }
-
-                        PushPutBackArray('\\');
-                        state.escaped = false;
-                        this.state = State.DEFAULT;
-                    }
-                    else
-                    {
-                        state.escaped = true;
-                        MoveNextChar();
-                    }
-                    break;
-                case '\n':
-                    if (!state.escaped)
-                    {
-                        this.state = State.IDENTIFIER;
-                    }
-                    else
-                    {
-                        state.escaped = false;
-                        MoveNextChar();
-                    }
-                    break;
-                case '8':
-                    if (curTokVal[0] != 'u')
-                    {
-                        this.state = State.IDENTIFIER;
-                    }
-                    else
-                    {
-                        MoveNextChar();
-                    }
-                    curTokVal.Append(ch);
-                    break;
-                case 'R':
-                    switch (curTokVal.ToString())
-                    {
-                        case "":
-                        case "u8":
-                        case "L":
-                        case "u":
-                        case "U":
-                            this.state = State.RAWSTRINGPREFIX;
-                            MoveNextChar();
-                            break;
-                        default:
-                            this.state = State.IDENTIFIER;
-                            break;
-                    }
-                    curTokVal.Append(ch);
-                    break;
-                case '"':
-                    this.state = State.STRING;
-                    curTokVal.Append(ch);
-                    MoveNextChar();
-                    break;
-                default:
-                    this.state = State.IDENTIFIER;
-                    break;
-            }
-            return ret;
-        }
-
         private List<Token> HandleStringNewChar(char ch, ref EnumeratorState state)
         {
             List<Token> ret = new List<Token>();
@@ -970,8 +909,9 @@ namespace libcppsharp
                     }
                     else
                     {
-                        if (treatStringSlashNAsNothing)
+                        if (!treatStringSlashNAsNothing)
                         {
+                            curTokVal.Append('\\');
                             curTokVal.Append('n');
                         }
                         state.escaped = false;
@@ -1036,8 +976,6 @@ namespace libcppsharp
                         tok.tokenType = TokenType.STRING;
                         ret.Add(tok);
 
-                        tok.tokenType = TokenType.UNKNOWN;
-
                         this.state = State.DEFAULT;
                     }
                     else
@@ -1053,8 +991,6 @@ namespace libcppsharp
                         tok.tokenType = TokenType.STRING;
                         ret.Add(tok);
 
-                        tok.tokenType = TokenType.UNKNOWN;
-
                         this.state = State.DEFAULT;
                     }
                     else
@@ -1065,6 +1001,184 @@ namespace libcppsharp
                 default:
                     tok.value = curTokVal.ToString();
                     tok.tokenType = TokenType.STRING;
+                    ret.Add(tok);
+
+                    this.state = State.DEFAULT;
+                    break;
+            }
+            return ret;
+        }
+
+        private List<Token> HandleIdentifiersNewChar(char ch, ref EnumeratorState state)
+        {
+            List<Token> ret = new List<Token>();
+            Token tok;
+
+            switch (ch)
+            {
+                case '_':
+                case 'a':
+                case 'b':
+                case 'c':
+                case 'd':
+                case 'e':
+                case 'f':
+                case 'g':
+                case 'h':
+                case 'i':
+                case 'j':
+                case 'k':
+                case 'l':
+                case 'm':
+                case 'n':
+                case 'o':
+                case 'p':
+                case 'q':
+                case 'r':
+                case 's':
+                case 't':
+                case 'u':
+                case 'v':
+                case 'w':
+                case 'x':
+                case 'y':
+                case 'z':
+                case 'A':
+                case 'B':
+                case 'C':
+                case 'D':
+                case 'E':
+                case 'F':
+                case 'G':
+                case 'H':
+                case 'I':
+                case 'J':
+                case 'K':
+                case 'L':
+                case 'M':
+                case 'N':
+                case 'O':
+                case 'P':
+                case 'Q':
+                case 'R':
+                case 'S':
+                case 'T':
+                case 'U':
+                case 'V':
+                case 'W':
+                case 'X':
+                case 'Y':
+                case 'Z':
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    if (state.escaped)
+                    {
+                        PushPutBackArray('\\');
+
+                        tok.value = curTokVal.ToString();
+                        tok.tokenType = TokenType.IDENTIFIER;
+                        ret.Add(tok);
+
+                        this.state = State.DEFAULT;
+                    }
+                    else
+                    {
+                        curTokVal.Append(ch);
+                        MoveNextChar();
+                    }
+
+                    break;
+                case '"':
+                    if (state.escaped)
+                    {
+                        PushPutBackArray('\\');
+
+                        tok.value = curTokVal.ToString();
+                        tok.tokenType = TokenType.IDENTIFIER;
+                        ret.Add(tok);
+
+                        this.state = State.DEFAULT;
+                    }
+                    else
+                    {
+                        switch(curTokVal.ToString())
+                        {
+                            case "u":
+                            case "u8":
+                            case "U":
+                            case "L":
+                                curTokVal.Append('"');
+                                this.state = State.STRING;
+                                MoveNextChar();
+                                break;
+                            case "R":
+                            case "uR":
+                            case "u8R":
+                            case "UR":
+                            case "LR":
+                                curTokVal.Append('"');
+                                this.state = State.RAWSTRINGPREFIX;
+                                MoveNextChar();
+                                break;
+                            default:
+                                tok.value = curTokVal.ToString();
+                                tok.tokenType = TokenType.IDENTIFIER;
+
+                                ret.Add(tok);
+
+                                curTokVal.Clear();
+                                curTokVal.Append('"');
+                                MoveNextChar();
+
+                                break;
+                        }
+
+                        this.state = State.STRING;
+                    }
+                    break;
+                case '\\':
+                    if (state.escaped)
+                    {
+                        PushPutBackArray('\\');
+
+                        tok.value = curTokVal.ToString();
+                        tok.tokenType = TokenType.IDENTIFIER;
+                        ret.Add(tok);
+
+                        this.state = State.DEFAULT;
+                    }
+                    else
+                    {
+                        state.escaped = true;
+                        MoveNextChar();
+                    }
+                    break;
+                case '\n':
+                    if (!state.escaped)
+                    {
+                        tok.value = curTokVal.ToString();
+                        tok.tokenType = TokenType.IDENTIFIER;
+                        ret.Add(tok);
+
+                        this.state = State.DEFAULT;
+                    }
+                    else
+                    {
+                        state.escaped = false;
+                        MoveNextChar();
+                    }
+                    break;
+                default:
+                    tok.value = curTokVal.ToString();
+                    tok.tokenType = TokenType.IDENTIFIER;
                     ret.Add(tok);
 
                     this.state = State.DEFAULT;
