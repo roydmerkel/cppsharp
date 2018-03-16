@@ -56,6 +56,7 @@ namespace libcppsharp
         R_PAREN,
         IDENTIFIER,
         STRING,
+        CHAR,
         EOF
     }
 }
