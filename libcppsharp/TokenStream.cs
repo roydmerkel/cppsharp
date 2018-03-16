@@ -40,7 +40,6 @@ namespace libcppsharp
             STRINGPOSTFIX,
             RAWSTRINGPREFIX,
             RAWSTRING,
-            RAWSTRINGPOSTFIX,
             IDENTIFIER
         }
 
@@ -70,7 +69,6 @@ namespace libcppsharp
         private int charBufPtr;
         private Stream inStr;
         private StringBuilder curTokVal;
-        private StringBuilder postfixVal;
         private bool digraphs;
         private int readResult;
 
@@ -125,7 +123,6 @@ namespace libcppsharp
             inStr = inStream;
             digraphs = handleDigraphs;
             curTokVal = new StringBuilder();
-            postfixVal = new StringBuilder();
             charReadBuffer = new char[bufSize];
             charBufPtr = 0;
             charBufDatSize = 0;
@@ -143,6 +140,8 @@ namespace libcppsharp
                 {State.DIGRAPH, new StateCallbacks(HandleDigraphStateEOFTokens, HandleDigraphNewChar) },
                 {State.STRING, new StateCallbacks(HandleStringStateEOFTokens, HandleStringNewChar) },
                 {State.STRINGPOSTFIX, new StateCallbacks(HandleStringPostfixStateEOFTokens, HandleStringPostfixNewChar) },
+                {State.RAWSTRINGPREFIX, new StateCallbacks(HandleRawStringPrefixStateEOFTokens, HandleRawStringPrefixNewChar) },
+                {State.RAWSTRING, new StateCallbacks(HandleRawStringStateEOFTokens, HandleRawStringNewChar) },
                 {State.IDENTIFIER, new StateCallbacks(HandleIdentifierStateEOFTokens, HandleIdentifiersNewChar) },
             };
         }
@@ -228,6 +227,9 @@ namespace libcppsharp
         private struct EnumeratorState
         {
             public bool escaped;
+            public StringBuilder prefixVal;
+            public StringBuilder postfixVal;
+            public int prefixValIdx;
         }
 
         private List<Token> HandleDefaultStateEOFTokens(ref EnumeratorState state)
@@ -317,13 +319,49 @@ namespace libcppsharp
                 throw new InvalidDataException("stray \\ found at EOF.");
             }
 
-            Token tok;
-            tok.tokenType = TokenType.STRING;
-            tok.value = curTokVal.ToString();
+            if (state.postfixVal.ToString().Equals("s"))
+            {
+                curTokVal.Append(state.postfixVal);
 
-            ret.Add(tok);
+                Token tok;
+                tok.tokenType = TokenType.STRING;
+                tok.value = curTokVal.ToString();
+
+                ret.Add(tok);
+            }
+            else
+            {
+                Token tok;
+                tok.tokenType = TokenType.STRING;
+                tok.value = curTokVal.ToString();
+
+                ret.Add(tok);
+
+                tok.tokenType = TokenType.IDENTIFIER;
+                tok.value = state.postfixVal.ToString();
+            }
 
             return ret;
+        }
+
+        private List<Token> HandleRawStringPrefixStateEOFTokens(ref EnumeratorState state)
+        {
+            if (state.escaped)
+            {
+                throw new InvalidDataException("stray \\ found at EOF.");
+            }
+
+            throw new InvalidDataException("Unfinished raw string...");
+        }
+
+        private List<Token> HandleRawStringStateEOFTokens(ref EnumeratorState state)
+        {
+            if (state.escaped)
+            {
+                throw new InvalidDataException("stray \\ found at EOF.");
+            }
+
+            throw new InvalidDataException("Unfinished raw string...");
         }
 
         private List<Token> HandleIdentifierStateEOFTokens(ref EnumeratorState state)
@@ -927,7 +965,7 @@ namespace libcppsharp
                     }
                     else
                     {
-                        postfixVal.Clear();
+                        state.postfixVal.Clear();
                         this.state = State.STRINGPOSTFIX;
                     }
 
@@ -1029,7 +1067,7 @@ namespace libcppsharp
                     }
                     else
                     {
-                        postfixVal.Append(ch);
+                        state.postfixVal.Append(ch);
                         MoveNextChar();
                     }
 
@@ -1037,10 +1075,10 @@ namespace libcppsharp
                 case '\\':
                     if (state.escaped)
                     {
-                        switch (postfixVal.ToString())
+                        switch (state.postfixVal.ToString())
                         {
                             case "s":
-                                curTokVal.Append(postfixVal);
+                                curTokVal.Append(state.postfixVal);
 
                                 tok.value = curTokVal.ToString();
                                 tok.tokenType = TokenType.STRING;
@@ -1053,9 +1091,9 @@ namespace libcppsharp
 
                                 curTokVal.Clear();
 
-                                if (postfixVal.Length > 0)
+                                if (state.postfixVal.Length > 0)
                                 {
-                                    curTokVal.Append(postfixVal);
+                                    curTokVal.Append(state.postfixVal);
 
                                     tok.value = curTokVal.ToString();
                                     tok.tokenType = TokenType.IDENTIFIER;
@@ -1075,10 +1113,10 @@ namespace libcppsharp
                 case '\n':
                     if (!state.escaped)
                     {
-                        switch (postfixVal.ToString())
+                        switch (state.postfixVal.ToString())
                         {
                             case "s":
-                                curTokVal.Append(postfixVal);
+                                curTokVal.Append(state.postfixVal);
 
                                 tok.value = curTokVal.ToString();
                                 tok.tokenType = TokenType.STRING;
@@ -1091,9 +1129,9 @@ namespace libcppsharp
 
                                 curTokVal.Clear();
 
-                                if (postfixVal.Length > 0)
+                                if (state.postfixVal.Length > 0)
                                 {
-                                    curTokVal.Append(postfixVal);
+                                    curTokVal.Append(state.postfixVal);
 
                                     tok.value = curTokVal.ToString();
                                     tok.tokenType = TokenType.IDENTIFIER;
@@ -1110,10 +1148,10 @@ namespace libcppsharp
                     }
                     break;
                 default:
-                    switch (postfixVal.ToString())
+                    switch (state.postfixVal.ToString())
                     {
                         case "s":
-                            curTokVal.Append(postfixVal);
+                            curTokVal.Append(state.postfixVal);
 
                             tok.value = curTokVal.ToString();
                             tok.tokenType = TokenType.STRING;
@@ -1126,9 +1164,9 @@ namespace libcppsharp
 
                             curTokVal.Clear();
 
-                            if (postfixVal.Length > 0)
+                            if (state.postfixVal.Length > 0)
                             {
-                                curTokVal.Append(postfixVal);
+                                curTokVal.Append(state.postfixVal);
 
                                 tok.value = curTokVal.ToString();
                                 tok.tokenType = TokenType.IDENTIFIER;
@@ -1140,6 +1178,106 @@ namespace libcppsharp
                     this.state = State.DEFAULT;
                     break;
             }
+            return ret;
+        }
+
+        private List<Token> HandleRawStringPrefixNewChar(char ch, ref EnumeratorState state)
+        {
+            List<Token> ret = new List<Token>();
+
+            switch (ch)
+            {
+                case ' ':
+                case '\t':
+                case '\v':
+                case '\f':
+                    throw new InvalidDataException("Unterminated raw string!");
+                case '"':
+                    throw new InvalidDataException("Unterminated raw string!");
+                case '\\':
+                    if (state.escaped)
+                    {
+                        throw new InvalidDataException("Unterminated raw string!");
+                    }
+                    else
+                    {
+                        state.escaped = true;
+                        MoveNextChar();
+                    }
+                    break;
+                case '\n':
+                    if (!state.escaped)
+                    {
+                        throw new InvalidDataException("Unterminated raw string!");
+                    }
+                    else
+                    {
+                        state.escaped = false;
+                        MoveNextChar();
+                    }
+                    break;
+                case '(':
+                    curTokVal.Append(ch);
+                    MoveNextChar();
+                    this.state = State.RAWSTRING;
+                    state.prefixValIdx = -1;
+                    break;
+                default:
+                    if (state.escaped)
+                    {
+                        throw new InvalidDataException("Unterminated raw string!");
+                    }
+
+                    state.prefixVal.Append(ch);
+                    curTokVal.Append(ch);
+                    MoveNextChar();
+                    break;
+            }
+            return ret;
+        }
+
+        private List<Token> HandleRawStringNewChar(char ch, ref EnumeratorState state)
+        {
+            List<Token> ret = new List<Token>();
+
+            if (ch == ')')
+            {
+                if (state.prefixValIdx == -1)
+                {
+                    state.prefixValIdx++;
+                }
+                else
+                {
+                    state.prefixValIdx = -1;
+                }
+            }
+            else if (ch == '"')
+            {
+                if (state.prefixValIdx == state.prefixVal.Length)
+                {
+                    state.postfixVal.Clear();
+                    this.state = State.STRINGPOSTFIX;
+                }
+                else
+                {
+                    state.prefixValIdx = -1;
+                }
+            }
+            else
+            {
+                if (state.prefixValIdx >= 0 && ch == state.prefixVal[state.prefixValIdx])
+                {
+                    state.prefixValIdx++;
+                }
+                else
+                {
+                    state.prefixValIdx = -1;
+                }
+            }
+
+            curTokVal.Append(ch);
+            MoveNextChar();
+
             return ret;
         }
 
@@ -1259,6 +1397,7 @@ namespace libcppsharp
                             case "UR":
                             case "LR":
                                 curTokVal.Append('"');
+                                state.prefixVal.Clear();
                                 this.state = State.RAWSTRINGPREFIX;
                                 MoveNextChar();
                                 break;
@@ -1272,10 +1411,10 @@ namespace libcppsharp
                                 curTokVal.Append('"');
                                 MoveNextChar();
 
+                                this.state = State.STRING;
+
                                 break;
                         }
-
-                        this.state = State.STRING;
                     }
                     break;
                 case '\\':
@@ -1355,6 +1494,9 @@ namespace libcppsharp
             EnumeratorState enumeratorState = new EnumeratorState();
             bool refillBuffer = false;
             enumeratorState.escaped = false;
+            enumeratorState.prefixVal = new StringBuilder();
+            enumeratorState.postfixVal = new StringBuilder();
+            enumeratorState.prefixValIdx = 0;
 
             readResult = RefillCharArray();
 
