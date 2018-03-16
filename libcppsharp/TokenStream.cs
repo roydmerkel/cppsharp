@@ -28,12 +28,13 @@ namespace libcppsharp
 {
     public class TokenStream
     {
-        private delegate List<Token> HandleStateEOF(ref Token lastTok, ref EnumeratorState state);
-        private delegate List<Token> HandleStateNewChar(char ch, ref Token lastTok, ref EnumeratorState state);
+        private delegate List<Token> HandleStateEOF(ref EnumeratorState state);
+        private delegate List<Token> HandleStateNewChar(char ch, ref EnumeratorState state);
 
         private enum State
         {
             DEFAULT,
+            WHITESPACE,
             DIGRAPH,
             STRINGPREFIX,
             STRING,
@@ -137,6 +138,7 @@ namespace libcppsharp
             state = State.DEFAULT;
             callbacks = new Dictionary<State, StateCallbacks>() {
                 {State.DEFAULT, new StateCallbacks(HandleDefaultStateEOFTokens, HandleDefaultNewChar) },
+                {State.WHITESPACE, new StateCallbacks(HandleWhiteSpaceStateEOFTokens, HandleWhiteSpaceNewChar) },
                 {State.DIGRAPH, new StateCallbacks(HandleDigraphStateEOFTokens, HandleDigraphNewChar) },
                 {State.STRINGPREFIX, new StateCallbacks(HandleStringPrefixStateEOFTokens, HandleStringPrefixNewChar) },
                 {State.STRING, new StateCallbacks(HandleStringStateEOFTokens, HandleStringNewChar) },
@@ -228,7 +230,7 @@ namespace libcppsharp
             public bool escaped;
         }
 
-        private List<Token> HandleDefaultStateEOFTokens(ref Token lastTok, ref EnumeratorState state)
+        private List<Token> HandleDefaultStateEOFTokens(ref EnumeratorState state)
         {
             List<Token> ret = new List<Token>();
 
@@ -238,41 +240,54 @@ namespace libcppsharp
             }
             else if (state.escaped)
             {
-                Token? retTok = ReturnLastToken(ref lastTok);
-                if (retTok != null)
-                {
-                    ret.Add(lastTok);
-                }
-
                 state.escaped = false;
 
-                lastTok.tokenType = TokenType.BACK_SLASH;
-                lastTok.value = "";
+                Token tok;
+                tok.tokenType = TokenType.BACK_SLASH;
+                tok.value = "";
 
-                ret.Add(lastTok);
-
-                lastTok.tokenType = TokenType.UNKNOWN;
+                ret.Add(tok);
             }
 
             return ret;
         }
 
-        private List<Token> HandleDigraphStateEOFTokens(ref Token lastTok, ref EnumeratorState state)
+        private List<Token> HandleWhiteSpaceStateEOFTokens(ref EnumeratorState state)
+        {
+            Token tok;
+            List<Token> ret = new List<Token>();
+
+            if (state.escaped && !ignoreStrayBackslash)
+            {
+                throw new InvalidDataException("Stray \\ in source");
+            }
+            else if (state.escaped)
+            {
+                state.escaped = false;
+
+                tok.tokenType = TokenType.BACK_SLASH;
+                tok.value = "";
+
+                ret.Add(tok);
+            }
+
+            tok.tokenType = TokenType.WHITESPACE;
+            tok.value = curTokVal.ToString();
+
+            return ret;
+        }
+
+        private List<Token> HandleDigraphStateEOFTokens(ref EnumeratorState state)
         {
             List<Token> ret = new List<Token>();
 
-            Token? retTok = ReturnLastToken(ref lastTok);
-            if (retTok != null)
-            {
-                ret.Add(lastTok);
-            }
-
             foreach (char ch in curTokVal.ToString())
             {
-                punctuation.TryGetValue(ch, out lastTok.tokenType);
-                lastTok.value = "";
+                Token tok;
+                punctuation.TryGetValue(ch, out tok.tokenType);
+                tok.value = "";
 
-                ret.Add(lastTok);
+                ret.Add(tok);
             }
 
             if (state.escaped)
@@ -283,26 +298,19 @@ namespace libcppsharp
             return ret;
         }
 
-        private List<Token> HandleStringPrefixStateEOFTokens(ref Token lastTok, ref EnumeratorState state)
+        private List<Token> HandleStringPrefixStateEOFTokens(ref EnumeratorState state)
         {
             List<Token> ret = new List<Token>();
-
-            Token? retTok = ReturnLastToken(ref lastTok);
-            if (retTok != null)
-            {
-                ret.Add(lastTok);
-            }
 
             if (curTokVal.Length > 0)
             {
                 string value = curTokVal.ToString();
 
-                lastTok.tokenType = TokenType.IDENTIFIER;
-                lastTok.value = value;
+                Token tok;
+                tok.tokenType = TokenType.IDENTIFIER;
+                tok.value = value;
 
-                ret.Add(lastTok);
-
-                lastTok.tokenType = TokenType.UNKNOWN;
+                ret.Add(tok);
             }
 
             if (state.escaped)
@@ -313,16 +321,8 @@ namespace libcppsharp
             return ret;
         }
 
-        private List<Token> HandleStringStateEOFTokens(ref Token lastTok, ref EnumeratorState state)
+        private List<Token> HandleStringStateEOFTokens(ref EnumeratorState state)
         {
-            List<Token> ret = new List<Token>();
-
-            Token? retTok = ReturnLastToken(ref lastTok);
-            if (retTok != null)
-            {
-                ret.Add(lastTok);
-            }
-
             if (state.escaped)
             {
                 throw new InvalidDataException("stray \\ found at EOF.");
@@ -331,56 +331,29 @@ namespace libcppsharp
             throw new InvalidDataException("Unfinished string...");
         }
 
-        private List<Token> HandleStringPostfixStateEOFTokens(ref Token lastTok, ref EnumeratorState state)
+        private List<Token> HandleStringPostfixStateEOFTokens(ref EnumeratorState state)
         {
             List<Token> ret = new List<Token>();
             String val = curTokVal.ToString();
-
-            Token? retTok = ReturnLastToken(ref lastTok);
-            if (retTok != null)
-            {
-                ret.Add(lastTok);
-            }
 
             if (state.escaped)
             {
                 throw new InvalidDataException("stray \\ found at EOF.");
             }
 
-            lastTok.tokenType = TokenType.STRING;
-            lastTok.value = val;
+            Token tok;
+            tok.tokenType = TokenType.STRING;
+            tok.value = val;
 
-            ret.Add(lastTok);
+            ret.Add(tok);
 
             return ret;
         }
 
-        private List<Token> HandleDefaultNewChar(char ch, ref Token lastTok, ref EnumeratorState state)
+        private List<Token> HandleDefaultNewChar(char ch, ref EnumeratorState state)
         {
             List<Token> ret = new List<Token>();
-            Token? retTok;
-
-            if (" \t\v\f\r\n".IndexOf(ch) < 0 && state.escaped && !ignoreStrayBackslash)
-            {
-                throw new InvalidDataException("Stray \\ in source");
-            }
-            else if (" \t\v\f\r\n".IndexOf(ch) < 0 && state.escaped)
-            {
-                state.escaped = false;
-
-                retTok = ReturnLastToken(ref lastTok);
-                if (retTok != null)
-                {
-                    ret.Add(lastTok);
-                }
-
-                lastTok.tokenType = TokenType.BACK_SLASH;
-                lastTok.value = "";
-
-                ret.Add(lastTok);
-
-                lastTok.tokenType = TokenType.UNKNOWN;
-            }
+            Token tok;
 
             switch (ch)
             {
@@ -388,114 +361,160 @@ namespace libcppsharp
                 case '\t':
                 case '\v':
                 case '\f':
-                    if (lastTok.tokenType != TokenType.WHITESPACE)
-                    {
-                        retTok = ReturnLastToken(ref lastTok);
-                        if (retTok != null)
-                        {
-                            ret.Add(lastTok);
-                        }
-
-                        lastTok.tokenType = TokenType.WHITESPACE;
-                    }
-
+                    curTokVal.Clear();
                     curTokVal.Append(ch);
+
+                    this.state = State.WHITESPACE;
                     MoveNextChar();
                     break;
                 case '\r':
                 case '\n':
-                    retTok = ReturnLastToken(ref lastTok);
-                    if (retTok != null)
+                    if (state.escaped)
                     {
-                        ret.Add(lastTok);
+                        curTokVal.Clear();
+                        curTokVal.Append(ch);
+                        this.state = State.WHITESPACE;
                     }
+                    else
+                    {
+                        tok.tokenType = TokenType.NEWLINE;
+                        tok.value = "";
 
-                    lastTok.tokenType = TokenType.NEWLINE;
-                    lastTok.value = "";
-
-                    ret.Add(lastTok);
-
-                    lastTok.tokenType = TokenType.UNKNOWN;
+                        ret.Add(tok);
+                    }
 
                     MoveNextChar();
                     break;
                 case '<':
-                    retTok = ReturnLastToken(ref lastTok);
-                    if (retTok != null)
+                    if (state.escaped)
                     {
-                        ret.Add(lastTok);
-                    }
+                        if (!ignoreStrayBackslash)
+                        {
+                            throw new InvalidDataException("Stray \\ found in code.");
+                        }
+                        else
+                        {
+                            tok.tokenType = TokenType.BACK_SLASH;
+                            tok.value = "";
 
-                    if (digraphs)
-                    {
-                        curTokVal.Clear();
-                        curTokVal.Append('<');
-
-                        this.state = State.DIGRAPH;
+                            state.escaped = false;
+                            ret.Add(tok);
+                        }
                     }
                     else
                     {
-                        lastTok.tokenType = TokenType.LESS_THEN;
+                        if (digraphs)
+                        {
+                            curTokVal.Clear();
+                            curTokVal.Append('<');
 
-                        ret.Add(lastTok);
+                            this.state = State.DIGRAPH;
+                        }
+                        else
+                        {
+                            tok.tokenType = TokenType.LESS_THEN;
+                            tok.value = "";
 
-                        lastTok.tokenType = TokenType.UNKNOWN;
+                            ret.Add(tok);
+                        }
 
+                        MoveNextChar();
                     }
-
-                    MoveNextChar();
                     break;
                 case ':':
-                    retTok = ReturnLastToken(ref lastTok);
-                    if (retTok != null)
+                    if (state.escaped)
                     {
-                        ret.Add(lastTok);
-                    }
+                        if (!ignoreStrayBackslash)
+                        {
+                            throw new InvalidDataException("Stray \\ found in code.");
+                        }
+                        else
+                        {
+                            tok.tokenType = TokenType.BACK_SLASH;
+                            tok.value = "";
 
-                    if (digraphs)
-                    {
-                        curTokVal.Clear();
-                        curTokVal.Append(':');
+                            state.escaped = false;
 
-                        this.state = State.DIGRAPH;
+                            ret.Add(tok);
+                        }
                     }
                     else
                     {
-                        lastTok.tokenType = TokenType.COLON;
+                        if (digraphs)
+                        {
+                            curTokVal.Clear();
+                            curTokVal.Append(':');
 
-                        ret.Add(lastTok);
+                            this.state = State.DIGRAPH;
+                        }
+                        else
+                        {
+                            tok.tokenType = TokenType.COLON;
+                            tok.value = "";
 
-                        lastTok.tokenType = TokenType.UNKNOWN;
+                            ret.Add(tok);
+
+                            tok.tokenType = TokenType.UNKNOWN;
+                        }
+
+                        MoveNextChar();
                     }
-
-                    MoveNextChar();
                     break;
                 case '%':
-                    retTok = ReturnLastToken(ref lastTok);
-                    if (retTok != null)
+                    if (state.escaped)
                     {
-                        ret.Add(lastTok);
-                    }
+                        if (!ignoreStrayBackslash)
+                        {
+                            throw new InvalidDataException("Stray \\ found in code.");
+                        }
+                        else
+                        {
+                            tok.tokenType = TokenType.BACK_SLASH;
+                            tok.value = "";
 
-                    if (digraphs)
-                    {
-                        curTokVal.Clear();
-                        curTokVal.Append('%');
+                            state.escaped = false;
 
-                        this.state = State.DIGRAPH;
+                            ret.Add(tok);
+                        }
                     }
                     else
                     {
-                        lastTok.tokenType = TokenType.PERCENT;
+                        if (digraphs)
+                        {
+                            curTokVal.Clear();
+                            curTokVal.Append('%');
 
-                        ret.Add(lastTok);
+                            this.state = State.DIGRAPH;
+                        }
+                        else
+                        {
+                            tok.tokenType = TokenType.PERCENT;
+                            tok.value = "";
 
-                        lastTok.tokenType = TokenType.UNKNOWN;
+                            ret.Add(tok);
+                        }
+
+                        MoveNextChar();
                     }
-
-                    MoveNextChar();
                     break;
                 case '\\':
+                    if (state.escaped)
+                    {
+                        if (!ignoreStrayBackslash)
+                        {
+                            throw new InvalidDataException("Stray \\ found in code.");
+                        }
+                        else
+                        {
+                            tok.tokenType = TokenType.BACK_SLASH;
+                            tok.value = "";
+
+                            state.escaped = false;
+
+                            ret.Add(tok);
+                        }
+                    }
+                    else
                     {
                         state.escaped = true;
                         MoveNextChar();
@@ -526,60 +545,165 @@ namespace libcppsharp
                 case '@':
                 case '?':
                     {
-                        retTok = ReturnLastToken(ref lastTok);
-                        if (retTok != null)
+                        if (state.escaped)
                         {
-                            ret.Add(lastTok);
+                            if (!ignoreStrayBackslash)
+                            {
+                                throw new InvalidDataException("Stray \\ found in code.");
+                            }
+                            else
+                            {
+                                tok.tokenType = TokenType.BACK_SLASH;
+                                tok.value = "";
+
+                                state.escaped = false;
+
+                                ret.Add(tok);
+                            }
                         }
+                        else
+                        {
+                            punctuation.TryGetValue(ch, out tok.tokenType);
+                            tok.value = "";
+                            ret.Add(tok);
 
-                        punctuation.TryGetValue(ch, out lastTok.tokenType);
-                        ret.Add(lastTok);
+                            tok.tokenType = TokenType.UNKNOWN;
 
-                        lastTok.tokenType = TokenType.UNKNOWN;
-
-                        MoveNextChar();
+                            MoveNextChar();
+                        }
                     }
                     break;
                 case 'u':
                 case 'U':
                 case 'L':
-                    curTokVal.Clear();
-                    curTokVal.Append(ch);
+                    if (state.escaped)
+                    {
+                        if (!ignoreStrayBackslash)
+                        {
+                            throw new InvalidDataException("Stray \\ found in code.");
+                        }
+                        else
+                        {
+                            tok.tokenType = TokenType.BACK_SLASH;
+                            tok.value = "";
 
-                    MoveNextChar();
-                    this.state = State.STRINGPREFIX;
+                            state.escaped = false;
+
+                            ret.Add(tok);
+                        }
+                    }
+                    else
+                    {
+                        curTokVal.Clear();
+                        curTokVal.Append(ch);
+
+                        MoveNextChar();
+                        this.state = State.STRINGPREFIX;
+                    }
                     break;
                 case '"':
-                    curTokVal.Clear();
-                    curTokVal.Append(ch);
-                    MoveNextChar();
+                    if (state.escaped)
+                    {
+                        if (!ignoreStrayBackslash)
+                        {
+                            throw new InvalidDataException("Stray \\ found in code.");
+                        }
+                        else
+                        {
+                            tok.tokenType = TokenType.BACK_SLASH;
+                            tok.value = "";
 
-                    this.state = State.STRING;
+                            state.escaped = false;
+
+                            ret.Add(tok);
+                        }
+                    }
+                    else
+                    {
+                        curTokVal.Clear();
+                        curTokVal.Append(ch);
+                        MoveNextChar();
+
+                        this.state = State.STRING;
+                    }
                     break;
                 default:
-                    retTok = ReturnLastToken(ref lastTok);
-                    if (retTok != null)
-                    {
-                        ret.Add(lastTok);
-                    }
-
                     throw new NotImplementedException(new String(new char[] { ch }) + " not yet handled.");
             }
 
             return ret;
         }
 
-        private List<Token> HandleDigraphNewChar(char ch, ref Token lastTok, ref EnumeratorState state)
+        private List<Token> HandleWhiteSpaceNewChar(char ch, ref EnumeratorState state)
+        {
+            List<Token> ret = new List<Token>();
+            Token tok;
+
+            switch (ch)
+            {
+                case '\\':
+                    if (state.escaped)
+                    {
+                        tok.value = curTokVal.ToString();
+                        tok.tokenType = TokenType.WHITESPACE;
+
+                        ret.Add(tok);
+
+                        PushPutBackArray('\\');
+                        this.state = State.DEFAULT;
+                    }
+                    else
+                    {
+                        state.escaped = true;
+                        MoveNextChar();
+                    }
+
+                    break;
+                case '\n':
+                    if (state.escaped)
+                    {
+                        curTokVal.Append(ch);
+                        MoveNextChar();
+                    }
+                    else
+                    {
+                        tok.value = curTokVal.ToString();
+                        tok.tokenType = TokenType.WHITESPACE;
+
+                        ret.Add(tok);
+
+                        this.state = State.DEFAULT;
+                    }
+                    break;
+                case ' ':
+                case '\t':
+                case '\v':
+                case '\f':
+                    curTokVal.Append(ch);
+
+                    MoveNextChar();
+                    break;
+                default:
+                    {
+                        tok.value = curTokVal.ToString();
+                        tok.tokenType = TokenType.WHITESPACE;
+
+                        ret.Add(tok);
+
+                        this.state = State.DEFAULT;
+                    }
+                    break;
+            }
+
+            return ret;
+        }
+
+        private List<Token> HandleDigraphNewChar(char ch, ref EnumeratorState state)
         {
             // TODO: Handle escaped newline between two pieces of the digram!
             bool invalidDigram = false;
+            Token tok;
             List<Token> ret = new List<Token>();
-
-            Token? retTok = ReturnLastToken(ref lastTok);
-            if (retTok != null)
-            {
-                ret.Add(lastTok);
-            }
 
             if (curTokVal.Length != 1)
             {
@@ -628,25 +752,21 @@ namespace libcppsharp
                             switch (curTokVal[0])
                             {
                                 case '<':
-                                    lastTok.tokenType = TokenType.L_SQ_BRACKET;
-                                    lastTok.value = "";
+                                    tok.tokenType = TokenType.L_SQ_BRACKET;
+                                    tok.value = "";
 
-                                    ret.Add(lastTok);
+                                    ret.Add(tok);
 
                                     MoveNextChar();
-
-                                    lastTok.tokenType = TokenType.UNKNOWN;
                                     this.state = State.DEFAULT;
                                     break;
                                 case '%':
-                                    lastTok.value = "";
+                                    tok.value = "";
 
-                                    lastTok.tokenType = TokenType.HASH;
-                                    ret.Add(lastTok);
+                                    tok.tokenType = TokenType.HASH;
+                                    ret.Add(tok);
 
                                     MoveNextChar();
-
-                                    lastTok.tokenType = TokenType.UNKNOWN;
                                     this.state = State.DEFAULT;
                                     break;
                                 default:
@@ -658,25 +778,21 @@ namespace libcppsharp
                             switch (curTokVal[0])
                             {
                                 case ':':
-                                    lastTok.tokenType = TokenType.R_SQ_BRACKET;
-                                    lastTok.value = "";
+                                    tok.tokenType = TokenType.R_SQ_BRACKET;
+                                    tok.value = "";
 
-                                    ret.Add(lastTok);
+                                    ret.Add(tok);
 
                                     MoveNextChar();
-
-                                    lastTok.tokenType = TokenType.UNKNOWN;
                                     this.state = State.DEFAULT;
                                     break;
                                 case '%':
-                                    lastTok.tokenType = TokenType.R_CURLY_BRACE;
-                                    lastTok.value = "";
+                                    tok.tokenType = TokenType.R_CURLY_BRACE;
+                                    tok.value = "";
 
-                                    ret.Add(lastTok);
+                                    ret.Add(tok);
 
                                     MoveNextChar();
-
-                                    lastTok.tokenType = TokenType.UNKNOWN;
                                     this.state = State.DEFAULT;
                                     break;
                                 default:
@@ -688,14 +804,13 @@ namespace libcppsharp
                             switch (curTokVal[0])
                             {
                                 case '<':
-                                    lastTok.tokenType = TokenType.L_CURLY_BRACE;
-                                    lastTok.value = "";
+                                    tok.tokenType = TokenType.L_CURLY_BRACE;
+                                    tok.value = "";
 
-                                    ret.Add(lastTok);
+                                    ret.Add(tok);
 
                                     MoveNextChar();
 
-                                    lastTok.tokenType = TokenType.UNKNOWN;
                                     this.state = State.DEFAULT;
                                     break;
                                 default:
@@ -712,21 +827,19 @@ namespace libcppsharp
 
             if (invalidDigram)
             {
-                lastTok.value = "";
+                tok.value = "";
 
-                punctuation.TryGetValue(curTokVal[0], out lastTok.tokenType);
-                ret.Add(lastTok);
+                punctuation.TryGetValue(curTokVal[0], out tok.tokenType);
+                ret.Add(tok);
 
                 curTokVal.Clear();
-
-                lastTok.tokenType = TokenType.UNKNOWN;
                 this.state = State.DEFAULT;
             }
 
             return ret;
         }
 
-        private List<Token> HandleStringPrefixNewChar(char ch, ref Token lastTok, ref EnumeratorState state)
+        private List<Token> HandleStringPrefixNewChar(char ch, ref EnumeratorState state)
         {
             List<Token> ret = new List<Token>();
 
@@ -738,19 +851,11 @@ namespace libcppsharp
                 {
                     string value = curTokVal.ToString();
 
-                    Token? retTok = ReturnLastToken(ref lastTok);
-                    if (retTok != null)
-                    {
-                        ret.Add(lastTok);
-                    }
+                    Token tok;
+                    tok.tokenType = TokenType.IDENTIFIER;
+                    tok.value = value;
 
-
-                    lastTok.tokenType = TokenType.IDENTIFIER;
-                    lastTok.value = value;
-
-                    ret.Add(lastTok);
-
-                    lastTok.tokenType = TokenType.UNKNOWN;
+                    ret.Add(tok);
                 }
 
                 state.escaped = false;
@@ -766,18 +871,11 @@ namespace libcppsharp
                         {
                             string value = curTokVal.ToString();
 
-                            Token? retTok = ReturnLastToken(ref lastTok);
-                            if (retTok != null)
-                            {
-                                ret.Add(lastTok);
-                            }
+                            Token tok;
+                            tok.tokenType = TokenType.IDENTIFIER;
+                            tok.value = value;
 
-                            lastTok.tokenType = TokenType.IDENTIFIER;
-                            lastTok.value = value;
-
-                            ret.Add(lastTok);
-
-                            lastTok.tokenType = TokenType.UNKNOWN;
+                            ret.Add(tok);
                         }
 
                         PushPutBackArray('\\');
@@ -841,7 +939,7 @@ namespace libcppsharp
             return ret;
         }
 
-        private List<Token> HandleStringNewChar(char ch, ref Token lastTok, ref EnumeratorState state)
+        private List<Token> HandleStringNewChar(char ch, ref EnumeratorState state)
         {
             List<Token> ret = new List<Token>();
 
@@ -908,27 +1006,19 @@ namespace libcppsharp
             return ret;
         }
 
-        private List<Token> HandleStringPostfixNewChar(char ch, ref Token lastTok, ref EnumeratorState state)
+        private List<Token> HandleStringPostfixNewChar(char ch, ref EnumeratorState state)
         {
             List<Token> ret = new List<Token>();
-            Token? retTok;
+            Token tok;
 
             switch (ch)
             {
                 case 's':
                     if (state.escaped)
                     {
-                        retTok = ReturnLastToken(ref lastTok);
-                        if (retTok != null)
-                        {
-                            ret.Add(lastTok);
-                        }
-
-                        lastTok.value = curTokVal.ToString();
-                        lastTok.tokenType = TokenType.STRING;
-                        ret.Add(lastTok);
-
-                        lastTok.tokenType = TokenType.UNKNOWN;
+                        tok.value = curTokVal.ToString();
+                        tok.tokenType = TokenType.STRING;
+                        ret.Add(tok);
 
                         this.state = State.DEFAULT;
                     }
@@ -942,17 +1032,11 @@ namespace libcppsharp
                 case '\\':
                     if (state.escaped)
                     {
-                        retTok = ReturnLastToken(ref lastTok);
-                        if (retTok != null)
-                        {
-                            ret.Add(lastTok);
-                        }
+                        tok.value = curTokVal.ToString();
+                        tok.tokenType = TokenType.STRING;
+                        ret.Add(tok);
 
-                        lastTok.value = curTokVal.ToString();
-                        lastTok.tokenType = TokenType.STRING;
-                        ret.Add(lastTok);
-
-                        lastTok.tokenType = TokenType.UNKNOWN;
+                        tok.tokenType = TokenType.UNKNOWN;
 
                         this.state = State.DEFAULT;
                     }
@@ -965,17 +1049,11 @@ namespace libcppsharp
                 case '\n':
                     if (!state.escaped)
                     {
-                        retTok = ReturnLastToken(ref lastTok);
-                        if (retTok != null)
-                        {
-                            ret.Add(lastTok);
-                        }
+                        tok.value = curTokVal.ToString();
+                        tok.tokenType = TokenType.STRING;
+                        ret.Add(tok);
 
-                        lastTok.value = curTokVal.ToString();
-                        lastTok.tokenType = TokenType.STRING;
-                        ret.Add(lastTok);
-
-                        lastTok.tokenType = TokenType.UNKNOWN;
+                        tok.tokenType = TokenType.UNKNOWN;
 
                         this.state = State.DEFAULT;
                     }
@@ -985,45 +1063,13 @@ namespace libcppsharp
                     }
                     break;
                 default:
-                    String val = curTokVal.ToString();
-
-                    retTok = ReturnLastToken(ref lastTok);
-                    if (retTok != null)
-                    {
-                        ret.Add(lastTok);
-                    }
-
-                    lastTok.value = val;
-                    lastTok.tokenType = TokenType.STRING;
-                    ret.Add(lastTok);
-
-                    lastTok.tokenType = TokenType.UNKNOWN;
+                    tok.value = curTokVal.ToString();
+                    tok.tokenType = TokenType.STRING;
+                    ret.Add(tok);
 
                     this.state = State.DEFAULT;
                     break;
             }
-            return ret;
-        }
-
-        private Token? ReturnLastToken(ref Token lastTok)
-        {
-            Token? ret = null;
-
-            if (lastTok.tokenType != TokenType.UNKNOWN)
-            {
-                if (curTokVal.Length > 0)
-                {
-                    lastTok.value = curTokVal.ToString();
-                    curTokVal.Clear();
-                }
-                else
-                {
-                    lastTok.value = "";
-                }
-
-                ret = lastTok;
-            }
-
             return ret;
         }
 
@@ -1060,9 +1106,6 @@ namespace libcppsharp
             StateCallbacks sc;
             EnumeratorState enumeratorState = new EnumeratorState();
             bool refillBuffer = false;
-            Token lastTok;
-            lastTok.tokenType = TokenType.UNKNOWN;
-            lastTok.value = null;
             enumeratorState.escaped = false;
 
             readResult = RefillCharArray();
@@ -1070,14 +1113,16 @@ namespace libcppsharp
             if (readResult <= 0)
             {
                 callbacks.TryGetValue(state, out sc);
-                foreach (Token tok in sc.eofHandler(ref lastTok, ref enumeratorState))
+                foreach (Token curtok in sc.eofHandler(ref enumeratorState))
                 {
-                    yield return tok;
+                    yield return curtok;
                 }
 
-                lastTok.tokenType = TokenType.EOF;
+                Token tok;
+                tok.tokenType = TokenType.EOF;
+                tok.value = "";
 
-                yield return lastTok;
+                yield return tok;
             }
 
             while (readResult > 0)
@@ -1095,14 +1140,16 @@ namespace libcppsharp
                     if (readResult <= 0)
                     {
                         callbacks.TryGetValue(state, out sc);
-                        foreach (Token tok in sc.eofHandler(ref lastTok, ref enumeratorState))
+                        foreach (Token curtok in sc.eofHandler(ref enumeratorState))
                         {
-                            yield return tok;
+                            yield return curtok;
                         }
 
-                        lastTok.tokenType = TokenType.EOF;
+                        Token tok;
+                        tok.tokenType = TokenType.EOF;
+                        tok.value = "";
 
-                        yield return lastTok;
+                        yield return tok;
                         break;
                     }
                 }
@@ -1110,7 +1157,7 @@ namespace libcppsharp
                 char ch = GetNextChar();
 
                 callbacks.TryGetValue(state, out sc);
-                foreach (Token tok in sc.charHandler(ch, ref lastTok, ref enumeratorState))
+                foreach (Token tok in sc.charHandler(ch, ref enumeratorState))
                 {
                     yield return tok;
                 }
