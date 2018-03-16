@@ -410,7 +410,7 @@ int main(void)
         }
 
         [Test]
-        public void TestRaeString1()
+        public void TestRawString1()
         {
             // test # digram.
             string code = @"R""ABC(DEF)ABC""";
@@ -427,7 +427,7 @@ int main(void)
         }
 
         [Test]
-        public void TestRaeString2()
+        public void TestRawString2()
         {
             // test # digram.
             string code = @"R""ABC(DEF)ABC)ABC""";
@@ -444,7 +444,7 @@ int main(void)
         }
 
         [Test]
-        public void TestRaeString3()
+        public void TestRawString3()
         {
             // test # digram.
             string code = @"R""(DEF))""";
@@ -461,7 +461,7 @@ int main(void)
         }
 
         [Test]
-        public void TestRaeString4()
+        public void TestRawString4()
         {
             // test # digram.
             string code = @"R""(DEF))""s";
@@ -475,6 +475,147 @@ int main(void)
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.STRING);
             Assert.AreEqual(t.value, "R\"(DEF))\"s");
+        }
+
+        [Test]
+        public void TestRawString5()
+        {
+            // test # digram.
+            string code = @"R\
+""\
+(DEF))""s";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.STRING);
+            Assert.AreEqual(t.value, "R\"(DEF))\"s");
+        }
+
+
+        [Test]
+        public void TestRawString6()
+        {
+            // test # digram.
+            string code = @"R""\A\
+(DEF))""s";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+
+            try
+            {
+                i.MoveNext();
+                Token tok = i.Current;
+
+                Assert.Fail();
+            }
+            catch (InvalidDataException)
+            {
+                Assert.Pass();
+            }
+        }
+
+        [Test]
+        public void TestRawString7()
+        {
+            // test # digram.
+            string code = @"R"" A(DEF))""s";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+
+            try
+            {
+                i.MoveNext();
+                Token tok = i.Current;
+
+                Assert.Fail();
+            }
+            catch (InvalidDataException)
+            {
+                Assert.Pass();
+            }
+        }
+
+        [Test]
+        public void TestRawString8()
+        {
+            // test # digram.
+            string code = @"R"" A(DEF))""s";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+
+            try
+            {
+                i.MoveNext();
+                Token tok = i.Current;
+
+                Assert.Fail();
+            }
+            catch (InvalidDataException)
+            {
+                Assert.Pass();
+            }
+        }
+
+        [Test]
+        public void TestRawString9()
+        {
+            // test # digram.
+            string code = @"R"")A(DEF))""s";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+
+            try
+            {
+                i.MoveNext();
+                Token tok = i.Current;
+
+                Assert.Fail();
+            }
+            catch (InvalidDataException)
+            {
+                Assert.Pass();
+            }
+        }
+
+        [Test]
+        public void TestRawString10()
+        {
+            // test # digram.
+            string code = @"R""""A(DEF))""s";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+
+            try
+            {
+                i.MoveNext();
+                Token tok = i.Current;
+
+                Assert.Fail();
+            }
+            catch (InvalidDataException)
+            {
+                Assert.Pass();
+            }
         }
     }
 }
