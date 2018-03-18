@@ -1772,6 +1772,7 @@ int main(void)
             Assert.AreEqual(t.value, " ");
         }
 
+        [Test]
         public void TestInteger33()
         {
             // test # digram.
@@ -1791,7 +1792,7 @@ int main(void)
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.PLUS_SIGN);
-            Assert.AreEqual(t.value, "");
+            Assert.AreEqual(t.value, "+");
 
             i.MoveNext();
             t = i.Current;
@@ -1806,5 +1807,27 @@ int main(void)
             Assert.AreEqual(t.value, " ");
         }
 
+        [Test]
+        public void TestIdentifierUnderscores()
+        {
+            // test # digram.
+            string code = "__VA_ARGS__ ";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.IDENTIFIER);
+            Assert.AreEqual(t.value, "__VA_ARGS__");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+            Assert.AreEqual(t.value, " ");
+        }
     }
 }
