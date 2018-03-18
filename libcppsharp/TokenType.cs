@@ -57,6 +57,7 @@ namespace libcppsharp
         IDENTIFIER,
         STRING,
         CHAR,
+        NUMBER,
         EOF
     }
 }

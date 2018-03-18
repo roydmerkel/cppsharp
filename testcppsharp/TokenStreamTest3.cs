@@ -969,5 +969,51 @@ int main(void)
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
         }
+
+        [Test]
+        public void TestInteger1()
+        {
+            // test # digram.
+            string code = "0123 ";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NUMBER);
+            Assert.AreEqual(t.value, "0123");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+            Assert.AreEqual(t.value, " ");
+        }
+
+        [Test]
+        public void TestInteger2()
+        {
+            // test # digram.
+            string code = "0x123#";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NUMBER);
+            Assert.AreEqual(t.value, "0x123");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+            Assert.AreEqual(t.value, "");
+        }
     }
 }
