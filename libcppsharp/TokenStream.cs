@@ -151,6 +151,7 @@ namespace libcppsharp
                 {State.IDENTIFIER, new StateCallbacks(HandleIdentifierStateEOFTokens, HandleIdentifiersNewChar) },
                 {State.INTEGER, new StateCallbacks(HandleIntegerStateEOFTokens, HandleIntegerNewChar) },
                 {State.DECIMAL, new StateCallbacks(HandleDecimalStateEOFTokens, HandleDecimalNewChar) },
+                {State.EXPONENT, new StateCallbacks(HandleExponentStateEOFTokens, HandleExponentNewChar) },
             };
         }
 
@@ -421,6 +422,24 @@ namespace libcppsharp
         }
 
         private List<Token> HandleDecimalStateEOFTokens(ref EnumeratorState state)
+        {
+            List<Token> ret = new List<Token>();
+
+            if (state.escaped)
+            {
+                throw new InvalidDataException("stray \\ found at EOF.");
+            }
+
+            Token tok;
+            tok.tokenType = TokenType.NUMBER;
+            tok.value = curTokVal.ToString();
+
+            ret.Add(tok);
+
+            return ret;
+        }
+
+        private List<Token> HandleExponentStateEOFTokens(ref EnumeratorState state)
         {
             List<Token> ret = new List<Token>();
 
@@ -1732,7 +1751,7 @@ namespace libcppsharp
                     break;
                 case 'b':
                 case 'B':
-                    if ((curTokVal.Length == 1 && curTokVal[0] == '0') || 
+                    if ((curTokVal.Length == 1 && curTokVal[0] == '0') ||
                         (curTokVal.Length >= 2 && (curTokVal[1] == 'x' || curTokVal[1] == 'X')))
                     {
                         curTokVal.Append(ch);
@@ -1755,15 +1774,34 @@ namespace libcppsharp
                     break;
                 case 'e':
                 case 'E':
-                    if (curTokVal.Length >= 2 && (curTokVal[1] == 'x' || curTokVal[1] == 'X'))
-                    {
-                        curTokVal.Append(ch);
-                        MoveNextChar();
-                    }
-                    else
+                    curTokVal.Append(ch);
+                    MoveNextChar();
+
+                    break;
+                case '+':
+                case '-':
+                    if (curTokVal[curTokVal.Length - 1] == 'e' || curTokVal[curTokVal.Length - 1] == 'E')
                     {
                         this.state = State.EXPONENT;
                     }
+                    else
+                    {
+                        tok.value = curTokVal.ToString();
+                        tok.tokenType = TokenType.NUMBER;
+                        ret.Add(tok);
+
+                        curTokVal.Clear();
+
+                        this.state = State.DEFAULT;
+                    }
+                    break;
+                case 'p':
+                case 'P':
+                    curTokVal.Append(ch);
+                    MoveNextChar();
+
+                    this.state = State.EXPONENT;
+
                     break;
                 case '.':
                     if (curTokVal.Length >= 2 && curTokVal[2] == 'b')
@@ -1887,37 +1925,33 @@ namespace libcppsharp
                     break;
                 case 'e':
                 case 'E':
-                    if (curTokVal.Length >= 2 && (curTokVal[1] == 'x' || curTokVal[1] == 'X'))
-                    {
-                        curTokVal.Append(ch);
-                        MoveNextChar();
-                    }
-                    else
-                    {
-                        this.state = State.EXPONENT;
-                    }
-                    break;
-                case ' ':
-                case '\t':
-                case '\v':
-                case '\f':
-                    if (curTokVal.Length >= 2 && (curTokVal[1] == 'x' || curTokVal[1] == 'X'))
-                    {
-                        this.state = State.EXPONENT;
-                    }
-                    else
-                    {
-                        tok.tokenType = TokenType.NUMBER;
-                        tok.value = curTokVal.ToString();
+                    curTokVal.Append(ch);
+                    MoveNextChar();
 
+                    break;
+                case 'p':
+                case 'P':
+                    curTokVal.Append(ch);
+                    MoveNextChar();
+
+                    this.state = State.EXPONENT;
+
+                    break;
+                case '+':
+                case '-':
+                    if (curTokVal[curTokVal.Length - 1] == 'e' || curTokVal[curTokVal.Length - 1] == 'E')
+                    {
+                        this.state = State.EXPONENT;
+                    }
+                    else
+                    {
+                        tok.value = curTokVal.ToString();
+                        tok.tokenType = TokenType.NUMBER;
                         ret.Add(tok);
 
                         curTokVal.Clear();
-                        curTokVal.Append(ch);
 
-                        this.state = State.WHITESPACE;
-
-                        MoveNextChar();
+                        this.state = State.DEFAULT;
                     }
                     break;
                 case '\\':
@@ -1926,9 +1960,7 @@ namespace libcppsharp
                         PushPutBackArray('\\');
 
                         tok.value = curTokVal.ToString();
-                        tok.tokenType = TokenType.IDENTIFIER;
-                        ret.Add(tok);
-
+                        tok.tokenType = TokenType.NUMBER;
                         ret.Add(tok);
 
                         this.state = State.DEFAULT;
@@ -1944,8 +1976,6 @@ namespace libcppsharp
                     {
                         tok.value = curTokVal.ToString();
                         tok.tokenType = TokenType.NUMBER;
-                        ret.Add(tok);
-
                         ret.Add(tok);
 
                         this.state = State.DEFAULT;
@@ -1969,6 +1999,90 @@ namespace libcppsharp
                         tok.tokenType = TokenType.NUMBER;
                         ret.Add(tok);
                     }
+
+                    this.state = State.DEFAULT;
+                    break;
+            }
+            return ret;
+        }
+
+        private List<Token> HandleExponentNewChar(char ch, ref EnumeratorState state)
+        {
+            List<Token> ret = new List<Token>();
+            Token tok;
+
+            switch (ch)
+            {
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    curTokVal.Append(ch);
+                    MoveNextChar();
+                    break;
+                case '+':
+                case '-':
+                    if (curTokVal[curTokVal.Length - 1] != 'p' &&
+                        curTokVal[curTokVal.Length - 1] != 'P' &&
+                        curTokVal[curTokVal.Length - 1] != 'e' &&
+                        curTokVal[curTokVal.Length - 1] != 'E')
+                    {
+                        tok.value = curTokVal.ToString();
+                        tok.tokenType = TokenType.NUMBER;
+                        ret.Add(tok);
+
+                        curTokVal.Clear();
+
+                        this.state = State.DEFAULT;
+                    }
+                    else
+                    {
+                        curTokVal.Append(ch);
+                        MoveNextChar();
+                    }
+                    break;
+                case '\\':
+                    if (state.escaped)
+                    {
+                        PushPutBackArray('\\');
+
+                        tok.value = curTokVal.ToString();
+                        tok.tokenType = TokenType.NUMBER;
+                        ret.Add(tok);
+
+                        this.state = State.DEFAULT;
+                    }
+                    else
+                    {
+                        state.escaped = true;
+                        MoveNextChar();
+                    }
+                    break;
+                case '\n':
+                    if (!state.escaped)
+                    {
+                        tok.value = curTokVal.ToString();
+                        tok.tokenType = TokenType.NUMBER;
+                        ret.Add(tok);
+
+                        this.state = State.DEFAULT;
+                    }
+                    else
+                    {
+                        state.escaped = false;
+                        MoveNextChar();
+                    }
+                    break;
+                default:
+                    tok.value = curTokVal.ToString();
+                    tok.tokenType = TokenType.NUMBER;
+                    ret.Add(tok);
 
                     this.state = State.DEFAULT;
                     break;
