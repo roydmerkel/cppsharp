@@ -364,7 +364,7 @@ int main(void)
             Token t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-            Assert.AreEqual(t.value, "");
+            Assert.AreEqual(t.value, "#");
 
             i.MoveNext();
             t = i.Current;
@@ -382,7 +382,7 @@ int main(void)
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.LESS_THEN);
-            Assert.AreEqual(t.value, "");
+            Assert.AreEqual(t.value, "<");
 
             i.MoveNext();
             t = i.Current;
@@ -394,7 +394,7 @@ int main(void)
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.PERIOD);
-            Assert.AreEqual(t.value, "");
+            Assert.AreEqual(t.value, ".");
 
             i.MoveNext();
             t = i.Current;
@@ -406,7 +406,7 @@ int main(void)
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.GREATER_THEN);
-            Assert.AreEqual(t.value, "");
+            Assert.AreEqual(t.value, ">");
         }
 
         [Test]
@@ -1013,7 +1013,7 @@ int main(void)
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-            Assert.AreEqual(t.value, "");
+            Assert.AreEqual(t.value, "#");
         }
 
         [Test]
@@ -1036,7 +1036,7 @@ int main(void)
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-            Assert.AreEqual(t.value, "");
+            Assert.AreEqual(t.value, "#");
         }
 
         [Test]
@@ -1065,7 +1065,7 @@ int main(void)
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-            Assert.AreEqual(t.value, "");
+            Assert.AreEqual(t.value, "#");
         }
 
         [Test]
@@ -1710,7 +1710,7 @@ int main(void)
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.PLUS_SIGN);
-            Assert.AreEqual(t.value, "");
+            Assert.AreEqual(t.value, "+");
 
             i.MoveNext();
             t = i.Current;
@@ -1745,7 +1745,7 @@ int main(void)
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.PLUS_SIGN);
-            Assert.AreEqual(t.value, "");
+            Assert.AreEqual(t.value, "+");
 
             i.MoveNext();
             t = i.Current;
@@ -1757,7 +1757,7 @@ int main(void)
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.PLUS_SIGN);
-            Assert.AreEqual(t.value, "");
+            Assert.AreEqual(t.value, "+");
 
             i.MoveNext();
             t = i.Current;

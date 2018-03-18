@@ -255,7 +255,7 @@ namespace libcppsharp
 
                 Token tok;
                 tok.tokenType = TokenType.BACK_SLASH;
-                tok.value = "";
+                tok.value = "\\";
 
                 ret.Add(tok);
             }
@@ -277,7 +277,7 @@ namespace libcppsharp
                 state.escaped = false;
 
                 tok.tokenType = TokenType.BACK_SLASH;
-                tok.value = "";
+                tok.value = "\\";
 
                 ret.Add(tok);
             }
@@ -298,7 +298,7 @@ namespace libcppsharp
             {
                 Token tok;
                 punctuation.TryGetValue(ch, out tok.tokenType);
-                tok.value = "";
+                tok.value = ch.ToString();
 
                 ret.Add(tok);
             }
@@ -485,7 +485,7 @@ namespace libcppsharp
                     else
                     {
                         tok.tokenType = TokenType.NEWLINE;
-                        tok.value = "";
+                        tok.value = "\n";
 
                         ret.Add(tok);
                     }
@@ -502,7 +502,7 @@ namespace libcppsharp
                         else
                         {
                             tok.tokenType = TokenType.BACK_SLASH;
-                            tok.value = "";
+                            tok.value = "\\";
 
                             state.escaped = false;
                             ret.Add(tok);
@@ -520,7 +520,7 @@ namespace libcppsharp
                         else
                         {
                             tok.tokenType = TokenType.LESS_THEN;
-                            tok.value = "";
+                            tok.value = "<";
 
                             ret.Add(tok);
                         }
@@ -538,7 +538,7 @@ namespace libcppsharp
                         else
                         {
                             tok.tokenType = TokenType.BACK_SLASH;
-                            tok.value = "";
+                            tok.value = "\\";
 
                             state.escaped = false;
 
@@ -557,7 +557,7 @@ namespace libcppsharp
                         else
                         {
                             tok.tokenType = TokenType.COLON;
-                            tok.value = "";
+                            tok.value = ":";
 
                             ret.Add(tok);
                         }
@@ -575,7 +575,7 @@ namespace libcppsharp
                         else
                         {
                             tok.tokenType = TokenType.BACK_SLASH;
-                            tok.value = "";
+                            tok.value = "\\";
 
                             state.escaped = false;
 
@@ -594,7 +594,7 @@ namespace libcppsharp
                         else
                         {
                             tok.tokenType = TokenType.PERCENT;
-                            tok.value = "";
+                            tok.value = "%";
 
                             ret.Add(tok);
                         }
@@ -612,7 +612,7 @@ namespace libcppsharp
                         else
                         {
                             tok.tokenType = TokenType.BACK_SLASH;
-                            tok.value = "";
+                            tok.value = "\\";
 
                             state.escaped = false;
 
@@ -666,7 +666,7 @@ namespace libcppsharp
                             else
                             {
                                 tok.tokenType = TokenType.BACK_SLASH;
-                                tok.value = "";
+                                tok.value = "\\";
 
                                 state.escaped = false;
 
@@ -676,7 +676,7 @@ namespace libcppsharp
                         else
                         {
                             punctuation.TryGetValue(ch, out tok.tokenType);
-                            tok.value = "";
+                            tok.value = ch.ToString();
                             ret.Add(tok);
 
                             MoveNextChar();
@@ -745,7 +745,7 @@ namespace libcppsharp
                         else
                         {
                             tok.tokenType = TokenType.BACK_SLASH;
-                            tok.value = "";
+                            tok.value = "\\";
 
                             state.escaped = false;
 
@@ -771,7 +771,7 @@ namespace libcppsharp
                         else
                         {
                             tok.tokenType = TokenType.BACK_SLASH;
-                            tok.value = "";
+                            tok.value = "\\";
 
                             state.escaped = false;
 
@@ -797,7 +797,7 @@ namespace libcppsharp
                         else
                         {
                             tok.tokenType = TokenType.BACK_SLASH;
-                            tok.value = "";
+                            tok.value = "\\";
 
                             state.escaped = false;
 
@@ -832,7 +832,7 @@ namespace libcppsharp
                         else
                         {
                             tok.tokenType = TokenType.BACK_SLASH;
-                            tok.value = "";
+                            tok.value = "\\";
 
                             state.escaped = false;
 
@@ -974,7 +974,7 @@ namespace libcppsharp
                             {
                                 case '<':
                                     tok.tokenType = TokenType.L_SQ_BRACKET;
-                                    tok.value = "";
+                                    tok.value = "[";
 
                                     ret.Add(tok);
 
@@ -982,7 +982,7 @@ namespace libcppsharp
                                     this.state = State.DEFAULT;
                                     break;
                                 case '%':
-                                    tok.value = "";
+                                    tok.value = "#";
 
                                     tok.tokenType = TokenType.HASH;
                                     ret.Add(tok);
@@ -1000,7 +1000,7 @@ namespace libcppsharp
                             {
                                 case ':':
                                     tok.tokenType = TokenType.R_SQ_BRACKET;
-                                    tok.value = "";
+                                    tok.value = "]";
 
                                     ret.Add(tok);
 
@@ -1009,7 +1009,7 @@ namespace libcppsharp
                                     break;
                                 case '%':
                                     tok.tokenType = TokenType.R_CURLY_BRACE;
-                                    tok.value = "";
+                                    tok.value = "}";
 
                                     ret.Add(tok);
 
@@ -1026,7 +1026,7 @@ namespace libcppsharp
                             {
                                 case '<':
                                     tok.tokenType = TokenType.L_CURLY_BRACE;
-                                    tok.value = "";
+                                    tok.value = "{";
 
                                     ret.Add(tok);
 
@@ -1048,7 +1048,7 @@ namespace libcppsharp
 
             if (invalidDigram)
             {
-                tok.value = "";
+                tok.value = curTokVal[0].ToString();
 
                 punctuation.TryGetValue(curTokVal[0], out tok.tokenType);
                 ret.Add(tok);
@@ -1999,7 +1999,7 @@ namespace libcppsharp
                 default:
                     if (curTokVal.Length == 1 && curTokVal[0] == '.')
                     {
-                        tok.value = "";
+                        tok.value = ".";
                         tok.tokenType = TokenType.PERIOD;
                         ret.Add(tok);
                     }

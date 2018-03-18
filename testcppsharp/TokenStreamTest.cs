@@ -1199,7 +1199,7 @@ int main(void)
             Token t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.NEWLINE);
-            Assert.AreEqual(t.value, "");
+            Assert.AreEqual(t.value, "\n");
 
             i.MoveNext();
             t = i.Current;

@@ -767,7 +767,7 @@ int main(void)
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.BACK_SLASH);
-            Assert.AreEqual(t.value, "");
+            Assert.AreEqual(t.value, "\\");
 
             i.MoveNext();
             t = i.Current;
