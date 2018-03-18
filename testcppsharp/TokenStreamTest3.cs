@@ -1596,5 +1596,215 @@ int main(void)
             Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
             Assert.AreEqual(t.value, " ");
         }
+
+        [Test]
+        public void TestInteger28()
+        {
+            // test # digram.
+            string code = "1b23.123p+123 ";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NUMBER);
+            Assert.AreEqual(t.value, "1");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.IDENTIFIER);
+            Assert.AreEqual(t.value, "b23");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NUMBER);
+            Assert.AreEqual(t.value, ".123p+123");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+            Assert.AreEqual(t.value, " ");
+        }
+
+        [Test]
+        public void TestInteger29()
+        {
+            // test # digram.
+            string code = "0bb23.123p+123 ";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NUMBER);
+            Assert.AreEqual(t.value, "0b");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.IDENTIFIER);
+            Assert.AreEqual(t.value, "b23");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NUMBER);
+            Assert.AreEqual(t.value, ".123p+123");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+            Assert.AreEqual(t.value, " ");
+        }
+
+        [Test]
+        public void TestInteger30()
+        {
+            // test # digram.
+            string code = "0x1b23.123p+123 ";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NUMBER);
+            Assert.AreEqual(t.value, "0x1b23.123p+123");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+            Assert.AreEqual(t.value, " ");
+        }
+
+        [Test]
+        public void TestInteger31()
+        {
+            // test # digram.
+            string code = "123.+123p+123 ";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NUMBER);
+            Assert.AreEqual(t.value, "123.");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.PLUS_SIGN);
+            Assert.AreEqual(t.value, "");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NUMBER);
+            Assert.AreEqual(t.value, "123p+123");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+            Assert.AreEqual(t.value, " ");
+        }
+
+        [Test]
+        public void TestInteger32()
+        {
+            // test # digram.
+            string code = "123.123+p+123 ";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NUMBER);
+            Assert.AreEqual(t.value, "123.123");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.PLUS_SIGN);
+            Assert.AreEqual(t.value, "");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.IDENTIFIER);
+            Assert.AreEqual(t.value, "p");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.PLUS_SIGN);
+            Assert.AreEqual(t.value, "");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NUMBER);
+            Assert.AreEqual(t.value, "123");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+            Assert.AreEqual(t.value, " ");
+        }
+
+        public void TestInteger33()
+        {
+            // test # digram.
+            string code = "123.123p++123 ";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NUMBER);
+            Assert.AreEqual(t.value, "123.123p+");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.PLUS_SIGN);
+            Assert.AreEqual(t.value, "");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NUMBER);
+            Assert.AreEqual(t.value, "123");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+            Assert.AreEqual(t.value, " ");
+        }
+
     }
 }
