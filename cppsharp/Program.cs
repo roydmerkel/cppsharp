@@ -35,6 +35,7 @@ namespace cppsharp
             Console.WriteLine("Hello World!");
 
             String code = @"#include <stdio.h>
+#include ""string.h""
             
 #define TMP(A, B) (A) + \
 (B)

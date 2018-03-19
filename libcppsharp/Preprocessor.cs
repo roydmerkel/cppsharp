@@ -27,14 +27,26 @@ namespace libcppsharp
 {
     public class Preprocessor
     {
-        TokenStream tokenStream;
+        private struct Define
+        {
+            public string name;
+            public string[] paramList;
+            public Token[] tokens;
+        }
+
+        bool handleTrigraphs;
+        bool handleDigraphs;
+        Stream inStream;
         DirectoryInfo[] includePath;
+        List<Define> defines;
 
         public Preprocessor(Stream inStream, bool handleTrigraphs = false, bool handleDigraphs = false)
         {
             List<DirectoryInfo> directories = new List<DirectoryInfo>();
 
-            tokenStream = new TokenStream(inStream, handleTrigraphs, handleDigraphs, true, true);
+            this.inStream = inStream;
+            this.handleDigraphs = handleDigraphs;
+            this.handleTrigraphs = handleTrigraphs;
 
             switch ((int)Environment.OSVersion.Platform)
             {
@@ -226,19 +238,300 @@ namespace libcppsharp
             }
 
             this.includePath = directories.ToArray();
+            this.defines = new List<Define>();
         }
 
         public bool Preprocess(TextWriter outStream)
         {
-            bool lineStart = true;
+            return Preprocess(outStream, this.inStream);
+        }
+
+        public bool Preprocess(TextWriter outStream, Stream inStream)
+        {
+            bool foundStartHash = false;
+
+            TokenStream tokenStream = tokenStream = new TokenStream(inStream, handleTrigraphs, handleDigraphs, true, true);
             IEnumerable<Token> enumerable = tokenStream.GetTokenEnumerable();
             IEnumerator<Token> enumerator = enumerable.GetEnumerator();
+            List<Token> lineToks = new List<Token>();
 
-            List<Token> allToks = new List<Token>();
-
-            while (enumerator.MoveNext())
+            while (true)
             {
-                allToks.Add(enumerator.Current);
+                foundStartHash = false;
+                lineToks.Clear();
+
+                while (enumerator.MoveNext())
+                {
+                    Token t = enumerator.Current;
+
+                    if (t.tokenType == TokenType.NEWLINE)
+                    {
+                        lineToks.Add(t);
+                        break;
+                    }
+                    else if (t.tokenType == TokenType.EOF)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        lineToks.Add(t);
+                    }
+                }
+
+                foreach (Token t in lineToks)
+                {
+                    if (t.tokenType == TokenType.WHITESPACE)
+                    {
+                    }
+                    else if (t.tokenType == TokenType.HASH)
+                    {
+                        foundStartHash = true;
+                        break;
+                    }
+                    else
+                    {
+                        foundStartHash = false;
+                        break;
+                    }
+                }
+
+                // if not found hash, do replacements:
+                Token last;
+                last.tokenType = TokenType.UNKNOWN;
+
+                if (!foundStartHash)
+                {
+                    bool replaced = false;
+
+                    // do replacement loop.
+                    foreach (Token t in lineToks)
+                    {
+                        if (t.tokenType == TokenType.IDENTIFIER)
+                        {
+                            foreach (Define def in defines)
+                            {
+                                if (t.value == def.name)
+                                {
+                                    // TODO: do replacements.
+                                    replaced = true;
+                                }
+                            }
+                        }
+                        last = t;
+                    }
+                }
+                else
+                {
+                    bool foundHash = false;
+                    bool foundDirective = false;
+                    string directive = null;
+
+                    foreach (Token t in lineToks)
+                    {
+                        if (!foundHash)
+                        {
+                            if (t.tokenType == TokenType.HASH)
+                            {
+                                foundHash = true;
+                            }
+                        }
+                        else if (foundHash && !foundDirective)
+                        {
+                            if (t.tokenType == TokenType.WHITESPACE)
+                            {
+                                continue;
+                            }
+                            else if (t.tokenType == TokenType.IDENTIFIER)
+                            {
+                                foundDirective = true;
+                                directive = t.value;
+
+                                switch (directive.ToLower())
+                                {
+                                    case "include":
+                                    case "define":
+                                    case "undef":
+                                    case "if":
+                                    case "elif":
+                                    case "else":
+                                    case "endif":
+                                    case "ifdef":
+                                    case "ifndef":
+                                    case "line":
+                                    case "pragma":
+                                        break;
+                                    default:
+                                        throw new InvalidDataException("invalid preprocessor directive:" + directive);
+                                }
+
+                                break;
+                            }
+                            else
+                            {
+                                throw new InvalidDataException("preprocessor directive not found after newline #...");
+                            }
+                        }
+                    }
+
+                    if (foundDirective)
+                    {
+                        switch (directive)
+                        {
+                            case "include":
+                                {
+                                    string incPath = "";
+                                    bool foundInclude = false;
+                                    bool foundString = false;
+                                    bool foundLessThen = false;
+                                    bool foundGreaterThen = false;
+                                    bool foundEOL = false;
+
+                                    foundHash = false;
+                                    foreach (Token t in lineToks)
+                                    {
+                                        if (!foundHash)
+                                        {
+                                            if (t.tokenType == TokenType.HASH)
+                                            {
+                                                foundHash = true;
+                                            }
+                                        }
+                                        else if (foundHash && !foundInclude)
+                                        {
+                                            if (t.tokenType == TokenType.IDENTIFIER)
+                                            {
+                                                foundInclude = true;
+                                            }
+                                        }
+                                        else if (foundInclude && !foundString && !foundLessThen)
+                                        {
+                                            switch (t.tokenType)
+                                            {
+                                                case TokenType.WHITESPACE:
+                                                    break;
+                                                case TokenType.STRING:
+                                                    if (!t.value.StartsWith("\"") || !t.value.EndsWith("\""))
+                                                    {
+                                                        throw new InvalidDataException("Invalid stringtype in #include, basic string literal expected (e.g. \"myfile.h\", or similar.)");
+                                                    }
+
+                                                    foundString = true;
+                                                    incPath = t.value;
+                                                    break;
+                                                case TokenType.LESS_THEN:
+                                                    foundLessThen = true;
+                                                    incPath = "<";
+                                                    break;
+                                                default:
+                                                    throw new InvalidDataException("Unexpected token: " + t.value + " while process #include directive.");
+                                            }
+                                        }
+                                        else if (foundLessThen && !foundGreaterThen)
+                                        {
+                                            if (t.tokenType == TokenType.GREATER_THEN)
+                                            {
+                                                incPath = incPath + ">";
+                                                foundGreaterThen = true;
+                                            }
+                                            else if (t.tokenType == TokenType.NEWLINE)
+                                            {
+                                                throw new InvalidDataException("Unexpected \n while parsing #include.");
+                                            }
+                                            else
+                                            {
+                                                incPath = incPath + t.value;
+                                            }
+                                        }
+                                        else if ((foundString || foundGreaterThen) && !foundEOL)
+                                        {
+                                            if (t.tokenType == TokenType.WHITESPACE)
+                                            {
+                                            }
+                                            else if (t.tokenType == TokenType.NEWLINE)
+                                            {
+                                                foundEOL = true;
+                                            }
+                                            else
+                                            {
+                                                throw new InvalidDataException("Unexpected " + t.value + " while processing #include.");
+                                            }
+                                        }
+                                    }
+
+                                    if (!foundEOL)
+                                    {
+                                        throw new InvalidDataException("unterminated #include.");
+                                    }
+
+                                    string fname = incPath.Substring(1, incPath.Length - 2);
+                                    FileInfo incFile = null;
+                                    if (incPath.StartsWith("\""))
+                                    {
+                                        string searchFile = Environment.CurrentDirectory + Path.DirectorySeparatorChar + fname;
+                                        if (File.Exists(searchFile))
+                                        {
+                                            incFile = new FileInfo(searchFile);
+                                        }
+                                        else
+                                        {
+                                            foreach (DirectoryInfo dir in includePath)
+                                            {
+                                                searchFile = dir.FullName + Path.DirectorySeparatorChar + fname;
+
+                                                if (File.Exists(searchFile))
+                                                {
+                                                    incFile = new FileInfo(searchFile);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else if (incPath.StartsWith("<"))
+                                    {
+                                        foreach (DirectoryInfo dir in includePath)
+                                        {
+                                            string searchFile = dir.FullName + Path.DirectorySeparatorChar + fname;
+
+                                            if (File.Exists(searchFile))
+                                            {
+                                                incFile = new FileInfo(searchFile);
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    if (incFile != null)
+                                    {
+                                        bool includeSuccess = Preprocess(outStream, incFile.OpenRead());
+
+                                        if (!includeSuccess)
+                                        {
+                                            return false;
+                                        }
+                                    }
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+
+                foreach (Token t in lineToks)
+                {
+                    last = t;
+
+                    if (!foundStartHash)
+                    {
+                        outStream.Write(t.value);
+                    }
+                }
+
+                if (last.tokenType == TokenType.EOF || lineToks.Count == 0)
+                {
+                    break;
+                }
             }
 
             return true;

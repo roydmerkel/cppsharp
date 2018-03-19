@@ -58,6 +58,7 @@ namespace libcppsharp
         STRING,
         CHAR,
         NUMBER,
+        COMMENT,
         EOF
     }
 }

@@ -46,6 +46,9 @@ namespace libcppsharp
             DECIMAL,
             EXPONENT,
             NUMBERPOSTFIX,
+            C_COMMENT_START,
+            C_COMMENT,
+            CPP_COMMENT,
         }
 
         private struct StateCallbacks
@@ -152,6 +155,9 @@ namespace libcppsharp
                 {State.INTEGER, new StateCallbacks(HandleIntegerStateEOFTokens, HandleIntegerNewChar) },
                 {State.DECIMAL, new StateCallbacks(HandleDecimalStateEOFTokens, HandleDecimalNewChar) },
                 {State.EXPONENT, new StateCallbacks(HandleExponentStateEOFTokens, HandleExponentNewChar) },
+                {State.C_COMMENT_START, new StateCallbacks(HandleCCommentStartStateEOFTokens, HandleCCommentStartNewChar) },
+                {State.C_COMMENT, new StateCallbacks(HandleCCommentEOFTokens, HandleCCommentNewChar) },
+                {State.CPP_COMMENT, new StateCallbacks(HandleCPPCommentEOFTokens, HandleCPPCommentNewChar) },
             };
         }
 
@@ -457,6 +463,48 @@ namespace libcppsharp
             return ret;
         }
 
+        private List<Token> HandleCCommentStartStateEOFTokens(ref EnumeratorState state)
+        {
+            List<Token> ret = new List<Token>();
+
+            if (state.escaped)
+            {
+                throw new InvalidDataException("stray \\ found at EOF.");
+            }
+
+            Token tok;
+            tok.tokenType = TokenType.FORWARD_SLASH;
+            tok.value = curTokVal.ToString();
+
+            ret.Add(tok);
+
+            return ret;
+        }
+
+        private List<Token> HandleCCommentEOFTokens(ref EnumeratorState state)
+        {
+            List<Token> ret = new List<Token>();
+
+            if (state.escaped)
+            {
+                throw new InvalidDataException("stray \\ found at EOF.");
+            }
+
+            throw new InvalidDataException("Unterminated C style string (/* */)");
+        }
+
+        private List<Token> HandleCPPCommentEOFTokens(ref EnumeratorState state)
+        {
+            List<Token> ret = new List<Token>();
+
+            if (state.escaped)
+            {
+                throw new InvalidDataException("stray \\ found at EOF.");
+            }
+
+            throw new InvalidDataException("Unterminated C++ style string (//)");
+        }
+
         private List<Token> HandleDefaultNewChar(char ch, ref EnumeratorState state)
         {
             List<Token> ret = new List<Token>();
@@ -652,7 +700,6 @@ namespace libcppsharp
                 case ';':
                 case '>':
                 case ',':
-                case '/':
                 case '#':
                 case '`':
                 case '@':
@@ -683,6 +730,14 @@ namespace libcppsharp
                             MoveNextChar();
                         }
                     }
+                    break;
+                case '/':
+                    curTokVal.Clear();
+                    curTokVal.Append(ch);
+                    MoveNextChar();
+
+                    this.state = State.C_COMMENT_START;
+
                     break;
                 case '_':
                 case 'a':
@@ -2098,6 +2153,151 @@ namespace libcppsharp
                     ret.Add(tok);
 
                     this.state = State.DEFAULT;
+                    break;
+            }
+            return ret;
+        }
+
+        private List<Token> HandleCCommentStartNewChar(char ch, ref EnumeratorState state)
+        {
+            List<Token> ret = new List<Token>();
+            Token tok;
+
+            switch (ch)
+            {
+                case '/':
+                    curTokVal.Append(ch);
+
+                    this.state = State.CPP_COMMENT;
+                    MoveNextChar();
+
+                    break;
+                case '*':
+                    curTokVal.Append(ch);
+
+                    this.state = State.C_COMMENT;
+                    MoveNextChar();
+
+                    break;
+                case '\\':
+                    if (state.escaped)
+                    {
+                        PushPutBackArray('\\');
+
+                        tok.value = curTokVal.ToString();
+                        tok.tokenType = TokenType.FORWARD_SLASH;
+                        ret.Add(tok);
+
+                        this.state = State.DEFAULT;
+                    }
+                    else
+                    {
+                        state.escaped = true;
+                        MoveNextChar();
+                    }
+                    break;
+                case '\n':
+                    if (!state.escaped)
+                    {
+                        tok.value = curTokVal.ToString();
+                        tok.tokenType = TokenType.FORWARD_SLASH;
+                        ret.Add(tok);
+
+                        this.state = State.DEFAULT;
+                    }
+                    else
+                    {
+                        state.escaped = false;
+                        MoveNextChar();
+                    }
+                    break;
+                default:
+                    tok.value = curTokVal.ToString();
+                    tok.tokenType = TokenType.FORWARD_SLASH;
+                    ret.Add(tok);
+
+                    this.state = State.DEFAULT;
+                    break;
+            }
+            return ret;
+        }
+
+        private List<Token> HandleCCommentNewChar(char ch, ref EnumeratorState state)
+        {
+            List<Token> ret = new List<Token>();
+            Token tok;
+
+            switch (ch)
+            {
+                case '/':
+                    if (curTokVal[curTokVal.Length - 1] == '*')
+                    {
+                        curTokVal.Append(ch);
+                        tok.tokenType = TokenType.COMMENT;
+                        tok.value = curTokVal.ToString();
+
+                        ret.Add(tok);
+
+                        this.state = State.DEFAULT;
+                    }
+                    else
+                    {
+                        curTokVal.Append(ch);
+                    }
+
+                    MoveNextChar();
+
+                    break;
+                default:
+                    curTokVal.Append(ch);
+                    MoveNextChar();
+
+                    break;
+            }
+            return ret;
+        }
+
+        private List<Token> HandleCPPCommentNewChar(char ch, ref EnumeratorState state)
+        {
+            List<Token> ret = new List<Token>();
+            Token tok;
+
+            switch (ch)
+            {
+                case '\\':
+                    curTokVal.Append(ch);
+                    MoveNextChar();
+
+                    if (state.escaped)
+                    {
+                        state.escaped = false;
+                    }
+                    else
+                    {
+                        state.escaped = true;
+                    }
+
+                    break;
+                case '\n':
+                    curTokVal.Append(ch);
+                    MoveNextChar();
+
+                    if (!state.escaped)
+                    {
+                        tok.value = curTokVal.ToString();
+                        tok.tokenType = TokenType.COMMENT;
+                        ret.Add(tok);
+
+                        this.state = State.DEFAULT;
+                    }
+                    else
+                    {
+                        state.escaped = false;
+                    }
+                    break;
+                default:
+                    curTokVal.Append(ch);
+                    MoveNextChar();
                     break;
             }
             return ret;

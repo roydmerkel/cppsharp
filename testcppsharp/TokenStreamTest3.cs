@@ -1829,5 +1829,220 @@ int main(void)
             Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
             Assert.AreEqual(t.value, " ");
         }
+
+        [Test]
+        public void TestComment1()
+        {
+            // test # digram.
+            string code = @"#include ""stdio.h""
+
+/* Does this work? *//* it had better! */
+int main(void)
+{
+    return 0;
+}";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+            Assert.AreEqual(t.value, "#");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.IDENTIFIER);
+            Assert.AreEqual(t.value, "include");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+            Assert.AreEqual(t.value, " ");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.STRING);
+            Assert.AreEqual(t.value, "\"stdio.h\"");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NEWLINE);
+            Assert.AreEqual(t.value, "\n");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NEWLINE);
+            Assert.AreEqual(t.value, "\n");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.COMMENT);
+            Assert.AreEqual(t.value, "/* Does this work? */");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.COMMENT);
+            Assert.AreEqual(t.value, "/* it had better! */");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NEWLINE);
+            Assert.AreEqual(t.value, "\n");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.IDENTIFIER);
+            Assert.AreEqual(t.value, "int");
+        }
+
+        [Test]
+        public void TestComment2()
+        {
+            // test # digram.
+            string code = @"#include ""stdio.h""
+
+// Does this work?
+// it had better!
+int main(void)
+{
+    return 0;
+}";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+            Assert.AreEqual(t.value, "#");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.IDENTIFIER);
+            Assert.AreEqual(t.value, "include");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+            Assert.AreEqual(t.value, " ");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.STRING);
+            Assert.AreEqual(t.value, "\"stdio.h\"");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NEWLINE);
+            Assert.AreEqual(t.value, "\n");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NEWLINE);
+            Assert.AreEqual(t.value, "\n");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.COMMENT);
+            Assert.AreEqual(t.value, "// Does this work?\n");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.COMMENT);
+            Assert.AreEqual(t.value, "// it had better!\n");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.IDENTIFIER);
+            Assert.AreEqual(t.value, "int");
+        }
+
+        [Test]
+        public void TestComment3()
+        {
+            // test # digram.
+            string code = @"#include ""stdio.h""
+
+// Does this work?\
+// it had better!
+int main(void)
+{
+    return 0;
+}";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            TokenStream ts = new TokenStream(ms, true, true, true, true);
+
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerator<Token> i = enumerable.GetEnumerator();
+            i.MoveNext();
+            Token t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+            Assert.AreEqual(t.value, "#");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.IDENTIFIER);
+            Assert.AreEqual(t.value, "include");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
+            Assert.AreEqual(t.value, " ");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.STRING);
+            Assert.AreEqual(t.value, "\"stdio.h\"");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NEWLINE);
+            Assert.AreEqual(t.value, "\n");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NEWLINE);
+            Assert.AreEqual(t.value, "\n");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.COMMENT);
+            Assert.AreEqual(t.value, "// Does this work?\\\n// it had better!\n");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.IDENTIFIER);
+            Assert.AreEqual(t.value, "int");
+        }
     }
 }
