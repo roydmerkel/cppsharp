@@ -39,6 +39,12 @@ namespace libcppsharp
             switch ((int)Environment.OSVersion.Platform)
             {
                 case (int)PlatformID.MacOSX:
+                case (int)PlatformID.Unix:
+                case 128:
+                    if (Directory.Exists("/Applications")
+                    & Directory.Exists("/System")
+                    & Directory.Exists("/Users")
+                    & Directory.Exists("/Volumes"))
                     {
                         String[] includePathsArr = new string[] { "HEADER_SEARCH_PATHS", "USER_HEADER_SEARCH_PATHS" };
 
@@ -69,10 +75,60 @@ namespace libcppsharp
                                 }
                             }
                         }
+
+                        Process p = new Process();
+                        p.StartInfo.UseShellExecute = false;
+                        p.StartInfo.RedirectStandardOutput = true;
+                        p.StartInfo.FileName = "sh";
+                        p.StartInfo.Arguments = @"-c ""xcode-select -p""";
+                        p.Start();
+                        string output = p.StandardOutput.ReadToEnd();
+                        p.WaitForExit();
+
+                        if (output != null && output.Length > 0)
+                        {
+                            output = output.Trim();
+                            String arguments = @"-c ""echo | " + output + @"/usr/bin/gcc -c -x c++ -Wp,-v - 2>&1 | grep -v \""^#\"" | grep -v \""End of\"" | grep -v \""^ignoring \"" | sed -e 's/^[ \t]*//g' | sed -e 's/(framework directory)//g' | grep -v '^clang '""";
+                            Console.Out.WriteLine(arguments);
+                            p = new Process();
+                            p.StartInfo.UseShellExecute = false;
+                            p.StartInfo.RedirectStandardOutput = true;
+                            p.StartInfo.FileName = "sh";
+                            p.StartInfo.Arguments = arguments;
+                            p.Start();
+                            output = p.StandardOutput.ReadToEnd();
+                            p.WaitForExit();
+
+                            System.Console.Out.WriteLine(output);
+
+                            if (output != null && output.Length > 0)
+                            {
+                                includePathsArr = output.Split(new char[] { '\n' });
+
+                                foreach (String path in includePathsArr)
+                                {
+                                    if (path != null)
+                                    {
+                                        DirectoryInfo di = null;
+
+                                        try
+                                        {
+                                            di = new DirectoryInfo(path);
+
+                                            if (di.Exists)
+                                            {
+                                                directories.Add(di);
+                                            }
+                                        }
+                                        catch (Exception)
+                                        {
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
-                    break;
-                case (int)PlatformID.Unix:
-                case 128:
+                    else
                     {
                         String[] includePathsArr = new string[] { "CPATH", "C_INCLUDE_PATH", "CPLUS_INCLUDE_PATH", "OBJC_INCLUDE_PATH" };
 
