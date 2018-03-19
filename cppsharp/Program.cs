@@ -34,10 +34,20 @@ namespace cppsharp
         {
             Console.WriteLine("Hello World!");
 
-            String code = "#include <stdio.h>";
+            String code = @"#include <stdio.h>
+            
+#define TMP(A, B) (A) + \
+(B)
+
+int main(void)
+{
+    return 0;
+}";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
 
             Preprocessor pr = new Preprocessor(ms);
+
+            pr.Preprocess(System.Console.Out);
         }
     }
 }

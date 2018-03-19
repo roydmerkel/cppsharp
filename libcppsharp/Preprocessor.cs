@@ -227,5 +227,21 @@ namespace libcppsharp
 
             this.includePath = directories.ToArray();
         }
+
+        public bool Preprocess(TextWriter outStream)
+        {
+            bool lineStart = true;
+            IEnumerable<Token> enumerable = tokenStream.GetTokenEnumerable();
+            IEnumerator<Token> enumerator = enumerable.GetEnumerator();
+
+            List<Token> allToks = new List<Token>();
+
+            while (enumerator.MoveNext())
+            {
+                allToks.Add(enumerator.Current);
+            }
+
+            return true;
+        }
     }
 }

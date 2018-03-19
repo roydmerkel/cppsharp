@@ -481,6 +481,7 @@ namespace libcppsharp
                         curTokVal.Clear();
                         curTokVal.Append(ch);
                         this.state = State.WHITESPACE;
+                        state.escaped = false;
                     }
                     else
                     {
@@ -885,6 +886,7 @@ namespace libcppsharp
                     {
                         curTokVal.Append(ch);
                         MoveNextChar();
+                        state.escaped = false;
                     }
                     else
                     {
@@ -1288,6 +1290,7 @@ namespace libcppsharp
                     else
                     {
                         MoveNextChar();
+                        state.escaped = false;
                     }
                     break;
                 default:
