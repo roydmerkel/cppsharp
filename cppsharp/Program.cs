@@ -33,6 +33,11 @@ namespace cppsharp
         public static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
+
+            String code = "#include <stdio.h>";
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+
+            Preprocessor pr = new Preprocessor(ms);
         }
     }
 }
