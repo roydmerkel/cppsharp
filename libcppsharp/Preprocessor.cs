@@ -89,7 +89,6 @@ namespace libcppsharp
                         {
                             output = output.Trim();
                             String arguments = @"-c ""echo | " + output + @"/usr/bin/gcc -c -x c++ -Wp,-v - 2>&1 | grep -v \""^#\"" | grep -v \""End of\"" | grep -v \""^ignoring \"" | sed -e 's/^[ \t]*//g' | sed -e 's/(framework directory)//g' | grep -v '^clang '""";
-                            Console.Out.WriteLine(arguments);
                             p = new Process();
                             p.StartInfo.UseShellExecute = false;
                             p.StartInfo.RedirectStandardOutput = true;
@@ -98,8 +97,6 @@ namespace libcppsharp
                             p.Start();
                             output = p.StandardOutput.ReadToEnd();
                             p.WaitForExit();
-
-                            System.Console.Out.WriteLine(output);
 
                             if (output != null && output.Length > 0)
                             {
