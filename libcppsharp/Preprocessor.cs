@@ -241,12 +241,12 @@ namespace libcppsharp
             this.defines = new List<Define>();
         }
 
-        public bool Preprocess(TextWriter outStream)
+        public bool Preprocess(TextWriter outStream, TextWriter warnStream)
         {
-            return Preprocess(outStream, this.inStream);
+            return Preprocess(outStream, warnStream, this.inStream);
         }
 
-        public bool Preprocess(TextWriter outStream, Stream inStream)
+        public bool Preprocess(TextWriter outStream, TextWriter warnStream, Stream inStream)
         {
             bool foundStartHash = false;
 
@@ -360,6 +360,8 @@ namespace libcppsharp
                                     case "ifndef":
                                     case "line":
                                     case "pragma":
+                                    case "error":
+                                    case "warning":
                                         break;
                                     default:
                                         throw new InvalidDataException("invalid preprocessor directive:" + directive);
@@ -503,13 +505,106 @@ namespace libcppsharp
 
                                     if (incFile != null)
                                     {
-                                        bool includeSuccess = Preprocess(outStream, incFile.OpenRead());
+                                        bool includeSuccess = Preprocess(outStream, warnStream, incFile.OpenRead());
 
                                         if (!includeSuccess)
                                         {
                                             return false;
                                         }
                                     }
+                                }
+                                break;
+                            case "error":
+                                {
+                                    bool foundError = false;
+                                    bool foundEOL = false;
+                                    string errText = "";
+
+                                    foundHash = false;
+                                    foreach (Token t in lineToks)
+                                    {
+                                        if (!foundHash)
+                                        {
+                                            if (t.tokenType == TokenType.HASH)
+                                            {
+                                                foundHash = true;
+                                            }
+                                        }
+                                        else if (foundHash && !foundError)
+                                        {
+                                            if (t.tokenType == TokenType.IDENTIFIER)
+                                            {
+                                                foundError = true;
+                                            }
+                                        }
+                                        else if (foundError && !foundEOL)
+                                        {
+                                            if (t.tokenType == TokenType.WHITESPACE && errText.Length == 0)
+                                            {
+                                            }
+                                            else if (t.tokenType == TokenType.NEWLINE)
+                                            {
+                                                foundEOL = true;
+                                            }
+                                            else
+                                            {
+                                                errText = errText + t.value;
+                                            }
+                                        }
+                                    }
+
+                                    if (!foundEOL)
+                                    {
+                                        throw new InvalidDataException("unterminated #error.");
+                                    }
+
+                                    throw new ApplicationException(errText);
+                                }
+                            case "warning":
+                                {
+                                    bool foundError = false;
+                                    bool foundEOL = false;
+                                    string errText = "";
+
+                                    foundHash = false;
+                                    foreach (Token t in lineToks)
+                                    {
+                                        if (!foundHash)
+                                        {
+                                            if (t.tokenType == TokenType.HASH)
+                                            {
+                                                foundHash = true;
+                                            }
+                                        }
+                                        else if (foundHash && !foundError)
+                                        {
+                                            if (t.tokenType == TokenType.IDENTIFIER)
+                                            {
+                                                foundError = true;
+                                            }
+                                        }
+                                        else if (foundError && !foundEOL)
+                                        {
+                                            if (t.tokenType == TokenType.WHITESPACE && errText.Length == 0)
+                                            {
+                                            }
+                                            else if (t.tokenType == TokenType.NEWLINE)
+                                            {
+                                                foundEOL = true;
+                                            }
+                                            else
+                                            {
+                                                errText = errText + t.value;
+                                            }
+                                        }
+                                    }
+
+                                    if (!foundEOL)
+                                    {
+                                        throw new InvalidDataException("unterminated #error.");
+                                    }
+
+                                    warnStream.WriteLine(errText);
                                 }
                                 break;
                             default:

@@ -34,11 +34,15 @@ namespace cppsharp
         {
             Console.WriteLine("Hello World!");
 
-            String code = @"#include <stdio.h>
-#include ""string.h""
+            String code = @"//#include <stdio.h>
+//#include ""string.h""
             
 #define TMP(A, B) (A) + \
 (B)
+
+#ifndef NONEXIST
+#warning IFNDEF is not properly implemented!
+#endif
 
 int main(void)
 {
