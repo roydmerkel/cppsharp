@@ -25,5 +25,55 @@ namespace libcppsharp
     {
         public TokenType tokenType;
         public String value;
-    }
+        public Token[] tokens;
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+            else if (obj.GetType() != typeof(Token))
+            {
+                return false;
+            }
+            else
+            {
+                Token tok2 = (Token)obj;
+                if (tokenType != tok2.tokenType)
+                {
+                    return false;
+                }
+                else if (!value.Equals(tok2.value))
+                {
+                    return false;
+                }
+                else if (tokens == null && tok2.tokens != null)
+                {
+                    return false;
+                }
+                else if (tokens != null && tok2.tokens == null)
+                {
+                    return false;
+                }
+                else if (tokens != null)
+                {
+                    if (tokens.Length != tok2.tokens.Length)
+                    {
+                        return false;
+                    }
+
+                    for (int i = 0; i < tokens.Length; i++)
+                    {
+                        if (!tokens[i].Equals(tok2.tokens[i]))
+                        {
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            }
+		}
+	}
 }

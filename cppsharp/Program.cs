@@ -37,8 +37,7 @@ namespace cppsharp
             String code = @"//#include <stdio.h>
 //#include ""string.h""
             
-#define TMP(A, B) (A) + \
-(B)
+#define TMP(A, B) #(A##B)
 
 #ifndef NONEXIST
 #warning IFNDEF is not properly implemented!
@@ -52,7 +51,7 @@ int main(void)
 
             Preprocessor pr = new Preprocessor(ms);
 
-            pr.Preprocess(System.Console.Out);
+            pr.Preprocess(System.Console.Out, System.Console.Error);
         }
     }
 }
