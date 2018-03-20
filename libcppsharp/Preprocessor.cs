@@ -36,17 +36,19 @@ namespace libcppsharp
 
         bool handleTrigraphs;
         bool handleDigraphs;
+        bool whitespacePaste;
         Stream inStream;
         DirectoryInfo[] includePath;
         List<Define> defines;
 
-        public Preprocessor(Stream inStream, bool handleTrigraphs = false, bool handleDigraphs = false)
+        public Preprocessor(Stream inStream, bool handleTrigraphs = false, bool handleDigraphs = false, bool whitespacePaste = false)
         {
             List<DirectoryInfo> directories = new List<DirectoryInfo>();
 
             this.inStream = inStream;
             this.handleDigraphs = handleDigraphs;
             this.handleTrigraphs = handleTrigraphs;
+            this.whitespacePaste = whitespacePaste;
 
             switch ((int)Environment.OSVersion.Platform)
             {
@@ -762,7 +764,61 @@ namespace libcppsharp
                                             // Handle ## and #
                                             for (int i = 0; i < definitionList.Count; i++)
                                             {
-                                                if (definitionList[i].tokenType == TokenType.HASH)
+                                                // handle comment paste.
+                                                if (whitespacePaste && definitionList[i].tokenType == TokenType.COMMENT)
+                                                {
+                                                    int j;
+
+                                                    // find start.
+                                                    for (j = i - 1; j >= 0; j--)
+                                                    {
+                                                        if (definitionList[j].tokenType != TokenType.WHITESPACE)
+                                                        {
+                                                            break;
+                                                        }
+                                                    }
+
+                                                    if (j < 0)
+                                                    {
+                                                        continue;
+                                                    }
+
+                                                    start = j;
+
+                                                    for (j = i + 1; j < definitionList.Count; j++)
+                                                    {
+                                                        if (definitionList[j].tokenType != TokenType.WHITESPACE)
+                                                        {
+                                                            break;
+                                                        }
+                                                    }
+
+                                                    if (j >= definitionList.Count)
+                                                    {
+                                                        continue;
+                                                    }
+
+                                                    stop = j;
+
+                                                    List<Token> newList = new List<Token>();
+
+                                                    newList.AddRange(definitionList.GetRange(0, start));
+
+                                                    Token newTok;
+                                                    newTok.tokenType = TokenType.TOKEN_PASTE;
+                                                    newTok.value = "";
+                                                    newTok.tokens = new Token[] { definitionList[start], definitionList[stop] };
+                                                    newList.Add(newTok);
+
+                                                    newList.AddRange(definitionList.GetRange(stop + 1, definitionList.Count - stop - 1));
+
+                                                    definitionList.Clear();
+                                                    definitionList.AddRange(newList);
+
+                                                    replaced = true;
+                                                    break;
+                                                }
+                                                else if (definitionList[i].tokenType == TokenType.HASH)
                                                 {
                                                     // handle ##
                                                     if (foundHash)
@@ -815,7 +871,9 @@ namespace libcppsharp
                                                         definitionList.Clear();
                                                         definitionList.AddRange(newList);
 
+                                                        replaced = true;
                                                         foundHash = false;
+                                                        break;
                                                     }
                                                     else
                                                     {

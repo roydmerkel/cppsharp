@@ -37,7 +37,7 @@ namespace cppsharp
             String code = @"//#include <stdio.h>
 //#include ""string.h""
             
-#define TMP(A, B) #(A##B)
+#define TMP(A, B, C) A /**/ B /* */ C
 
 #ifndef NONEXIST
 #warning IFNDEF is not properly implemented!
@@ -49,7 +49,7 @@ int main(void)
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
 
-            Preprocessor pr = new Preprocessor(ms);
+            Preprocessor pr = new Preprocessor(ms, true, true, true);
 
             pr.Preprocess(System.Console.Out, System.Console.Error);
         }
