@@ -622,6 +622,7 @@ namespace libcppsharp
                                     string defineName = "";
                                     List<string> paramList = new List<string>();
                                     List<Token> definitionList = new List<Token>();
+                                    int numPeriods = 0;
 
                                     foundHash = false;
                                     foreach (Token t in lineToks)
@@ -676,6 +677,27 @@ namespace libcppsharp
                                         {
                                             switch (t.tokenType)
                                             {
+                                                case TokenType.PERIOD:
+                                                    if (!awaitIdentifier)
+                                                    {
+                                                        throw new InvalidDataException("Unexpected identifier in macro parameter list.");
+                                                    }
+                                                    else
+                                                    {
+                                                        numPeriods++;
+
+                                                        if (numPeriods == 3)
+                                                        {
+                                                            paramList.Add("...");
+                                                            awaitIdentifier = false;
+                                                        }
+                                                        else if (numPeriods > 3)
+                                                        {
+                                                            throw new InvalidDataException("Unexpected period in #define parameter list.");
+                                                        }
+                                                    }
+
+                                                    break;
                                                 case TokenType.COMMA:
                                                     if (awaitIdentifier)
                                                     {
@@ -711,6 +733,11 @@ namespace libcppsharp
 
                                                     break;
                                                 case TokenType.WHITESPACE:
+                                                    if (numPeriods >= 1 && numPeriods < 3)
+                                                    {
+                                                        throw new InvalidDataException("Unexpected whitespace in the middle of va_args list.");
+                                                    }
+
                                                     break;
                                                 default:
                                                     throw new InvalidDataException("Unexpected " + t.value + " in parameter function macro list.");

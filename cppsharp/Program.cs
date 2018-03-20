@@ -37,7 +37,7 @@ namespace cppsharp
             String code = @"//#include <stdio.h>
 //#include ""string.h""
             
-#define TMP(A, B, C) A /**/ B /* */ C
+#define TMP(A, B, C, ... ) A /**/ B /* */ C
 
 #ifndef NONEXIST
 #warning IFNDEF is not properly implemented!
