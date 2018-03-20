@@ -34,12 +34,20 @@ namespace libcppsharp
             public Token[] tokens;
         }
 
+        private struct If
+        {
+            public Token[] test;
+            public bool testTrue;
+        }
+
         bool handleTrigraphs;
         bool handleDigraphs;
         bool whitespacePaste;
         Stream inStream;
         DirectoryInfo[] includePath;
         List<Define> defines;
+        Stack<If> ifs;
+        bool anIfFailed;
 
         public Preprocessor(Stream inStream, bool handleTrigraphs = false, bool handleDigraphs = false, bool whitespacePaste = false)
         {
@@ -241,6 +249,8 @@ namespace libcppsharp
 
             this.includePath = directories.ToArray();
             this.defines = new List<Define>();
+            this.ifs = new Stack<If>();
+            this.anIfFailed = false;
         }
 
         public bool Preprocess(TextWriter outStream, TextWriter warnStream)
@@ -505,13 +515,20 @@ namespace libcppsharp
                                         }
                                     }
 
-                                    if (incFile != null)
+                                    if (!anIfFailed)
                                     {
-                                        bool includeSuccess = Preprocess(outStream, warnStream, incFile.OpenRead());
-
-                                        if (!includeSuccess)
+                                        if (incFile != null)
                                         {
-                                            return false;
+                                            bool includeSuccess = Preprocess(outStream, warnStream, incFile.OpenRead());
+
+                                            if (!includeSuccess)
+                                            {
+                                                return false;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            throw new InvalidDataException("Cannot find \"" + incFile.FullName + "\" to include.");
                                         }
                                     }
                                 }
@@ -560,8 +577,12 @@ namespace libcppsharp
                                         throw new InvalidDataException("unterminated #error.");
                                     }
 
-                                    throw new ApplicationException(errText);
+                                    if (!anIfFailed)
+                                    {
+                                        throw new ApplicationException(errText);
+                                    }
                                 }
+                                break;
                             case "warning":
                                 {
                                     bool foundError = false;
@@ -606,7 +627,10 @@ namespace libcppsharp
                                         throw new InvalidDataException("unterminated #error.");
                                     }
 
-                                    warnStream.WriteLine(errText);
+                                    if (!anIfFailed)
+                                    {
+                                        warnStream.WriteLine(errText);
+                                    }
                                 }
                                 break;
                             case "define":
@@ -667,6 +691,21 @@ namespace libcppsharp
                                             {
                                                 hasParams = true;
                                                 hasWhitespaceAfterParams = true;
+                                            }
+                                            else if (t.tokenType == TokenType.NEWLINE)
+                                            {
+                                                hasParams = true;
+                                                hasWhitespaceAfterParams = true;
+                                                hasEOL = true;
+
+                                                Token addTok;
+                                                addTok.tokenType = TokenType.WHITESPACE;
+                                                addTok.value = "";
+                                                addTok.tokens = null;
+
+                                                definitionList.Add(addTok);
+
+                                                break;
                                             }
                                             else
                                             {
@@ -749,6 +788,21 @@ namespace libcppsharp
                                             {
                                                 hasWhitespaceAfterParams = true;
                                             }
+                                            else if (t.tokenType == TokenType.NEWLINE)
+                                            {
+                                                hasParams = true;
+                                                hasWhitespaceAfterParams = true;
+                                                hasEOL = true;
+
+                                                Token addTok;
+                                                addTok.tokenType = TokenType.WHITESPACE;
+                                                addTok.value = "";
+                                                addTok.tokens = null;
+
+                                                definitionList.Add(addTok);
+
+                                                break;
+                                            }
                                             else
                                             {
                                                 throw new InvalidDataException("Unexpected " + t.value + " in #define between name/parameters and value.");
@@ -780,80 +834,26 @@ namespace libcppsharp
                                     }
                                     else
                                     {
-                                        foundHash = false;
-                                        int start;
-                                        int stop;
-                                        bool replaced = true;
-
-                                        while (replaced)
+                                        if (!anIfFailed)
                                         {
-                                            replaced = false;
-                                            // Handle ## and #
-                                            for (int i = 0; i < definitionList.Count; i++)
+                                            foundHash = false;
+                                            int start;
+                                            int stop;
+                                            bool replaced = true;
+
+                                            while (replaced)
                                             {
-                                                // handle comment paste.
-                                                if (whitespacePaste && definitionList[i].tokenType == TokenType.COMMENT)
+                                                replaced = false;
+                                                // Handle ## and #
+                                                for (int i = 0; i < definitionList.Count; i++)
                                                 {
-                                                    int j;
-
-                                                    // find start.
-                                                    for (j = i - 1; j >= 0; j--)
-                                                    {
-                                                        if (definitionList[j].tokenType != TokenType.WHITESPACE)
-                                                        {
-                                                            break;
-                                                        }
-                                                    }
-
-                                                    if (j < 0)
-                                                    {
-                                                        continue;
-                                                    }
-
-                                                    start = j;
-
-                                                    for (j = i + 1; j < definitionList.Count; j++)
-                                                    {
-                                                        if (definitionList[j].tokenType != TokenType.WHITESPACE)
-                                                        {
-                                                            break;
-                                                        }
-                                                    }
-
-                                                    if (j >= definitionList.Count)
-                                                    {
-                                                        continue;
-                                                    }
-
-                                                    stop = j;
-
-                                                    List<Token> newList = new List<Token>();
-
-                                                    newList.AddRange(definitionList.GetRange(0, start));
-
-                                                    Token newTok;
-                                                    newTok.tokenType = TokenType.TOKEN_PASTE;
-                                                    newTok.value = "";
-                                                    newTok.tokens = new Token[] { definitionList[start], definitionList[stop] };
-                                                    newList.Add(newTok);
-
-                                                    newList.AddRange(definitionList.GetRange(stop + 1, definitionList.Count - stop - 1));
-
-                                                    definitionList.Clear();
-                                                    definitionList.AddRange(newList);
-
-                                                    replaced = true;
-                                                    break;
-                                                }
-                                                else if (definitionList[i].tokenType == TokenType.HASH)
-                                                {
-                                                    // handle ##
-                                                    if (foundHash)
+                                                    // handle comment paste.
+                                                    if (whitespacePaste && definitionList[i].tokenType == TokenType.COMMENT)
                                                     {
                                                         int j;
 
                                                         // find start.
-                                                        for (j = i - 2; j >= 0; j--)
+                                                        for (j = i - 1; j >= 0; j--)
                                                         {
                                                             if (definitionList[j].tokenType != TokenType.WHITESPACE)
                                                             {
@@ -863,7 +863,7 @@ namespace libcppsharp
 
                                                         if (j < 0)
                                                         {
-                                                            throw new InvalidDataException("dangling pasting operator...");
+                                                            continue;
                                                         }
 
                                                         start = j;
@@ -878,7 +878,7 @@ namespace libcppsharp
 
                                                         if (j >= definitionList.Count)
                                                         {
-                                                            throw new InvalidDataException("dangling pasting operator...");
+                                                            continue;
                                                         }
 
                                                         stop = j;
@@ -899,92 +899,435 @@ namespace libcppsharp
                                                         definitionList.AddRange(newList);
 
                                                         replaced = true;
-                                                        foundHash = false;
                                                         break;
+                                                    }
+                                                    else if (definitionList[i].tokenType == TokenType.HASH)
+                                                    {
+                                                        // handle ##
+                                                        if (foundHash)
+                                                        {
+                                                            int j;
+
+                                                            // find start.
+                                                            for (j = i - 2; j >= 0; j--)
+                                                            {
+                                                                if (definitionList[j].tokenType != TokenType.WHITESPACE)
+                                                                {
+                                                                    break;
+                                                                }
+                                                            }
+
+                                                            if (j < 0)
+                                                            {
+                                                                throw new InvalidDataException("dangling pasting operator...");
+                                                            }
+
+                                                            start = j;
+
+                                                            for (j = i + 1; j < definitionList.Count; j++)
+                                                            {
+                                                                if (definitionList[j].tokenType != TokenType.WHITESPACE)
+                                                                {
+                                                                    break;
+                                                                }
+                                                            }
+
+                                                            if (j >= definitionList.Count)
+                                                            {
+                                                                throw new InvalidDataException("dangling pasting operator...");
+                                                            }
+
+                                                            stop = j;
+
+                                                            List<Token> newList = new List<Token>();
+
+                                                            newList.AddRange(definitionList.GetRange(0, start));
+
+                                                            Token newTok;
+                                                            newTok.tokenType = TokenType.TOKEN_PASTE;
+                                                            newTok.value = "";
+                                                            newTok.tokens = new Token[] { definitionList[start], definitionList[stop] };
+                                                            newList.Add(newTok);
+
+                                                            newList.AddRange(definitionList.GetRange(stop + 1, definitionList.Count - stop - 1));
+
+                                                            definitionList.Clear();
+                                                            definitionList.AddRange(newList);
+
+                                                            replaced = true;
+                                                            foundHash = false;
+                                                            break;
+                                                        }
+                                                        else
+                                                        {
+                                                            foundHash = true;
+                                                        }
                                                     }
                                                     else
                                                     {
-                                                        foundHash = true;
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    // handle #
-                                                    if (foundHash)
-                                                    {
-                                                        Token newTok;
-                                                        newTok.tokenType = TokenType.STRINGIFY;
-                                                        newTok.value = "";
-                                                        newTok.tokens = new Token[] { definitionList[i] };
-
-                                                        definitionList[i] = newTok;
-
-                                                        definitionList.RemoveAt(i - 1);
-
-                                                        replaced = true;
-                                                        foundHash = false;
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                        Define d = new Define();
-                                        d.name = defineName;
-                                        d.paramList = paramList.ToArray();
-                                        d.tokens = definitionList.ToArray();
-
-                                        foreach (Define testDefn in this.defines)
-                                        {
-                                            if (testDefn.name.Equals(defineName, StringComparison.CurrentCultureIgnoreCase))
-                                            {
-                                                bool same = true;
-
-                                                if (testDefn.paramList.Length != d.paramList.Length)
-                                                {
-                                                    same = false;
-                                                }
-
-                                                if (same)
-                                                {
-                                                    for (int i = 0; i < testDefn.paramList.Length; i++)
-                                                    {
-                                                        if (!testDefn.paramList[i].Equals(d.paramList[i]))
+                                                        // handle #
+                                                        if (foundHash)
                                                         {
-                                                            same = false;
+                                                            Token newTok;
+                                                            newTok.tokenType = TokenType.STRINGIFY;
+                                                            newTok.value = "";
+                                                            newTok.tokens = new Token[] { definitionList[i] };
+
+                                                            definitionList[i] = newTok;
+
+                                                            definitionList.RemoveAt(i - 1);
+
+                                                            replaced = true;
+                                                            foundHash = false;
                                                             break;
                                                         }
                                                     }
                                                 }
+                                            }
 
-                                                if (same)
+                                            Define d = new Define();
+                                            d.name = defineName;
+                                            d.paramList = paramList.ToArray();
+                                            d.tokens = definitionList.ToArray();
+
+                                            foreach (Define testDefn in this.defines)
+                                            {
+                                                if (testDefn.name.Equals(defineName, StringComparison.CurrentCultureIgnoreCase))
                                                 {
-                                                    if (testDefn.tokens.Length != d.tokens.Length)
+                                                    bool same = true;
+
+                                                    if (testDefn.paramList.Length != d.paramList.Length)
                                                     {
                                                         same = false;
                                                     }
-                                                }
 
-                                                if (same)
-                                                {
-                                                    for (int i = 0; i < testDefn.tokens.Length; i++)
+                                                    if (same)
                                                     {
-                                                        if (!testDefn.Equals(d))
+                                                        for (int i = 0; i < testDefn.paramList.Length; i++)
                                                         {
-                                                            same = false;
-                                                            break;
+                                                            if (!testDefn.paramList[i].Equals(d.paramList[i]))
+                                                            {
+                                                                same = false;
+                                                                break;
+                                                            }
                                                         }
                                                     }
-                                                }
 
-                                                if (!same)
+                                                    if (same)
+                                                    {
+                                                        if (testDefn.tokens.Length != d.tokens.Length)
+                                                        {
+                                                            same = false;
+                                                        }
+                                                    }
+
+                                                    if (same)
+                                                    {
+                                                        for (int i = 0; i < testDefn.tokens.Length; i++)
+                                                        {
+                                                            if (!testDefn.Equals(d))
+                                                            {
+                                                                same = false;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+
+                                                    if (!same)
+                                                    {
+                                                        throw new InvalidDataException("Can't redefine macro " + defineName);
+                                                    }
+                                                }
+                                            }
+
+                                            defines.Add(d);
+                                        }
+                                    }
+                                }
+                                break;
+                            case "undef":
+                                {
+                                    bool foundUndef = false;
+                                    bool foundDefineName = false;
+                                    bool hasEOL = false;
+                                    string defineName = "";
+
+                                    foundHash = false;
+                                    foreach (Token t in lineToks)
+                                    {
+                                        if (!foundHash)
+                                        {
+                                            if (t.tokenType == TokenType.HASH)
+                                            {
+                                                foundHash = true;
+                                            }
+                                        }
+                                        else if (foundHash && !foundUndef)
+                                        {
+                                            if (t.tokenType == TokenType.IDENTIFIER)
+                                            {
+                                                foundUndef = true;
+                                            }
+                                        }
+                                        else if (foundUndef && !foundDefineName)
+                                        {
+                                            if (t.tokenType == TokenType.IDENTIFIER)
+                                            {
+                                                foundDefineName = true;
+                                                defineName = t.value;
+                                            }
+                                            else if (t.tokenType == TokenType.WHITESPACE)
+                                            {
+                                            }
+                                            else
+                                            {
+                                                throw new InvalidDataException("Unexpected " + t.value + " in #undef.");
+                                            }
+                                        }
+                                        else if (foundDefineName && !hasEOL)
+                                        {
+                                            if (t.tokenType == TokenType.NEWLINE)
+                                            {
+                                                hasEOL = true;
+                                            }
+                                            else if (t.tokenType == TokenType.WHITESPACE)
+                                            {
+                                            }
+                                            else
+                                            {
+                                                throw new InvalidDataException("Unexpected " + t.value + " in #undef.");
+                                            }
+                                        }
+                                    }
+
+                                    if (!hasEOL)
+                                    {
+                                        throw new InvalidDataException("unterminated #undef.");
+                                    }
+                                    else
+                                    {
+                                        if (!anIfFailed)
+                                        {
+                                            for (int i = 0; i < defines.Count; i++)
+                                            {
+                                                if (defines[i].name.Equals(defineName))
                                                 {
-                                                    throw new InvalidDataException("Can't redefine macro " + defineName);
+                                                    defines.RemoveAt(i);
+                                                    break;
                                                 }
                                             }
                                         }
+                                    }
+                                }
+                                break;
+                            case "ifdef":
+                                {
+                                    bool foundIfdef = false;
+                                    bool foundDefineName = false;
+                                    bool hasEOL = false;
+                                    string defineName = "";
 
-                                        defines.Add(d);
+                                    foundHash = false;
+                                    foreach (Token t in lineToks)
+                                    {
+                                        if (!foundHash)
+                                        {
+                                            if (t.tokenType == TokenType.HASH)
+                                            {
+                                                foundHash = true;
+                                            }
+                                        }
+                                        else if (foundHash && !foundIfdef)
+                                        {
+                                            if (t.tokenType == TokenType.IDENTIFIER)
+                                            {
+                                                foundIfdef = true;
+                                            }
+                                        }
+                                        else if (foundIfdef && !foundDefineName)
+                                        {
+                                            if (t.tokenType == TokenType.IDENTIFIER)
+                                            {
+                                                foundDefineName = true;
+                                                defineName = t.value;
+                                            }
+                                            else if (t.tokenType == TokenType.WHITESPACE)
+                                            {
+                                            }
+                                            else
+                                            {
+                                                throw new InvalidDataException("Unexpected " + t.value + " in #ifdef.");
+                                            }
+                                        }
+                                        else if (foundDefineName && !hasEOL)
+                                        {
+                                            if (t.tokenType == TokenType.NEWLINE)
+                                            {
+                                                hasEOL = true;
+                                            }
+                                            else if (t.tokenType == TokenType.WHITESPACE)
+                                            {
+                                            }
+                                            else
+                                            {
+                                                throw new InvalidDataException("Unexpected " + t.value + " in #ifdef.");
+                                            }
+                                        }
+                                    }
+
+                                    if (!hasEOL)
+                                    {
+                                        throw new InvalidDataException("unterminated #ifdef.");
+                                    }
+                                    else
+                                    {
+                                        bool defined = false;
+                                        for (int i = 0; i < defines.Count; i++)
+                                        {
+                                            if (defines[i].name.Equals(defineName))
+                                            {
+                                                defined = true;
+                                                break;
+                                            }
+                                        }
+
+                                        List<Token> test = new List<Token>();
+
+                                        Token tok;
+                                        tok.tokenType = TokenType.IDENTIFIER;
+                                        tok.value = "defined";
+                                        tok.tokens = null;
+                                        test.Add(tok);
+
+                                        tok.tokenType = TokenType.WHITESPACE;
+                                        tok.value = " ";
+                                        tok.tokens = null;
+                                        test.Add(tok);
+
+                                        tok.tokenType = TokenType.IDENTIFIER;
+                                        tok.value = defineName;
+                                        tok.tokens = null;
+                                        test.Add(tok);
+
+                                        If @if;
+                                        @if.test = test.ToArray();
+                                        @if.testTrue = defined;
+
+                                        ifs.Push(@if);
+
+                                        anIfFailed = anIfFailed || !@if.testTrue;
+                                        if (anIfFailed)
+                                        {
+                                            tokenStream.IgnoreStrayBackslash = true;
+                                        }
+                                    }
+                                }
+                                break;
+                            case "ifndef":
+                                {
+                                    bool foundIfndef = false;
+                                    bool foundDefineName = false;
+                                    bool hasEOL = false;
+                                    string defineName = "";
+
+                                    foundHash = false;
+                                    foreach (Token t in lineToks)
+                                    {
+                                        if (!foundHash)
+                                        {
+                                            if (t.tokenType == TokenType.HASH)
+                                            {
+                                                foundHash = true;
+                                            }
+                                        }
+                                        else if (foundHash && !foundIfndef)
+                                        {
+                                            if (t.tokenType == TokenType.IDENTIFIER)
+                                            {
+                                                foundIfndef = true;
+                                            }
+                                        }
+                                        else if (foundIfndef && !foundDefineName)
+                                        {
+                                            if (t.tokenType == TokenType.IDENTIFIER)
+                                            {
+                                                foundDefineName = true;
+                                                defineName = t.value;
+                                            }
+                                            else if (t.tokenType == TokenType.WHITESPACE)
+                                            {
+                                            }
+                                            else
+                                            {
+                                                throw new InvalidDataException("Unexpected " + t.value + " in #ifdef.");
+                                            }
+                                        }
+                                        else if (foundDefineName && !hasEOL)
+                                        {
+                                            if (t.tokenType == TokenType.NEWLINE)
+                                            {
+                                                hasEOL = true;
+                                            }
+                                            else if (t.tokenType == TokenType.WHITESPACE)
+                                            {
+                                            }
+                                            else
+                                            {
+                                                throw new InvalidDataException("Unexpected " + t.value + " in #ifdef.");
+                                            }
+                                        }
+                                    }
+
+                                    if (!hasEOL)
+                                    {
+                                        throw new InvalidDataException("unterminated #ifdef.");
+                                    }
+                                    else
+                                    {
+                                        bool defined = false;
+                                        for (int i = 0; i < defines.Count; i++)
+                                        {
+                                            if (defines[i].name.Equals(defineName))
+                                            {
+                                                defined = true;
+                                                break;
+                                            }
+                                        }
+
+                                        List<Token> test = new List<Token>();
+
+                                        Token tok;
+                                        tok.tokenType = TokenType.EXCLAIMATION_MARK;
+                                        tok.value = "!";
+                                        tok.tokens = null;
+                                        test.Add(tok);
+
+                                        tok.tokenType = TokenType.IDENTIFIER;
+                                        tok.value = "defined";
+                                        tok.tokens = null;
+                                        test.Add(tok);
+
+                                        tok.tokenType = TokenType.WHITESPACE;
+                                        tok.value = " ";
+                                        tok.tokens = null;
+                                        test.Add(tok);
+
+                                        tok.tokenType = TokenType.IDENTIFIER;
+                                        tok.value = defineName;
+                                        tok.tokens = null;
+                                        test.Add(tok);
+
+                                        If @if;
+                                        @if.test = test.ToArray();
+                                        @if.testTrue = !defined;
+
+                                        ifs.Push(@if);
+
+                                        anIfFailed = anIfFailed || !@if.testTrue;
+                                        if (anIfFailed)
+                                        {
+                                            tokenStream.IgnoreStrayBackslash = true;
+                                        }
                                     }
                                 }
                                 break;
@@ -998,7 +1341,7 @@ namespace libcppsharp
                 {
                     last = t;
 
-                    if (!foundStartHash)
+                    if (!foundStartHash && !anIfFailed)
                     {
                         outStream.Write(t.value);
                     }

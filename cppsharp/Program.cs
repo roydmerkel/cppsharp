@@ -36,10 +36,19 @@ namespace cppsharp
 
             String code = @"//#include <stdio.h>
 //#include ""string.h""
-            
-#define TMP(A, B, C, ... ) A /**/ B /* */ C
 
-#ifndef NONEXIST
+#define EXIST(A,B)
+#define EXI
+#define EXI2 A
+#define EXI3(A, B) A ## B
+
+#ifdef NOTEXIST
+#define TMP
+#warning IFNDEF is not properly implemented!
+#endif
+
+#ifndef EXIST
+#undef TMP
 #warning IFNDEF is not properly implemented!
 #endif
 

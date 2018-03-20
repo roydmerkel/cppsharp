@@ -161,6 +161,19 @@ namespace libcppsharp
             };
         }
 
+        public bool IgnoreStrayBackslash
+        {
+            get
+            {
+                return ignoreStrayBackslash;
+            }
+
+            set
+            {
+                this.ignoreStrayBackslash = value;
+            }
+        }
+
         private bool PutBackArrayEmpty()
         {
             return putBackCount == 0;
