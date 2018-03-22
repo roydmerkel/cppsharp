@@ -41,9 +41,9 @@ namespace testcppsharp
             // test # digram.
             string code = "\"ABC123\"#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -63,9 +63,9 @@ namespace testcppsharp
             // test # digram.
             string code = "u\"ABC123\"#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -85,9 +85,9 @@ namespace testcppsharp
             // test # digram.
             string code = "u8\"ABC123\"#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -107,9 +107,9 @@ namespace testcppsharp
             // test # digram.
             string code = "U\"ABC123\"#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -129,9 +129,9 @@ namespace testcppsharp
             // test # digram.
             string code = "L\"ABC123\"#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -151,9 +151,9 @@ namespace testcppsharp
             // test # digram.
             string code = "\"ABC123\"s#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -173,9 +173,9 @@ namespace testcppsharp
             // test # digram.
             string code = "u\"ABC123\"s#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -195,9 +195,9 @@ namespace testcppsharp
             // test # digram.
             string code = "u8\"ABC123\"s#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -217,9 +217,9 @@ namespace testcppsharp
             // test # digram.
             string code = "U\"ABC123\"s#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -239,9 +239,9 @@ namespace testcppsharp
             // test # digram.
             string code = "L\"ABC123\"s#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -261,9 +261,9 @@ namespace testcppsharp
             // test # digram.
             string code = "Lu8\"ABC123\"s#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -289,9 +289,9 @@ namespace testcppsharp
             // test # digram.
             string code = "Lu\\\n8\"ABC\\\n123\"s#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -317,9 +317,9 @@ namespace testcppsharp
             // test # digram.
             string code = "Lu\\\n8\"ABC\\\n123\"sa#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -331,13 +331,13 @@ namespace testcppsharp
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.STRING);
-            Assert.AreEqual(t.value, "\"ABC123\"");
+            Assert.AreEqual(t.value, "\"ABC123\"s");
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.IDENTIFIER);
-            Assert.AreEqual(t.value, "sa");
+            Assert.AreEqual(t.value, "a");
 
             i.MoveNext();
             t = i.Current;
@@ -356,9 +356,9 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -415,9 +415,9 @@ int main(void)
             // test # digram.
             string code = @"R""ABC(DEF)ABC""";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -432,9 +432,9 @@ int main(void)
             // test # digram.
             string code = @"R""ABC(DEF)ABC)ABC""";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -449,9 +449,9 @@ int main(void)
             // test # digram.
             string code = @"R""(DEF))""";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -466,9 +466,9 @@ int main(void)
             // test # digram.
             string code = @"R""(DEF))""s";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -485,9 +485,9 @@ int main(void)
 ""\
 (DEF))""s";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -504,22 +504,22 @@ int main(void)
             string code = @"R""\A\
 (DEF))""s";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
 
-            try
-            {
-                i.MoveNext();
-                Token tok = i.Current;
+            i.MoveNext();
+            Token tok = i.Current;
 
-                Assert.Fail();
-            }
-            catch (InvalidDataException)
-            {
-                Assert.Pass();
-            }
+            Assert.AreEqual((int)tok.tokenType, (int)TokenType.IDENTIFIER);
+            Assert.AreEqual(tok.value, "R");
+
+            i.MoveNext();
+            tok = i.Current;
+
+            Assert.AreEqual((int)tok.tokenType, (int)TokenType.STRING);
+            Assert.AreEqual(tok.value, @"""\A(DEF))""s");
         }
 
         [Test]
@@ -528,22 +528,22 @@ int main(void)
             // test # digram.
             string code = @"R"" A(DEF))""s";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
 
-            try
-            {
-                i.MoveNext();
-                Token tok = i.Current;
+            i.MoveNext();
+            Token tok = i.Current;
 
-                Assert.Fail();
-            }
-            catch (InvalidDataException)
-            {
-                Assert.Pass();
-            }
+            Assert.AreEqual((int)tok.tokenType, (int)TokenType.IDENTIFIER);
+            Assert.AreEqual(tok.value, "R");
+
+            i.MoveNext();
+            tok = i.Current;
+
+            Assert.AreEqual((int)tok.tokenType, (int)TokenType.STRING);
+            Assert.AreEqual(tok.value, @""" A(DEF))""s");
         }
 
         [Test]
@@ -552,22 +552,22 @@ int main(void)
             // test # digram.
             string code = @"R"" A(DEF))""s";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
 
-            try
-            {
-                i.MoveNext();
-                Token tok = i.Current;
+            i.MoveNext();
+            Token tok = i.Current;
 
-                Assert.Fail();
-            }
-            catch (InvalidDataException)
-            {
-                Assert.Pass();
-            }
+            Assert.AreEqual((int)tok.tokenType, (int)TokenType.IDENTIFIER);
+            Assert.AreEqual(tok.value, "R");
+
+            i.MoveNext();
+            tok = i.Current;
+
+            Assert.AreEqual((int)tok.tokenType, (int)TokenType.STRING);
+            Assert.AreEqual(tok.value, @""" A(DEF))""s");
         }
 
         [Test]
@@ -576,22 +576,22 @@ int main(void)
             // test # digram.
             string code = @"R"")A(DEF))""s";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
 
-            try
-            {
-                i.MoveNext();
-                Token tok = i.Current;
+            i.MoveNext();
+            Token tok = i.Current;
 
-                Assert.Fail();
-            }
-            catch (InvalidDataException)
-            {
-                Assert.Pass();
-            }
+            Assert.AreEqual((int)tok.tokenType, (int)TokenType.IDENTIFIER);
+            Assert.AreEqual(tok.value, "R");
+
+            i.MoveNext();
+            tok = i.Current;
+
+            Assert.AreEqual((int)tok.tokenType, (int)TokenType.STRING);
+            Assert.AreEqual(tok.value, @""")A(DEF))""s");
         }
 
         [Test]
@@ -600,16 +600,56 @@ int main(void)
             // test # digram.
             string code = @"R""""A(DEF))""s";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
+
+            i.MoveNext();
+            Token tok = i.Current;
+
+            Assert.AreEqual((int)tok.tokenType, (int)TokenType.IDENTIFIER);
+            Assert.AreEqual(tok.value, "R");
+
+            i.MoveNext();
+            tok = i.Current;
+
+            Assert.AreEqual((int)tok.tokenType, (int)TokenType.STRING);
+            Assert.AreEqual(tok.value, @"""""");
+
+            i.MoveNext();
+            tok = i.Current;
+
+            Assert.AreEqual((int)tok.tokenType, (int)TokenType.IDENTIFIER);
+            Assert.AreEqual(tok.value, @"A");
+
+            i.MoveNext();
+            tok = i.Current;
+
+            Assert.AreEqual((int)tok.tokenType, (int)TokenType.L_PAREN);
+            Assert.AreEqual(tok.value, @"(");
+
+            i.MoveNext();
+            tok = i.Current;
+
+            Assert.AreEqual((int)tok.tokenType, (int)TokenType.IDENTIFIER);
+            Assert.AreEqual(tok.value, @"DEF");
+
+            i.MoveNext();
+            tok = i.Current;
+
+            Assert.AreEqual((int)tok.tokenType, (int)TokenType.R_PAREN);
+            Assert.AreEqual(tok.value, @")");
+
+            i.MoveNext();
+            tok = i.Current;
+
+            Assert.AreEqual((int)tok.tokenType, (int)TokenType.R_PAREN);
+            Assert.AreEqual(tok.value, @")");
 
             try
             {
                 i.MoveNext();
-                Token tok = i.Current;
-
                 Assert.Fail();
             }
             catch (InvalidDataException)
@@ -624,9 +664,9 @@ int main(void)
             // test # digram.
             string code = "'A'#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -646,9 +686,9 @@ int main(void)
             // test # digram.
             string code = "u'A'#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -668,9 +708,9 @@ int main(void)
             // test # digram.
             string code = "u8'A'#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -690,9 +730,9 @@ int main(void)
             // test # digram.
             string code = "U'A'#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -712,9 +752,9 @@ int main(void)
             // test # digram.
             string code = "L'A'#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -734,9 +774,9 @@ int main(void)
             // test # digram.
             string code = "'A's#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -762,9 +802,9 @@ int main(void)
             // test # digram.
             string code = "u'A's#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -790,9 +830,9 @@ int main(void)
             // test # digram.
             string code = "u8'A's#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -818,9 +858,9 @@ int main(void)
             // test # digram.
             string code = "U'A's#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -846,9 +886,9 @@ int main(void)
             // test # digram.
             string code = "L'A's#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -874,9 +914,9 @@ int main(void)
             // test # digram.
             string code = "Lu8'A's#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -908,9 +948,9 @@ int main(void)
             // test # digram.
             string code = "Lu\\\n8'\\\nA's#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -942,9 +982,9 @@ int main(void)
             // test # digram.
             string code = "Lu\\\n8'\\\nA'sa#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -976,9 +1016,9 @@ int main(void)
             // test # digram.
             string code = "0123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -999,9 +1039,9 @@ int main(void)
             // test # digram.
             string code = "0x123#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1022,9 +1062,9 @@ int main(void)
             // test # digram.
             string code = "0x123B#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1045,15 +1085,21 @@ int main(void)
             // test # digram.
             string code = "0B123B#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.NUMBER);
-            Assert.AreEqual(t.value, "0B123");
+            Assert.AreEqual(t.value, "0B1");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.NUMBER);
+            Assert.AreEqual(t.value, "23");
 
             i.MoveNext();
             t = i.Current;
@@ -1074,9 +1120,9 @@ int main(void)
             // test # digram.
             string code = "123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1097,9 +1143,9 @@ int main(void)
             // test # digram.
             string code = "123E+123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1120,9 +1166,9 @@ int main(void)
             // test # digram.
             string code = "123E-123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1143,9 +1189,9 @@ int main(void)
             // test # digram.
             string code = "123P+123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1166,9 +1212,9 @@ int main(void)
             // test # digram.
             string code = "123P-123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1189,9 +1235,9 @@ int main(void)
             // test # digram.
             string code = "123e+123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1212,9 +1258,9 @@ int main(void)
             // test # digram.
             string code = "123e-123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1235,9 +1281,9 @@ int main(void)
             // test # digram.
             string code = "123p+123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1258,9 +1304,9 @@ int main(void)
             // test # digram.
             string code = "123p-123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1281,9 +1327,9 @@ int main(void)
             // test # digram.
             string code = "123p123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1304,9 +1350,9 @@ int main(void)
             // test # digram.
             string code = "123P123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1327,9 +1373,9 @@ int main(void)
             // test # digram.
             string code = "123E123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1350,9 +1396,9 @@ int main(void)
             // test # digram.
             string code = "123e123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1373,9 +1419,9 @@ int main(void)
             // test # digram.
             string code = "123.e123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1396,9 +1442,9 @@ int main(void)
             // test # digram.
             string code = "123.e+123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1419,9 +1465,9 @@ int main(void)
             // test # digram.
             string code = "123.p123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1442,9 +1488,9 @@ int main(void)
             // test # digram.
             string code = "123.p+123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1465,9 +1511,9 @@ int main(void)
             // test # digram.
             string code = "123. ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1488,9 +1534,9 @@ int main(void)
             // test # digram.
             string code = "123.123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1511,9 +1557,9 @@ int main(void)
             // test # digram.
             string code = "123.123e123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1534,9 +1580,9 @@ int main(void)
             // test # digram.
             string code = "123.123e+123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1557,9 +1603,9 @@ int main(void)
             // test # digram.
             string code = "123.123p123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1580,9 +1626,9 @@ int main(void)
             // test # digram.
             string code = "123.123p+123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1603,9 +1649,9 @@ int main(void)
             // test # digram.
             string code = "1b23.123p+123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1638,21 +1684,21 @@ int main(void)
             // test # digram.
             string code = "0bb23.123p+123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.NUMBER);
-            Assert.AreEqual(t.value, "0b");
+            Assert.AreEqual(t.value, "0");
 
             i.MoveNext();
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.IDENTIFIER);
-            Assert.AreEqual(t.value, "b23");
+            Assert.AreEqual(t.value, "bb23");
 
             i.MoveNext();
             t = i.Current;
@@ -1673,9 +1719,9 @@ int main(void)
             // test # digram.
             string code = "0x1b23.123p+123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1696,9 +1742,9 @@ int main(void)
             // test # digram.
             string code = "123.+123p+123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1731,9 +1777,9 @@ int main(void)
             // test # digram.
             string code = "123.123+p+123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1778,21 +1824,27 @@ int main(void)
             // test # digram.
             string code = "123.123p++123 ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.NUMBER);
-            Assert.AreEqual(t.value, "123.123p+");
+            Assert.AreEqual(t.value, "123.123");
 
             i.MoveNext();
             t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.PLUS_SIGN);
-            Assert.AreEqual(t.value, "+");
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.IDENTIFIER);
+            Assert.AreEqual(t.value, "p");
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.PLUS_PLUS);
+            Assert.AreEqual(t.value, "++");
 
             i.MoveNext();
             t = i.Current;
@@ -1813,9 +1865,9 @@ int main(void)
             // test # digram.
             string code = "__VA_ARGS__ ";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1836,15 +1888,15 @@ int main(void)
             // test # digram.
             string code = @"#include ""stdio.h""
 
-/* Does this work? *//* it had better! */
+/* Does this work? *//* it had better!**/
 int main(void)
 {
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1892,7 +1944,7 @@ int main(void)
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.COMMENT);
-            Assert.AreEqual(t.value, "/* it had better! */");
+            Assert.AreEqual(t.value, "/* it had better!**/");
 
             i.MoveNext();
             t = i.Current;
@@ -1920,9 +1972,9 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1992,9 +2044,9 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true, true, true);
+            TokenStream ts = new TokenStream(true, true, true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;

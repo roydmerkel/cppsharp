@@ -45,9 +45,9 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms);
+            TokenStream ts = new TokenStream();
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -58,7 +58,7 @@ int main(void)
         [Test]
         public void TestByteRefill()
         {
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
@@ -72,9 +72,9 @@ int main(void)
 
             Encoding utf16 = new UnicodeEncoding(false, true);
             MemoryStream ms = new MemoryStream(utf16.GetBytes(code));
-            TokenStream ts = new TokenStream(ms);
+            TokenStream ts = new TokenStream();
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -99,9 +99,9 @@ int main(void)
 }";
 
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true);
+            TokenStream ts = new TokenStream(true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -121,19 +121,14 @@ int main(void)
 }";
 
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms);
+            TokenStream ts = new TokenStream();
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK_QUESTION_MARK);
 
             i.MoveNext();
             t = i.Current;
@@ -153,11 +148,11 @@ int main(void)
 }";
 
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true);
+            TokenStream ts = new TokenStream(true);
             FieldInfo fieldInfo = ts.GetType().GetField("ignoreStrayBackslash", BindingFlags.NonPublic | BindingFlags.Instance);
             fieldInfo.SetValue(ts, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -166,12 +161,7 @@ int main(void)
             i.MoveNext();
             t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK_QUESTION_MARK);
 
             i.MoveNext();
             t = i.Current;
@@ -196,11 +186,11 @@ int main(void)
 }";
 
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true);
+            TokenStream ts = new TokenStream(true);
             FieldInfo fieldInfo = ts.GetType().GetField("ignoreStrayBackslash", BindingFlags.NonPublic | BindingFlags.Instance);
             fieldInfo.SetValue(ts, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -240,11 +230,11 @@ int main(void)
 }";
 
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true);
+            TokenStream ts = new TokenStream(true);
             FieldInfo fieldInfo = ts.GetType().GetField("ignoreStrayBackslash", BindingFlags.NonPublic | BindingFlags.Instance);
             fieldInfo.SetValue(ts, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -259,12 +249,7 @@ int main(void)
             i.MoveNext();
             t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
         }
 
         [Test]
@@ -279,11 +264,11 @@ int main(void)
 }";
 
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true);
+            TokenStream ts = new TokenStream(true);
             FieldInfo fieldInfo = ts.GetType().GetField("ignoreStrayBackslash", BindingFlags.NonPublic | BindingFlags.Instance);
             fieldInfo.SetValue(ts, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -293,13 +278,7 @@ int main(void)
             i.MoveNext();
             t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
-
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK_QUESTION_MARK);
 
             i.MoveNext();
             t = i.Current;
@@ -316,7 +295,7 @@ int main(void)
         public void TestBoundryTrigraph1()
         {
             // testcppsharp 1 question mark before buffer boundry.
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
@@ -329,9 +308,9 @@ int main(void)
             code = new string(' ', bufSize - 1) + "?" + code;
 
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true);
+            TokenStream ts = new TokenStream(true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -341,19 +320,14 @@ int main(void)
             i.MoveNext();
             t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
         }
 
         [Test]
         public void TestBoundryTrigraph2()
         {
             // test two question marks before buffer boundry.
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
@@ -366,9 +340,9 @@ int main(void)
             code = new string(' ', bufSize - 2) + "??" + code;
 
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true);
+            TokenStream ts = new TokenStream(true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -378,12 +352,7 @@ int main(void)
             i.MoveNext();
             t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
         }
 
         [Test]
@@ -397,29 +366,19 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true);
+            TokenStream ts = new TokenStream(true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK_QUESTION_MARK);
 
             i.MoveNext();
             t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
 
         }
 
@@ -434,19 +393,14 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true);
+            TokenStream ts = new TokenStream(true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK_QUESTION_MARK);
 
             i.MoveNext();
             t = i.Current;
@@ -465,9 +419,9 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true);
+            TokenStream ts = new TokenStream(true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -484,7 +438,7 @@ int main(void)
         public void TestBoundryTrigraph6()
         {
             // test bad trigraph at char 3 with one char before the boundry.
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
@@ -497,9 +451,9 @@ int main(void)
 
             code = new string(' ', bufSize - 1) + "?" + code;
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true);
+            TokenStream ts = new TokenStream(true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -509,22 +463,12 @@ int main(void)
             i.MoveNext();
             t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK_QUESTION_MARK);
 
             i.MoveNext();
             t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
         }
 
 
@@ -532,7 +476,7 @@ int main(void)
         public void TestBoundryTrigraph7()
         {
             // test bad trigraph at char 3 with one char before the boundry.
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
@@ -545,9 +489,9 @@ int main(void)
 
             code = new string(' ', bufSize - 1) + "?" + code;
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true);
+            TokenStream ts = new TokenStream(true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -562,19 +506,14 @@ int main(void)
             i.MoveNext();
             t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
         }
 
         [Test]
         public void TestBoundryTrigraph8()
         {
             // test bad trigraph at char 3 with one char before the boundry.
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
@@ -587,9 +526,9 @@ int main(void)
 
             code = new string(' ', bufSize - 2) + "??" + code;
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true);
+            TokenStream ts = new TokenStream(true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -599,22 +538,12 @@ int main(void)
             i.MoveNext();
             t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK_QUESTION_MARK);
 
             i.MoveNext();
             t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
         }
 
 
@@ -622,7 +551,7 @@ int main(void)
         public void TestBoundryTrigraph9()
         {
             // test bad trigraph at char 3 with one char before the boundry.
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
@@ -635,9 +564,9 @@ int main(void)
 
             code = new string(' ', bufSize - 2) + "?#" + code;
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true);
+            TokenStream ts = new TokenStream(true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -652,27 +581,22 @@ int main(void)
             i.MoveNext();
             t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
         }
 
         [Test]
         public void TestBoundryTrigraph10()
         {
             // test trigraph at end of file.
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
             string code = new string(' ', bufSize - 3) + "??=";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true);
+            TokenStream ts = new TokenStream(true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -694,7 +618,7 @@ int main(void)
         public void TestBoundryTrigraph11()
         {
             // test trigraph at end of file, with two chars before buffer end.
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
@@ -702,9 +626,9 @@ int main(void)
 
             code = new string(' ', bufSize - 2) + "??" + code;
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true);
+            TokenStream ts = new TokenStream(true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -726,7 +650,7 @@ int main(void)
         public void TestBoundryTrigraph12()
         {
             // test trigraph at end of file, with two chars before buffer end.
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
@@ -734,9 +658,9 @@ int main(void)
 
             code = new string(' ', bufSize - 1) + "?" + code;
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true);
+            TokenStream ts = new TokenStream(true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -758,7 +682,7 @@ int main(void)
         public void TestBoundryTrigraph13()
         {
             // test unfinished trigraph at the end of input, after a buffer.
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
@@ -766,9 +690,9 @@ int main(void)
 
             code = new string(' ', bufSize - 1) + "?" + code;
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true);
+            TokenStream ts = new TokenStream(true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -778,12 +702,7 @@ int main(void)
             i.MoveNext();
             t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK_QUESTION_MARK);
 
             i.MoveNext();
             t = i.Current;
@@ -795,7 +714,7 @@ int main(void)
         public void TestBoundryTrigraph14()
         {
             // test unfinished trigraph at the end of input, after a buffer.
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
@@ -803,9 +722,9 @@ int main(void)
 
             code = new string(' ', bufSize - 2) + "??";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true);
+            TokenStream ts = new TokenStream(true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -815,12 +734,7 @@ int main(void)
             i.MoveNext();
             t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.QUESTION_MARK_QUESTION_MARK);
 
             i.MoveNext();
             t = i.Current;
@@ -832,7 +746,7 @@ int main(void)
         public void TestBoundryTrigraph15()
         {
             // test unfinished trigraph at the end of input, after a buffer.
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
@@ -840,9 +754,9 @@ int main(void)
 
             code = new string(' ', bufSize - 1) + "?";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true);
+            TokenStream ts = new TokenStream(true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1191,9 +1105,9 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms);
+            TokenStream ts = new TokenStream();
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -1223,9 +1137,9 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms);
+            TokenStream ts = new TokenStream();
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             try
             {
@@ -1248,9 +1162,9 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms);
+            TokenStream ts = new TokenStream();
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             try
             {
@@ -1268,9 +1182,9 @@ int main(void)
         {
             string code = @"\";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms);
+            TokenStream ts = new TokenStream();
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             try
             {

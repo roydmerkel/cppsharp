@@ -46,19 +46,14 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
         }
 
         [Test]
@@ -72,9 +67,9 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, false);
+            TokenStream ts = new TokenStream(true, false);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -103,9 +98,9 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -129,9 +124,9 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -155,9 +150,9 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -181,9 +176,9 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -207,9 +202,9 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, false);
+            TokenStream ts = new TokenStream(true, false);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -238,9 +233,9 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, false);
+            TokenStream ts = new TokenStream(true, false);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -269,9 +264,9 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, false);
+            TokenStream ts = new TokenStream(true, false);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -300,9 +295,9 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, false);
+            TokenStream ts = new TokenStream(true, false);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -331,9 +326,9 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -343,12 +338,7 @@ int main(void)
             i.MoveNext();
             t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
         }
 
         [Test]
@@ -362,9 +352,9 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -374,12 +364,7 @@ int main(void)
             i.MoveNext();
             t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
         }
 
         [Test]
@@ -393,9 +378,9 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -405,36 +390,31 @@ int main(void)
             i.MoveNext();
             t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
         }
 
         [Test]
         public void TestDigram14()
         {
             // test <: after a buffer change at the end of input.
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
             string code = new string('#', bufSize - 1) + "<:";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
 
             Token t;
 
-            for (int iter = 0; iter < bufSize - 1; iter++)
+            for (int iter = 0; iter < bufSize - 1; iter+=2)
             {
                 Assert.IsTrue(i.MoveNext());
                 t = i.Current;
-                Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+                Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
             }
 
             i.MoveNext();
@@ -452,24 +432,24 @@ int main(void)
         public void TestDigram15()
         {
             // test :> after a buffer change at the end of input.
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
             string code = new string('#', bufSize - 1) + ":>";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
 
             Token t;
 
-            for (int iter = 0; iter < bufSize - 1; iter++)
+            for (int iter = 0; iter < bufSize - 1; iter+=2)
             {
                 Assert.IsTrue(i.MoveNext());
                 t = i.Current;
-                Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+                Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
             }
 
             i.MoveNext();
@@ -487,24 +467,24 @@ int main(void)
         public void TestDigram16()
         {
             // test <% after a buffer change at the end of input.
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
             string code = new string('#', bufSize - 1) + "<%";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
 
             Token t;
 
-            for (int iter = 0; iter < bufSize - 1; iter++)
+            for (int iter = 0; iter < bufSize - 1; iter+=2)
             {
                 Assert.IsTrue(i.MoveNext());
                 t = i.Current;
-                Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+                Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
             }
 
             i.MoveNext();
@@ -522,24 +502,24 @@ int main(void)
         public void TestDigram17()
         {
             // test %> after a buffer change at the end of input.
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
             string code = new string('#', bufSize - 1) + "%>";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
 
             Token t;
 
-            for (int iter = 0; iter < bufSize - 1; iter++)
+            for (int iter = 0; iter < bufSize - 1; iter+=2)
             {
                 Assert.IsTrue(i.MoveNext());
                 t = i.Current;
-                Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+                Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
             }
 
             i.MoveNext();
@@ -557,24 +537,24 @@ int main(void)
         public void TestDigram18()
         {
             // test %> after a buffer change at the end of input.
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
             string code = new string('#', bufSize - 1) + "%>";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
 
             Token t;
 
-            for (int iter = 0; iter < bufSize - 1; iter++)
+            for (int iter = 0; iter < bufSize - 1; iter+=2)
             {
                 Assert.IsTrue(i.MoveNext());
                 t = i.Current;
-                Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+                Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
             }
 
             i.MoveNext();
@@ -592,24 +572,24 @@ int main(void)
         public void TestDigram19()
         {
             // test invalid < digram after a buffer change at the end of input.
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
             string code = new string('#', bufSize - 1) + "<#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
 
             Token t;
 
-            for (int iter = 0; iter < bufSize - 1; iter++)
+            for (int iter = 0; iter < bufSize - 1; iter+=2)
             {
                 Assert.IsTrue(i.MoveNext());
                 t = i.Current;
-                Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+                Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
             }
 
             i.MoveNext();
@@ -632,24 +612,24 @@ int main(void)
         public void TestDigram20()
         {
             // test invalid : digram after a buffer change at the end of input.
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
             string code = new string('#', bufSize - 1) + ":#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
 
             Token t;
 
-            for (int iter = 0; iter < bufSize - 1; iter++)
+            for (int iter = 0; iter < bufSize - 1; iter+=2)
             {
                 Assert.IsTrue(i.MoveNext());
                 t = i.Current;
-                Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+                Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
             }
 
             i.MoveNext();
@@ -672,24 +652,24 @@ int main(void)
         public void TestDigram21()
         {
             // test invalid % digram after a buffer change at the end of input.
-            FieldInfo field = typeof(TokenStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
+            FieldInfo field = typeof(TrigraphStream).GetField("bufSize", BindingFlags.NonPublic | BindingFlags.Static);
             string bufSizeStr = field.GetRawConstantValue().ToString();
             int bufSize = int.Parse(bufSizeStr);
 
             string code = new string('#', bufSize - 1) + "%#";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
 
             Token t;
 
-            for (int iter = 0; iter < bufSize - 1; iter++)
+            for (int iter = 0; iter < bufSize - 1; iter+=2)
             {
                 Assert.IsTrue(i.MoveNext());
                 t = i.Current;
-                Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+                Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
             }
 
             i.MoveNext();
@@ -720,19 +700,14 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
 
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
-
-            i.MoveNext();
-            t = i.Current;
-
-            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH);
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.HASH_HASH);
         }
 
         [Test]
@@ -746,11 +721,11 @@ int main(void)
     return 0;
 }";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
             FieldInfo fieldInfo = ts.GetType().GetField("ignoreStrayBackslash", BindingFlags.NonPublic | BindingFlags.Instance);
             fieldInfo.SetValue(ts, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
             i.MoveNext();
             Token t = i.Current;
@@ -783,11 +758,11 @@ int main(void)
         [Test]
         public void TestPunctuation()
         {
-            string code = "!^&*()-+={}|~[];>,./#@`";
+            string code = "!^&*()-+ ={}|~[];>,./#@`";
             MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, true, true);
+            TokenStream ts = new TokenStream(true, true);
 
-            IEnumerable<Token> enumerable = ts.GetTokenEnumerable();
+            IEnumerable<Token> enumerable = ts.GetTokenEnumerable(ms);
             IEnumerator<Token> i = enumerable.GetEnumerator();
 
             Token t;
@@ -831,6 +806,11 @@ int main(void)
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.PLUS_SIGN);
+
+            i.MoveNext();
+            t = i.Current;
+
+            Assert.AreEqual((int)t.tokenType, (int)TokenType.WHITESPACE);
 
             i.MoveNext();
             t = i.Current;
@@ -913,176 +893,6 @@ int main(void)
             t = i.Current;
 
             Assert.AreEqual((int)t.tokenType, (int)TokenType.EOF);
-        }
-
-        [Test]
-        public void TestPutBackQueuePush()
-        {
-            FieldInfo field = typeof(TokenStream).GetField("putBackBufSize", BindingFlags.NonPublic | BindingFlags.Static);
-            string putBackBufSizeStr = field.GetRawConstantValue().ToString();
-            int putBackBufSize = int.Parse(putBackBufSizeStr);
-
-            String code = "#";
-
-            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, false, false);
-
-            MethodInfo PutBackArrayEmpty = ts.GetType().GetMethod("PutBackArrayEmpty", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo PushPutBackArray = ts.GetType().GetMethod("PushPutBackArray", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            var isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
-
-            Assert.AreEqual(true, isEmpty);
-
-            for (int i = 1; i <= putBackBufSize; i++)
-            {
-                var pushSuccess = PushPutBackArray.Invoke(ts, new object[] { Convert.ToChar('a' + i) });
-
-                Assert.AreEqual(true, pushSuccess);
-
-                isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
-
-                Assert.AreEqual(false, isEmpty);
-            }
-
-            var finalPushSuccess = PushPutBackArray.Invoke(ts, new object[] { Convert.ToChar('a' + putBackBufSize + 1) });
-
-            Assert.AreEqual(false, finalPushSuccess);
-
-            isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
-
-            Assert.AreEqual(false, isEmpty);
-        }
-
-        [Test]
-        public void TestPutBackQueuePop()
-        {
-            FieldInfo field = typeof(TokenStream).GetField("putBackBufSize", BindingFlags.NonPublic | BindingFlags.Static);
-            string putBackBufSizeStr = field.GetRawConstantValue().ToString();
-            int putBackBufSize = int.Parse(putBackBufSizeStr);
-
-            String code = "#";
-
-            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, false, false);
-
-            MethodInfo PutBackArrayEmpty = ts.GetType().GetMethod("PutBackArrayEmpty", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo PushPutBackArray = ts.GetType().GetMethod("PushPutBackArray", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo PopPutBackArray = ts.GetType().GetMethod("PopPutBackArray", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            var isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
-
-            Assert.AreEqual(true, isEmpty);
-
-            for (int i = 1; i <= putBackBufSize; i++)
-            {
-                var pushSuccess = PushPutBackArray.Invoke(ts, new object[] { Convert.ToChar('a' + i) });
-
-                Assert.AreEqual(true, pushSuccess);
-
-                isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
-
-                Assert.AreEqual(false, isEmpty);
-            }
-
-            var finalPushSuccess = PushPutBackArray.Invoke(ts, new object[] { Convert.ToChar('a' + putBackBufSize + 1) });
-
-            Assert.AreEqual(false, finalPushSuccess);
-
-            isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
-
-            Assert.AreEqual(false, isEmpty);
-
-            for (int i = 1; i < putBackBufSize; i++)
-            {
-                var ch = PopPutBackArray.Invoke(ts, new object[] { });
-
-                Assert.AreEqual(Convert.ToChar('a' + i), ch);
-
-                isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
-
-                Assert.AreEqual(false, isEmpty);
-            }
-
-            var ch2 = PopPutBackArray.Invoke(ts, new object[] { });
-
-            Assert.AreEqual(Convert.ToChar('a' + putBackBufSize), ch2);
-
-            isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
-
-            Assert.AreEqual(true, isEmpty);
-        }
-
-
-        [Test]
-        public void TestPutBackQueuePop2()
-        {
-            FieldInfo field = typeof(TokenStream).GetField("putBackBufSize", BindingFlags.NonPublic | BindingFlags.Static);
-            string putBackBufSizeStr = field.GetRawConstantValue().ToString();
-            int putBackBufSize = int.Parse(putBackBufSizeStr);
-
-            String code = "#";
-
-            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
-            TokenStream ts = new TokenStream(ms, false, false);
-
-            MethodInfo PutBackArrayEmpty = ts.GetType().GetMethod("PutBackArrayEmpty", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo PushPutBackArray = ts.GetType().GetMethod("PushPutBackArray", BindingFlags.NonPublic | BindingFlags.Instance);
-            MethodInfo PopPutBackArray = ts.GetType().GetMethod("PopPutBackArray", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            var isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
-
-            Assert.AreEqual(true, isEmpty);
-
-            for (int i = 1; i <= putBackBufSize; i++)
-            {
-                var pushSuccess = PushPutBackArray.Invoke(ts, new object[] { Convert.ToChar('a' + i) });
-
-                Assert.AreEqual(true, pushSuccess);
-
-                isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
-
-                Assert.AreEqual(false, isEmpty);
-            }
-
-            var finalPushSuccess = PushPutBackArray.Invoke(ts, new object[] { Convert.ToChar('a' + putBackBufSize + 1) });
-
-            Assert.AreEqual(false, finalPushSuccess);
-
-            isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
-
-            Assert.AreEqual(false, isEmpty);
-
-            var ch = PopPutBackArray.Invoke(ts, new object[] { });
-
-                Assert.AreEqual(Convert.ToChar('a' + 1), ch);
-
-                isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
-
-                Assert.AreEqual(false, isEmpty);
-
-            finalPushSuccess = PushPutBackArray.Invoke(ts, new object[] { Convert.ToChar('a' + putBackBufSize + 1) });
-
-            Assert.AreEqual(true, finalPushSuccess);
-
-            for (int i = 1; i < putBackBufSize; i++)
-            {
-                ch = PopPutBackArray.Invoke(ts, new object[] { });
-
-                Assert.AreEqual(Convert.ToChar('a' + i + 1), ch);
-
-                isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
-
-                Assert.AreEqual(false, isEmpty);
-            }
-
-            ch = PopPutBackArray.Invoke(ts, new object[] { });
-
-            Assert.AreEqual(Convert.ToChar('a' + putBackBufSize + 1), ch);
-
-            isEmpty = PutBackArrayEmpty.Invoke(ts, new object[] { });
-
-            Assert.AreEqual(true, isEmpty);
         }
     }
 }

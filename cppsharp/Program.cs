@@ -34,7 +34,13 @@ namespace cppsharp
         {
             Console.WriteLine("Hello World!");
 
-            String code = @"//#include <stdio.h>
+            String code = @"\
+i\
+n\
+t\
+
+
+//#include <stdio.h>\a
 //#include ""string.h""
 
 #define EXIST(A,B)

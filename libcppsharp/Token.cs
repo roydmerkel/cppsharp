@@ -27,6 +27,13 @@ namespace libcppsharp
         public String value;
         public Token[] tokens;
 
+        public Token(TokenType tokenType, String value, Token[] tokens)
+        {
+            this.tokenType = tokenType;
+            this.value = value;
+            this.tokens = null;
+        }
+
         public override bool Equals(object obj)
         {
             if (obj == null)

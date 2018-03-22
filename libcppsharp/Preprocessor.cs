@@ -262,8 +262,8 @@ namespace libcppsharp
         {
             bool foundStartHash = false;
 
-            TokenStream tokenStream = tokenStream = new TokenStream(inStream, handleTrigraphs, handleDigraphs, true, true);
-            IEnumerable<Token> enumerable = tokenStream.GetTokenEnumerable();
+            TokenStream tokenStream = tokenStream = new TokenStream(handleTrigraphs, handleDigraphs, true, true);
+            IEnumerable<Token> enumerable = tokenStream.GetTokenEnumerable(inStream);
             IEnumerator<Token> enumerator = enumerable.GetEnumerator();
             List<Token> lineToks = new List<Token>();
 
