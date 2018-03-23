@@ -1,0 +1,6 @@
+[submodule "src/NuGet/YaccLexTools/content"]
+	path = src/NuGet/YaccLexTools/content
+	url = https://github.com/ernstc/YaccLexTools.git
+[submodule "YaccLexTools"]
+	path = YaccLexTools
+	url = https://github.com/ernstc/YaccLexTools.git

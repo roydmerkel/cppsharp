@@ -253,6 +253,11 @@ namespace libcppsharp
             this.anIfFailed = false;
         }
 
+        public bool TestPredicate(List<Token> predicates)
+        {
+            return false;
+        }
+
         public bool Preprocess(TextWriter outStream, TextWriter warnStream)
         {
             return Preprocess(outStream, warnStream, this.inStream);
@@ -1328,6 +1333,81 @@ namespace libcppsharp
                                         {
                                             tokenStream.IgnoreStrayBackslash = true;
                                         }
+                                    }
+                                }
+                                break;
+                            case "if":
+                                {
+                                    bool foundIfndef = false;
+                                    bool foundDefineName = false;
+                                    bool foundPostDefineWS = false;
+                                    bool hasEOL = false;
+                                    string defineName = "";
+                                    List<Token> predicates = new List<Token>();
+
+                                    foundHash = false;
+                                    foreach (Token t in lineToks)
+                                    {
+                                        if (!foundHash)
+                                        {
+                                            if (t.tokenType == TokenType.HASH)
+                                            {
+                                                foundHash = true;
+                                            }
+                                        }
+                                        else if (foundHash && !foundIfndef)
+                                        {
+                                            if (t.tokenType == TokenType.IDENTIFIER)
+                                            {
+                                                foundIfndef = true;
+                                            }
+                                        }
+                                        else if (foundIfndef && !foundDefineName)
+                                        {
+                                            if (t.tokenType == TokenType.IDENTIFIER)
+                                            {
+                                                foundDefineName = true;
+                                                defineName = t.value;
+                                            }
+                                            else if (t.tokenType == TokenType.WHITESPACE)
+                                            {
+                                            }
+                                            else
+                                            {
+                                                throw new InvalidDataException("Unexpected " + t.value + " in #ifdef.");
+                                            }
+                                        }
+                                        else if (foundDefineName && !foundPostDefineWS)
+                                        {
+                                            if (t.tokenType == TokenType.WHITESPACE)
+                                            {
+                                                foundPostDefineWS = true;
+                                            }
+                                            else
+                                            {
+                                                throw new InvalidDataException("Unexpected " + t.value + " in #if.");
+                                            }
+                                        }
+                                        else if (foundPostDefineWS && !hasEOL)
+                                        {
+                                            if (t.tokenType == TokenType.NEWLINE)
+                                            {
+                                                hasEOL = true;
+                                            }
+                                            else
+                                            {
+                                                predicates.Add(t);
+                                            }
+                                        }
+                                    }
+
+                                    if (!hasEOL)
+                                    {
+                                        throw new InvalidDataException("unterminated #ifdef.");
+                                    }
+                                    else
+                                    {
+                                        
                                     }
                                 }
                                 break;
