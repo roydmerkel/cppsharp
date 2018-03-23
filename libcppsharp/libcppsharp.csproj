@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -25,6 +25,17 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Label="YltParsers">
+    <Names>C_CPLUSPLUS_CSHARP-libcppsharp-parser</Names>
+  </PropertyGroup>
+  <PropertyGroup Label="YltProperties">
+    <YltTools>$(SolutionDir)packages\YaccLexTools.0.2.2\tools\</YltTools>
+    <GplexTool>"$(YltTools)gplex.exe"</GplexTool>
+    <GppgTool>"$(YltTools)gppg.exe"</GppgTool>
+  </PropertyGroup>
+  <PropertyGroup Label="GenerateC_CPLUSPLUS_CSHARP-libcppsharp-parserProperties">
+    <C_CPLUSPLUS_CSHARP-libcppsharp-parserParser>$(ProjectDir)parser\C_CPLUSPLUS_CSHARP</C_CPLUSPLUS_CSHARP-libcppsharp-parserParser>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -107,6 +118,31 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup Label="C_CPLUSPLUS_CSHARP-libcppsharp-parserFiles">
+    <Compile Include="parser\C_CPLUSPLUS_CSHARP.Parser.cs">
+      <DependentUpon>C_CPLUSPLUS_CSHARP.parser</DependentUpon>
+    </Compile>
+    <Compile Include="parser\C_CPLUSPLUS_CSHARP.Parser.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>C_CPLUSPLUS_CSHARP.Language.grammar.y</DependentUpon>
+    </Compile>
+    <Compile Include="parser\C_CPLUSPLUS_CSHARP.Scanner.cs">
+      <DependentUpon>C_CPLUSPLUS_CSHARP.parser</DependentUpon>
+    </Compile>
+    <Compile Include="parser\C_CPLUSPLUS_CSHARP.Scanner.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>C_CPLUSPLUS_CSHARP.Language.analyzer.lex</DependentUpon>
+    </Compile>
+    <None Include="parser\C_CPLUSPLUS_CSHARP.Language.analyzer.lex">
+      <DependentUpon>C_CPLUSPLUS_CSHARP.parser</DependentUpon>
+    </None>
+    <None Include="parser\C_CPLUSPLUS_CSHARP.Language.grammar.y">
+      <DependentUpon>C_CPLUSPLUS_CSHARP.parser</DependentUpon>
+    </None>
+    <None Include="parser\C_CPLUSPLUS_CSHARP.parser" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>
@@ -117,4 +153,16 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <Target Name="BeforeBuild" DependsOnTargets="YltBuildGen" />
+  <Target Name="YltBuildGen" DependsOnTargets="GenerateC_CPLUSPLUS_CSHARP-libcppsharp-parser" />
+  <Target Name="GenerateC_CPLUSPLUS_CSHARP-libcppsharp-parser" Inputs="$(C_CPLUSPLUS_CSHARP-libcppsharp-parserParser).Language.analyzer.lex;$(C_CPLUSPLUS_CSHARP-libcppsharp-parserParser).Language.grammar.y" Outputs="$(C_CPLUSPLUS_CSHARP-libcppsharp-parserParser).Scanner.Generated.cs;$(C_CPLUSPLUS_CSHARP-libcppsharp-parserParser).Parser.Generated.cs">
+    <Message Text="Generating scanner for $(C_CPLUSPLUS_CSHARP-libcppsharp-parserParser) ..." />
+    <Exec Command="$(GplexTool) &quot;/out:$(C_CPLUSPLUS_CSHARP-libcppsharp-parserParser).Scanner.Generated.cs&quot; &quot;$(C_CPLUSPLUS_CSHARP-libcppsharp-parserParser).Language.analyzer.lex&quot;" WorkingDirectory="$(ProjectDir)" Outputs="$(GenDir)Scanner.cs">
+      <Output TaskParameter="Outputs" ItemName="C_CPLUSPLUS_CSHARPScanner" />
+    </Exec>
+    <Message Text="Generating parser for $(C_CPLUSPLUS_CSHARP-libcppsharp-parserParser) ..." />
+    <Exec Command="$(GppgTool) /no-lines /gplex &quot;$(C_CPLUSPLUS_CSHARP-libcppsharp-parserParser).Language.grammar.y&quot; &gt; &quot;$(C_CPLUSPLUS_CSHARP-libcppsharp-parserParser).Parser.Generated.cs&quot;" WorkingDirectory="$(ProjectDir)" Outputs="$(C_CPLUSPLUS_CSHARP-libcppsharp-parserParser).Parser.Generated.cs">
+      <Output TaskParameter="Outputs" ItemName="C_CPLUSPLUS_CSHARP" />
+    </Exec>
+  </Target>
 </Project>
