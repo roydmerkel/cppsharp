@@ -26,11 +26,21 @@ namespace libcppsharp.parser
 {
     internal partial class C_CPLUSPLUS_CSHARPScanner
     {
-
+        
         void GetNumber()
         {
             yylval.s = yytext;
             yylval.n = int.Parse(yytext);
+        }
+
+        void GetIdentifier()
+        {
+            yylval.s = yytext.Replace("\\\n", "");
+        }
+
+        void GetComment()
+        {
+            yylval.s = curTokVal.ToString();
         }
 
 		public override void yyerror(string format, params object[] args)

@@ -108,11 +108,11 @@
     <Compile Include="TokenStream.cs" />
     <Compile Include="TrigraphStream.cs" />
     <Compile Include="Preprocessor.cs" />
-    <Compile Include="..\YaccLexTools\src\NuGet\YaccLexTools\content\GplexBuffers.cs">
-      <Link>GplexBuffers.cs</Link>
-    </Compile>
     <Compile Include="..\YaccLexTools\src\NuGet\YaccLexTools\content\ShiftReduceParserCode.cs">
       <Link>ShiftReduceParserCode.cs</Link>
+    </Compile>
+    <Compile Include="..\YaccLexTools\src\NuGet\YaccLexTools\content\GplexBuffers.cs">
+      <Link>GplexBuffers.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>

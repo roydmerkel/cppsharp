@@ -4,9 +4,9 @@
 
 // GPPG version 1.5.2
 // Machine:  ubuntu
-// DateTime: 3/22/2018 9:40:48 PM
+// DateTime: 3/23/2018 7:29:20 PM
 // UserName: rmerkel
-// Input file <parser/C_CPLUSPLUS_CSHARP.Language.grammar.y - 3/22/2018 9:39:11 PM>
+// Input file <parser/C_CPLUSPLUS_CSHARP.Language.grammar.y - 3/23/2018 11:26:44 AM>
 
 // options: no-lines gplex
 
@@ -19,7 +19,19 @@ using QUT.Gppg;
 
 namespace libcppsharp.parser
 {
-internal enum Token {error=2,EOF=3,NUMBER=4};
+internal enum Token {error=2,EOF=3,WHITESPACE=4,NEWLINE=5,COLON_COLON=6,
+    HASH=7,QUESTION_MARK=8,EQUAL_SIGN=9,LESS_THEN=10,GREATER_THEN=11,COLON=12,
+    SEMI_COLON=13,PERCENT=14,COMMA=15,PERIOD=16,TILDE=17,PIPE=18,
+    PLUS_SIGN=19,MINUS_SIGN=20,ASTERISK=21,AMPERSTAND=22,CARROT=23,EXCLAIMATION_MARK=24,
+    GRAVE=25,AT=26,BACK_SLASH=27,FORWARD_SLASH=28,L_CURLY_BRACE=29,R_CURLY_BRACE=30,
+    L_SQ_BRACKET=31,R_SQ_BRACKET=32,L_PAREN=33,R_PAREN=34,THIN_ARROW=35,PLUS_PLUS=36,
+    MINUS_MINUS=37,DOT_STAR=38,THIN_ARROW_STAR=39,SAUCER=40,LESS_THEN_LESS_THEN=41,GREATER_THEN_GRATER_THEN=42,
+    LESS_THEN_OR_EQUAL_TO=43,GREATER_THEN_OR_EQUAL_TO=44,EQUALS_EQUALS=45,NOT_EQUALS=46,AMPERSTAND_AMPERSTAND=47,PIPE_PIPE=48,
+    ASTERISK_EQUALS=49,FORWARD_SLASH_EQUALS=50,PERCENT_EQUALS=51,PLUS_EQUALS=52,MINUS_EQUALS=53,LESS_THEN_LESS_THEN_EQUALS=54,
+    GREATER_THEN_GREATER_THEN_EQUALS=55,AMPERSTAND_EQUALS=56,PIPE_EQUALS=57,CARROT_EQUALS=58,QUESTION_MARK_PERIOD=59,QUESTION_MARK_L_SQ_BRACKET=60,
+    QUESTION_MARK_QUESTION_MARK=61,HASH_HASH=62,EQUALS_SIGN_GREATER_THEN=63,ELLIPSE=64,SIZEOF=65,DEFINED=66,
+    IDENTIFIER=67,STRING=68,CHAR=69,NUMBER=70,COMMENT=71,TOKEN_PASTE=72,
+    STRINGIFY=73};
 
 internal partial struct ValueType
 { 
@@ -48,7 +60,7 @@ internal class ScanObj {
 [GeneratedCodeAttribute( "Gardens Point Parser Generator", "1.5.2")]
 internal partial class C_CPLUSPLUS_CSHARPParser: ShiftReduceParser<ValueType, LexLocation>
 {
-  // Verbatim content from parser/C_CPLUSPLUS_CSHARP.Language.grammar.y - 3/22/2018 9:39:11 PM
+  // Verbatim content from parser/C_CPLUSPLUS_CSHARP.Language.grammar.y - 3/23/2018 11:26:44 AM
 //
 //  C_CPLUSPLUS_CSHARP.Parser.Generated.cs
 //
@@ -70,7 +82,7 @@ internal partial class C_CPLUSPLUS_CSHARPParser: ShiftReduceParser<ValueType, Le
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-  // End verbatim content from parser/C_CPLUSPLUS_CSHARP.Language.grammar.y - 3/22/2018 9:39:11 PM
+  // End verbatim content from parser/C_CPLUSPLUS_CSHARP.Language.grammar.y - 3/23/2018 11:26:44 AM
 
 #pragma warning disable 649
   private static Dictionary<int, string> aliases;
@@ -81,7 +93,7 @@ internal partial class C_CPLUSPLUS_CSHARPParser: ShiftReduceParser<ValueType, Le
       "main", "$accept", "number", };
 
   static C_CPLUSPLUS_CSHARPParser() {
-    states[0] = new State(new int[]{4,4,3,-3},new int[]{-1,1,-3,3});
+    states[0] = new State(new int[]{70,4,3,-3},new int[]{-1,1,-3,3});
     states[1] = new State(new int[]{3,2});
     states[2] = new State(-1);
     states[3] = new State(-2);
@@ -92,7 +104,7 @@ internal partial class C_CPLUSPLUS_CSHARPParser: ShiftReduceParser<ValueType, Le
     rules[1] = new Rule(-2, new int[]{-1,3});
     rules[2] = new Rule(-1, new int[]{-3});
     rules[3] = new Rule(-3, new int[]{});
-    rules[4] = new Rule(-3, new int[]{4});
+    rules[4] = new Rule(-3, new int[]{70});
   }
 
   protected override void Initialize() {
