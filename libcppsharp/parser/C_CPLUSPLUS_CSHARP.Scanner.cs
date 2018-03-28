@@ -21,12 +21,38 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 
 namespace libcppsharp.parser
 {
     internal partial class C_CPLUSPLUS_CSHARPScanner
     {
-        
+#if !NOFILES
+        internal C_CPLUSPLUS_CSHARPScanner(Stream file, bool handleTrigraphs, bool handleDigraphs = false, bool allowSlashNInString = true, bool treatStringSlashNAsNothing = true) : this(file)
+        {
+            this.handleTrigraphs = handleTrigraphs;
+            this.handleDigraphs = handleDigraphs;
+            this.allowSlashNInString = allowSlashNInString;
+            this.treatStringSlashNAsNothing = treatStringSlashNAsNothing;
+        }
+
+        public C_CPLUSPLUS_CSHARPScanner(Stream file, string codepage, bool handleTrigraphs, bool handleDigraphs = false, bool allowSlashNInString = true, bool treatStringSlashNAsNothing = true) : this(file, codepage)
+        {
+            this.handleTrigraphs = handleTrigraphs;
+            this.handleDigraphs = handleDigraphs;
+            this.allowSlashNInString = allowSlashNInString;
+            this.treatStringSlashNAsNothing = treatStringSlashNAsNothing;
+        }
+#endif // !NOFILES
+
+        internal C_CPLUSPLUS_CSHARPScanner(bool handleTrigraphs, bool handleDigraphs = false, bool allowSlashNInString = true, bool treatStringSlashNAsNothing = true) : this()
+        {
+            this.handleTrigraphs = handleTrigraphs;
+            this.handleDigraphs = handleDigraphs;
+            this.allowSlashNInString = allowSlashNInString;
+            this.treatStringSlashNAsNothing = treatStringSlashNAsNothing;
+        }
+
         void GetNumber()
         {
             yylval.s = yytext;

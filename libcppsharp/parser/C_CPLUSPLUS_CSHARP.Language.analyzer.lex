@@ -30,9 +30,17 @@
 
 %x C_COMMENT
 %x CPP_COMMENT
+%x RAW_STRING_PREFIX
+%x RAW_STRING
+%x STRING
 
 %{
     StringBuilder curTokVal = new StringBuilder();
+    String rawStringPrefix = null;
+    bool handleTrigraphs = false;
+    bool handleDigraphs = false;
+    bool allowSlashNInString = true;
+    bool treatStringSlashNAsNothing = true;
 %}
 
 IdentUndAZaz    [_a-zA-Z]
@@ -96,6 +104,8 @@ hexLit          0(\\\n)*[xX](\\\n)*[0-9a-fA-F]((\\\n)*[0-9a-fA-F]*)*
 binLit          0(\\\n)*[bB](\\\n)*[0-1]((\\\n)*[0-1]*)*
 
 floatExp        [eEpP](\\\n)*[\-+]?(\\\n)*{mandDigSeq}
+
+stringPrefix    ((u)|(u(\\\n)*8)|(U)|(L))
 
 %%
 
@@ -198,5 +208,42 @@ d(\\\n)*e(\\\n)*f(\\\n)*i(\\\n)*n(\\\n)*e(\\\n)*d                               
 <C_COMMENT>\*[/]                                                                                        { curTokVal.Append(yytext); Console.WriteLine("token: {0}", curTokVal.ToString()); GetComment(); BEGIN(INITIAL); return (int)Token.COMMENT; }
 <C_COMMENT>/                                                                                            { curTokVal.Append(yytext); }
 <C_COMMENT><<EOF>>                                                                                      { throw new InvalidDataException("unterminated /*"); }
+
+({stringPrefix}(\\\n)*)?R(\\\n)*["]                                                                     { curTokVal.Clear(); curTokVal.Append(yytext.Replace("\\n", "")); }
+({stringPrefix}(\\\n)*)?["]                                                                             { curTokVal.Clear(); curTokVal.Append(yytext.Replace("\\n", "")); BEGIN(RAW_STRING_PREFIX); }
+
+<RAW_STRING_PREFIX>[^\(]*\(                                                                             { rawStringPrefix = yytext.Substring(0, yytext.Length - 1); }
+<RAW_STRING_PREFIX><<EOF>>                                                                              { throw new InvalidDataException("Unterminated Raw string prefix."); }
+
+<RAW_STRING>[^\)"]+                                                                                      { curTokVal.Append(yytext); }
+<RAW_STRING>\)[^\)]*["]{stringSuffix}?                                                                  { curTokVal.Append(yytext); if(yytext.Substring(1, yytext.LastIndexOf('"') - 1).Equals(rawStringPrefix)) { BEGIN(INITIAL); } }
+<RAW_STRING>(\)|["])                                                                                    { curTokVal.Append(yytext); }
+<RAW_STRING><<EOF>>                                                                                     { throw new InvalidDataException("Unterminated raw string."); }
+
+<STRING>\\\n                                                                                            { if(!allowSlashNInString) { throw new InvalidDataException("Unterminated \""); } if(!treatStringSlashNAsNothing) { curTokVal.Append(yytext); } }
+<STRING>\n                                                                                              { throw new InvalidDataException("Unterminated \""); }
+<STRING>\\[^\n]                                                                                         { curTokVal.Append(yytext); } 
+<STRING>["]{stringSuffix}?                                                                              { curTokVal.Append(yytext); BEGIN(INITIAL); }
+<STRING><<EOF>>                                                                                         { throw new InvalidDataException("Unterminated raw string."); }
+
+[<](?:\\\n)*:                                                                                           { if(!handleDigraphs) { yyless(1); return (int)Token.LESS_THEN; } else { return (int)Token.L_SQ_BRACKET; } }
+:(?:\\\n)*[>]                                                                                           { if(!handleDigraphs) { yyless(1); return (int)Token.COLON; } else { return (int)Token.R_SQ_BRACKET; } }
+[<](?:\\\n)*%                                                                                           { if(!handleDigraphs) { yyless(1); return (int)Token.LESS_THEN; } else { return (int)Token.L_CURLY_BRACE; } }
+%(?:\\\n)*[>]                                                                                           { if(!handleDigraphs) { yyless(1); return (int)Token.PERCENT; } else { return (int)Token.R_CURLY_BRACE; } }
+%(?:\\\n)*:                                                                                             { if(!handleDigraphs) { yyless(1); return (int)Token.PERCENT; } else { return (int)Token.HASH; } }
+%(?:\\\n)*:#                                                                                            { if(!handleDigraphs) { yyless(1); return (int)Token.PERCENT; } else { return (int)Token.HASH_HASH; } }
+#%(?:\\\n)*:                                                                                            { if(!handleDigraphs) { yyless(1); return (int)Token.HASH; } else { return (int)Token.HASH_HASH; } }
+%(?:\\\n)*:(?:\\\n)*%(?:\\\n)*:                                                                         { if(!handleDigraphs) { yyless(1); return (int)Token.PERCENT; } else { return (int)Token.HASH_HASH; } }
+c(?:\\\n)*o(?:\\\n)*m(?:\\\n)*p(?:\\\n)*l                                                               { if(!handleDigraphs) { Console.WriteLine("token: {0}", yytext); GetIdentifier(); return (int)Token.IDENTIFIER; } else { return (int)Token.TILDE; } }
+n(?:\\\n)*o(?:\\\n)*t                                                                                   { if(!handleDigraphs) { Console.WriteLine("token: {0}", yytext); GetIdentifier(); return (int)Token.IDENTIFIER; } else { return (int)Token.EXCLAIMATION_MARK; } }
+b(?:\\\n)*i(?:\\\n)*t(?:\\\n)*a(?:\\\n)*n(?:\\\n)*d                                                     { if(!handleDigraphs) { Console.WriteLine("token: {0}", yytext); GetIdentifier(); return (int)Token.IDENTIFIER; } else { return (int)Token.AMPERSTAND; } }
+b(?:\\\n)*i(?:\\\n)*t(?:\\\n)*o(?:\\\n)*r                                                               { if(!handleDigraphs) { Console.WriteLine("token: {0}", yytext); GetIdentifier(); return (int)Token.IDENTIFIER; } else { return (int)Token.PIPE; } }
+a(?:\\\n)*n(?:\\\n)*d                                                                                   { if(!handleDigraphs) { Console.WriteLine("token: {0}", yytext); GetIdentifier(); return (int)Token.IDENTIFIER; } else { return (int)Token.AMPERSTAND_AMPERSTAND; } }
+o(?:\\\n)*r                                                                                             { if(!handleDigraphs) { Console.WriteLine("token: {0}", yytext); GetIdentifier(); return (int)Token.IDENTIFIER; } else { return (int)Token.PIPE_PIPE; } }
+x(?:\\\n)*o(?:\\\n)*r                                                                                   { if(!handleDigraphs) { Console.WriteLine("token: {0}", yytext); GetIdentifier(); return (int)Token.IDENTIFIER; } else { return (int)Token.CARROT; } }
+a(?:\\\n)*n(?:\\\n)*d(?:\\\n)*_(?:\\\n)*e(?:\\\n)*q                                                     { if(!handleDigraphs) { Console.WriteLine("token: {0}", yytext); GetIdentifier(); return (int)Token.IDENTIFIER; } else { return (int)Token.AMPERSTAND_EQUALS; } }
+o(?:\\\n)*r(?:\\\n)*_(?:\\\n)*e(?:\\\n)*q                                                               { if(!handleDigraphs) { Console.WriteLine("token: {0}", yytext); GetIdentifier(); return (int)Token.IDENTIFIER; } else { return (int)Token.PIPE_EQUALS; } }
+x(?:\\\n)*o(?:\\\n)*r(?:\\\n)*_(?:\\\n)*e(?:\\\n)*q                                                     { if(!handleDigraphs) { Console.WriteLine("token: {0}", yytext); GetIdentifier(); return (int)Token.IDENTIFIER; } else { return (int)Token.CARROT_EQUALS; } }
+n(?:\\\n)*o(?:\\\n)*t(?:\\\n)*_(?:\\\n)*e(?:\\\n)*q                                                     { if(!handleDigraphs) { Console.WriteLine("token: {0}", yytext); GetIdentifier(); return (int)Token.IDENTIFIER; } else { return (int)Token.NOT_EQUALS; } }
 
 %%
