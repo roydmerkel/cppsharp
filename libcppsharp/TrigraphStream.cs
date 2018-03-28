@@ -26,71 +26,59 @@ using Ude;
 
 namespace libcppsharp
 {
-    public class TrigraphStream
+    public class TrigraphStream : Stream
     {
-        private byte[] byteReadBuffer;
-        private int bufDatSize;
-        private int bufPtr;
-        private const int bufSize = 1023;
-        private char[] charReadBuffer;
-        private int charBufDatSize;
-        private int charBufPtr;
-        private char[] trigraphCharsBuf;
-        private int trigraphCharsBufData;
-        private const int trigraphCharsBufSize = 2;
-        private Stream inStr;
         private bool trigraphs;
-        private int readResult;
-        private Encoding encoding;
-        private Decoder decoder;
-        private Encoder encoder;
         private const string TrigraphChars = "=/'()!<>-";
         private const string TrigraphStandins = "#\\^[]|{}~";
-        private bool escaped = false;
+        private bool escaped;
+        private Encoder encoder;
+        private Decoder decoder;
+        private String data;
+        private const int bufSize = 1023;
+        private MemoryStream ms;
+
+        public override bool CanRead { get { return ms.CanRead; } }
+
+        public override bool CanSeek { get { return ms.CanSeek; } }
+
+        public override bool CanWrite { get { return false; } }
+
+        public override long Length { get { throw new NotSupportedException(); } }
+
+        public override long Position { get { throw new NotSupportedException(); } set { throw new NotSupportedException(); } }
 
         public TrigraphStream(Stream inStream, bool handleTrigraphs = false, bool handleDigraphs = false)
         {
-            inStr = inStream;
+            List<byte> bytesList = new List<byte>();
+            byte[] readBuf = new byte[1024];
+            int numRead = 0;
+            bool escaped = false;
+
             trigraphs = handleTrigraphs;
-            byteReadBuffer = new byte[bufSize];
-            charReadBuffer = new char[bufSize];
-            trigraphCharsBuf = new char[trigraphCharsBufSize];
-            bufPtr = 0;
-            bufDatSize = 0;
-            charBufPtr = 0;
-            charBufDatSize = 0;
-            trigraphCharsBufData = 0;
-            readResult = 0;
-            encoding = null;
-        }
 
-        private int RefillByteArray()
-        {
-            int i;
-            // move any unprocessed bytes down.
-            for (i = 0; i + bufPtr < bufDatSize; i++)
+            escaped = false;
+            encoder = null;
+            decoder = null;
+
+            do
             {
-                byteReadBuffer[i] = byteReadBuffer[i + bufPtr];
+                numRead = inStream.Read(readBuf, 0, 1024);
+
+                for (int i = 0; i < numRead; i++)
+                {
+                    bytesList.Add(readBuf[i]);
+                }
             }
+            while (numRead > 0);
 
-            readResult = inStr.Read(byteReadBuffer, i, bufSize - i);
+            byte[] bytes = bytesList.ToArray();
 
-            if (readResult > 0)
-            {
-                bufDatSize = readResult + i;
-            }
-
-            bufPtr = 0;
-
-            return readResult;
-        }
-
-        private bool SetEncoder()
-        {
-            // try to determine encoding.
             CharsetDetector charsetDetector = new CharsetDetector();
-            charsetDetector.Feed(byteReadBuffer, 0, bufSize);
+            charsetDetector.Feed(bytes, 0, bytes.Length);
             charsetDetector.DataEnd();
+
+            Encoding encoding = null;
 
             if (charsetDetector.Charset != null)
             {
@@ -194,269 +182,157 @@ namespace libcppsharp
                         encoding = Encoding.UTF8;
                         break;
                 }
-
-                if (encoding == null)
-                {
-                    return false;
-                }
             }
             else
             {
                 encoding = Encoding.UTF8;
             }
 
+            if (encoding == null)
+            {
+                throw new InvalidDataException("Can't find the type of data passed in via the stream.");
+            }
+
             encoder = encoding.GetEncoder();
             decoder = encoding.GetDecoder();
 
-            return true;
+            int charCount = decoder.GetCharCount(bytes, 0, bytes.Length);
+            char[] chars = new char[charCount];
+
+            decoder.GetChars(bytes, 0, bytes.Length, chars, 0);
+
+            String s = new String(chars);
+            StringBuilder sb = new StringBuilder();
+
+            int sLen = s.Length;
+            for (int i = 0; i < sLen; i++)
+            {
+                if (s[i] == '\xFEFF')
+                {
+                }
+                else if (s[i] == '\n')
+                {
+                    if (i + 1 < sLen && s[i + 1] == '\r')
+                    {
+                        sb.Append('\n');
+                        i++;
+                    }
+                    else
+                    {
+                        sb.Append('\n');
+                    }
+                }
+                else if (s[i] == '\r')
+                {
+                    if (i + 1 < sLen && s[i + 1] == '\n')
+                    {
+                        sb.Append('\n');
+                        i++;
+                    }
+                    else
+                    {
+                        sb.Append('\n');
+                    }
+                }
+                else if (!trigraphs)
+                {
+                    sb.Append(s[i]);
+                }
+                else if (s[i] == '\\')
+                {
+                    escaped = true;
+                    sb.Append(s[i]);
+                }
+                else if (s[i] == '?')
+                {
+                    if (escaped)
+                    {
+                        sb.Append(s[i]);
+                        escaped = false;
+                    }
+                    else if (i + 1 < sLen && s[i + 1] == '?')
+                    {
+                        if (i + 2 < sLen)
+                        {
+                            int idx = TrigraphChars.IndexOf(s[i + 2]);
+
+                            if (idx >= 0)
+                            {
+                                char ch = TrigraphStandins[idx];
+
+                                if (ch == '\\')
+                                {
+                                    escaped = true;
+                                }
+                                sb.Append(ch);
+                                i += 2;
+                            }
+                            else
+                            {
+                                sb.Append(s[i]);
+                            }
+                        }
+                        else
+                        {
+                            sb.Append(s[i]);
+                        }
+                    }
+                    else
+                    {
+                        sb.Append(s[i]);
+                    }
+                }
+                else
+                {
+                    escaped = false;
+                    sb.Append(s[i]);
+                }
+            }
+
+            data = sb.ToString();
+
+            chars = data.ToCharArray();
+
+            int byteCount = encoder.GetByteCount(chars, 0, chars.Length, true);
+
+            bytes = new byte[byteCount];
+
+            encoder.GetBytes(chars, 0, chars.Length, bytes, 0, true);
+
+            ms = new MemoryStream(bytes);
         }
 
         public IEnumerable<char> GetCharEnumerable()
         {
-            bool refillBuffer = false;
-            bool processingNewLine = false;
-            char lastNewLineChar = '\0';
-
-            readResult = RefillByteArray();
-
-            if (readResult <= 0 && trigraphCharsBufData > 0)
+            foreach (char ch in data)
             {
-                for (int i = 0; i < trigraphCharsBufData; i++)
-                {
-                    yield return trigraphCharsBuf[i];
-                }
+                yield return ch;
             }
-            else if (readResult > 0)
-            {
-                if (!SetEncoder())
-                {
-                    throw new ArgumentException("Encoding of stream is not supported by C#.");
-                }
+        }
 
-                charBufDatSize = decoder.GetChars(byteReadBuffer, 0, bufDatSize, charReadBuffer, 0, false);
-                bufPtr = encoder.GetByteCount(charReadBuffer, 0, charBufDatSize, false);
-                decoder.Reset();
-                encoder.Reset();
+        public override void Flush()
+        {
+            ms.Flush();
+        }
 
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            return ms.Read(buffer, offset, count);
+        }
 
-                while (readResult > 0)
-                {
-                    if (charBufPtr >= charBufDatSize)
-                    {
-                        refillBuffer = true;
-                    }
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            return ms.Seek(offset, origin);
+        }
 
-                    if (refillBuffer)
-                    {
-                        refillBuffer = false;
-                        readResult = RefillByteArray();
+        public override void SetLength(long value)
+        {
+            ms.SetLength(value);
+        }
 
-                        if (readResult <= 0 && trigraphCharsBufData > 0)
-                        {
-                            for (int i = 0; i < trigraphCharsBufData; i++)
-                            {
-                                yield return trigraphCharsBuf[i];
-                            }
-
-                            break;
-                        }
-                        else if (readResult <= 0)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            charBufDatSize = decoder.GetChars(byteReadBuffer, 0, bufDatSize, charReadBuffer, 0, false);
-                            bufPtr = encoder.GetByteCount(charReadBuffer, 0, charBufDatSize, false);
-                            decoder.Reset();
-                            encoder.Reset();
-                            charBufPtr = 0;
-                        }
-                    }
-
-                    char ch = charReadBuffer[charBufPtr];
-
-                    if (trigraphCharsBufData == 1)
-                    {
-                        if (ch == '?')
-                        {
-                            if (charBufPtr + 1 < charBufDatSize)
-                            {
-                                int index = TrigraphChars.IndexOf(charReadBuffer[charBufPtr + 1]);
-                                if (index >= 0)
-                                {
-                                    ch = TrigraphStandins[index];
-                                    if (ch == '\\')
-                                    {
-                                        escaped = true;
-                                    }
-                                    yield return ch;
-                                    charBufPtr += 2;
-                                    trigraphCharsBufData = 0;
-                                }
-                                else
-                                {
-                                    // handle ??? as ? + ??<ch> as per cpp standard.
-                                    yield return '?';
-                                    trigraphCharsBufData = 0;
-                                }
-                            }
-                            else
-                            {
-                                trigraphCharsBuf[1] = '?';
-                                trigraphCharsBufData = 2;
-                                refillBuffer = true;
-                            }
-                        }
-                        else
-                        {
-                            trigraphCharsBufData = 0;
-
-                            // handle ??? as ? + ??<ch> as per cpp standard.
-                            yield return trigraphCharsBuf[0];
-                            yield return ch;
-                        }
-
-                        continue;
-                    }
-                    else if (trigraphCharsBufData == 2)
-                    {
-                        int index = TrigraphChars.IndexOf(ch);
-                        if (index >= 0)
-                        {
-                            ch = TrigraphStandins[index];
-                            if (ch == '\\')
-                            {
-                                escaped = true;
-                            }
-                            yield return ch;
-                            charBufPtr++;
-                            trigraphCharsBufData = 0;
-                        }
-                        else
-                        {
-                            // handle ??? as ? + ??<ch> as per cpp standard.
-                            yield return '?';
-                            trigraphCharsBuf[0] = trigraphCharsBuf[1];
-                            trigraphCharsBufData = 1;
-                        }
-
-                        continue;
-                    }
-
-
-                    if (processingNewLine && ch != '\r' && ch != '\n')
-                    {
-                        yield return '\n';
-                        processingNewLine = false;
-                        lastNewLineChar = '\0';
-                    }
-
-                    switch (ch)
-                    {
-                        case '\xFEFF':
-                            escaped = false;
-                            charBufPtr++;
-                            break;
-                        case '\\':
-                            escaped = true;
-                            yield return '\\';
-                            charBufPtr++;
-                            break;
-                        case '\r':
-                        case '\n':
-                            escaped = false;
-                            // all \r\n combos need to be in pairs otherwise
-                            // we return \n and start again.
-                            if ((lastNewLineChar == '\r' && ch == '\n')
-                               || (lastNewLineChar == '\n' && ch == '\r'))
-                            {
-                                yield return '\n';
-                                processingNewLine = false;
-                                lastNewLineChar = '\0';
-                            }
-                            else if (lastNewLineChar == ch)
-                            {
-                                yield return '\n';
-                                processingNewLine = true;
-                                lastNewLineChar = '\0';
-                            }
-                            else
-                            {
-                                lastNewLineChar = ch;
-                                processingNewLine = true;
-                            }
-
-                            charBufPtr++;
-                            break;
-                        case '?':
-                            if (!trigraphs || escaped)
-                            {
-                                escaped = false;
-                                charBufPtr++;
-                                yield return ch;
-                            }
-                            else
-                            {
-                                if (charBufPtr + 1 < charBufDatSize)
-                                {
-                                    if (charReadBuffer[charBufPtr + 1] != '?')
-                                    {
-                                        // handle ??? as ? + ??<ch> as per cpp standard.
-                                        yield return ch;
-
-                                        charBufPtr++;
-                                    }
-                                    else
-                                    {
-                                        if (charBufPtr + 2 < charBufDatSize)
-                                        {
-                                            int index = TrigraphChars.IndexOf(charReadBuffer[charBufPtr + 2]);
-                                            if (index >= 0)
-                                            {
-                                                ch = TrigraphStandins[index];
-                                                if (ch == '\\')
-                                                {
-                                                    escaped = true;
-                                                }
-                                                yield return ch;
-                                                charBufPtr += 3;
-                                            }
-                                            else
-                                            {
-                                                // handle ??? as ? + ??<ch> as per cpp standard.
-                                                yield return ch;
-                                                charBufPtr++;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            trigraphCharsBuf[0] = ch;
-                                            trigraphCharsBuf[1] = charReadBuffer[charBufPtr + 1];
-                                            trigraphCharsBufData = 2;
-
-                                            refillBuffer = true;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    trigraphCharsBuf[0] = ch;
-                                    trigraphCharsBufData = 1;
-
-                                    refillBuffer = true;
-                                }
-                            }
-                            break;
-                        default:
-                            escaped = false;
-                            charBufPtr++;
-                            yield return ch;
-
-                            break;
-                    }
-                }
-            }
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            ms.Write(buffer, offset, count);
         }
     }
 }
