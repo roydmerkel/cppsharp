@@ -27,13 +27,23 @@ namespace libcppsharp.parser
 {
     internal partial class C_CPLUSPLUS_CSHARPParser
     {
-        public C_CPLUSPLUS_CSHARPParser() : base(null) { }
+        private bool trigraphs = false;
+        private bool digraphs = false;
+        public C_CPLUSPLUS_CSHARPParser(bool trigraphs = false, bool digraphs = false) : base(null) { this.trigraphs = trigraphs; this.digraphs = digraphs; }
 
         public void Parse(string s)
         {
             byte[] inputBuffer = System.Text.Encoding.Default.GetBytes(s);
-            MemoryStream stream = new MemoryStream(inputBuffer);
-            this.Scanner = new C_CPLUSPLUS_CSHARPScanner(stream);
+            MemoryStream str = new MemoryStream(inputBuffer);
+            TrigraphStream stream = new TrigraphStream(str, trigraphs, digraphs);
+            this.Scanner = new C_CPLUSPLUS_CSHARPScanner(stream, trigraphs, digraphs);
+            this.Parse();
+        }
+
+        public void Parse(Stream s)
+        {
+            TrigraphStream stream = new TrigraphStream(s, trigraphs, digraphs);
+            this.Scanner = new C_CPLUSPLUS_CSHARPScanner(stream, trigraphs, digraphs);
             this.Parse();
         }
     }

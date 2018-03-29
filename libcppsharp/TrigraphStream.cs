@@ -31,7 +31,6 @@ namespace libcppsharp
         private bool trigraphs;
         private const string TrigraphChars = "=/'()!<>-";
         private const string TrigraphStandins = "#\\^[]|{}~";
-        private bool escaped;
         private Encoder encoder;
         private Decoder decoder;
         private String data;

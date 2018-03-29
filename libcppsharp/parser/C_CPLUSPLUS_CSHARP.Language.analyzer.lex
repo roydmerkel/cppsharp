@@ -26,7 +26,7 @@
 %visibility internal
 %tokentype Token
 
-%option stack, classes, minimize, parser, verbose, persistbuffer, noembedbuffers, unicode 
+%option stack, classes, minimize, parser, verbose, persistbuffer, noembedbuffers, unicode
 
 %x C_COMMENT
 %x CPP_COMMENT
@@ -115,12 +115,14 @@ s(\\\n)*i(\\\n)*z(\\\n)*e(\\\n)*o(\\\n)*f                                       
 d(\\\n)*e(\\\n)*f(\\\n)*i(\\\n)*n(\\\n)*e(\\\n)*d                                                       { Console.WriteLine("token: {0}", yytext); return (int)Token.DEFINED; }
 {Identifier}                                                                                            { Console.WriteLine("token: {0}", yytext); GetIdentifier(); return (int)Token.IDENTIFIER; }
 
-{Whitespace}+	                                                                                        /* skip */
-\\{Space}*\n                                                                                            /* skip */
+{Whitespace}+	                                                                                        { Console.WriteLine("token: {0}", yytext); }
+\\{Space}*\n                                                                                            { Console.WriteLine("token: {0}", yytext); }
 
 \\{Space}*([^\n]|<<EOF>>)                                                                               { throw new InvalidDataException("Unexpected \\"); }
 
 \n                                                                                                      { Console.WriteLine("token: {0}", yytext); return (int)Token.NEWLINE; } 
+
+<<EOF>>                                                                                                 { return (int)Token.EOF; }
 
 :(\\\n)*:                                                                                               { Console.WriteLine("token: {0}", yytext); return (int)Token.COLON_COLON; }
 :                                                                                                       { Console.WriteLine("token: {0}", yytext); return (int)Token.COLON; }
@@ -161,8 +163,10 @@ d(\\\n)*e(\\\n)*f(\\\n)*i(\\\n)*n(\\\n)*e(\\\n)*d                               
 &                                                                                                       { Console.WriteLine("token: {0}", yytext); return (int)Token.AMPERSTAND; }
 \*(\\\n)*=                                                                                              { Console.WriteLine("token: {0}", yytext); return (int)Token.ASTERISK_EQUALS; }
 \*                                                                                                      { Console.WriteLine("token: {0}", yytext); return (int)Token.ASTERISK; }
-/(\\\n)*=                                                                                               { Console.WriteLine("token: {0}", yytext); return (int)Token.FORWARD_SLASH_EQUALS; }
-/                                                                                                       { Console.WriteLine("token: {0}", yytext); return (int)Token.FORWARD_SLASH; }
+\/(\\\n)*\/                                                                                               { Console.WriteLine("BEGIN CPP_COMMENT: token: {0}", yytext); BEGIN(CPP_COMMENT); curTokVal.Clear(); curTokVal.Append("//"); }
+\/(\\\n)*\*                                                                                              { Console.WriteLine("BEGIN C_COMMENT: token: {0}", yytext); BEGIN(C_COMMENT); curTokVal.Clear(); curTokVal.Append("/*"); }
+\/(\\\n)*=                                                                                               { Console.WriteLine("token: {0}", yytext); return (int)Token.FORWARD_SLASH_EQUALS; }
+\/                                                                                                       { Console.WriteLine("token: {0}", yytext); return (int)Token.FORWARD_SLASH; }
 \^(\\\n)*=                                                                                              { Console.WriteLine("token: {0}", yytext); return (int)Token.CARROT_EQUALS; }
 \^                                                                                                      { Console.WriteLine("token: {0}", yytext); return (int)Token.CARROT; }
 %(\\\n)*=                                                                                               { Console.WriteLine("token: {0}", yytext); return (int)Token.PERCENT_EQUALS; }
@@ -194,19 +198,16 @@ d(\\\n)*e(\\\n)*f(\\\n)*i(\\\n)*n(\\\n)*e(\\\n)*d                               
 0(\\\n)*[xX](\\\n)*{mandHexSeq}(\\\n)*\.(\\\n)*{floatExp}((\\\n)*{floatSufix})?                         { Console.WriteLine("token: {0}", yytext); GetNumber(); return (int)Token.NUMBER; }
 0(\\\n)*[xX](\\\n)*({mandHexSeq}(\\\n)*)?\.(\\\n)*{mandHexSeq}(\\\n)*{floatExp}((\\\n)*{floatSufix})?   { Console.WriteLine("token: {0}", yytext); GetNumber(); return (int)Token.NUMBER; }
 
-/(\\\n)*/                                                                                               { BEGIN(CPP_COMMENT); curTokVal.Clear(); curTokVal.Append("//"); }
-/(\\\n)*\*                                                                                              { BEGIN(C_COMMENT); curTokVal.Clear(); curTokVal.Append("/*"); }
-
 <CPP_COMMENT>[^\\\n]+                                                                                   { curTokVal.Append(yytext); }
 <CPP_COMMENT>\\{Space}*\\n                                                                              { curTokVal.Append(yytext); }
 <CPP_COMMENT>\\{Space}*[^\\n]                                                                           { curTokVal.Append(yytext); }
 <CPP_COMMENT>\\{Space}*<<EOF>>                                                                          { throw new InvalidDataException("unterminated //"); }
 <CPP_COMMENT>\n                                                                                         { curTokVal.Append(yytext); Console.WriteLine("token: {0}", curTokVal.ToString()); GetComment(); BEGIN(INITIAL); return (int)Token.COMMENT; }
 
-<C_COMMENT>[^*/]+                                                                                       { curTokVal.Append(yytext); }
-<C_COMMENT>\*[^/]                                                                                       { curTokVal.Append(yytext); }
-<C_COMMENT>\*[/]                                                                                        { curTokVal.Append(yytext); Console.WriteLine("token: {0}", curTokVal.ToString()); GetComment(); BEGIN(INITIAL); return (int)Token.COMMENT; }
-<C_COMMENT>/                                                                                            { curTokVal.Append(yytext); }
+<C_COMMENT>[^*\/]+                                                                                       { curTokVal.Append(yytext); }
+<C_COMMENT>\*[^\/]                                                                                       { curTokVal.Append(yytext); }
+<C_COMMENT>\*[\/]                                                                                        { curTokVal.Append(yytext); Console.WriteLine("token: {0}", curTokVal.ToString()); GetComment(); BEGIN(INITIAL); return (int)Token.COMMENT; }
+<C_COMMENT>\/                                                                                            { curTokVal.Append(yytext); }
 <C_COMMENT><<EOF>>                                                                                      { throw new InvalidDataException("unterminated /*"); }
 
 ({stringPrefix}(\\\n)*)?R(\\\n)*["]                                                                     { curTokVal.Clear(); curTokVal.Append(yytext.Replace("\\n", "")); }

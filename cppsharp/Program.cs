@@ -62,11 +62,14 @@ int main(void)
 {
     return 0;
 }";
-            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code));
+            MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(code.ToCharArray(), 0, code.Length));
+            libcppsharp.parser.Scanner scanner = new libcppsharp.parser.Scanner(ms, true, true);
 
-            Preprocessor pr = new Preprocessor(ms, true, true, true);
-
-            pr.Preprocess(System.Console.Out, System.Console.Error);
+            int tok = 3;
+            while ((tok = scanner.Scan()) != 3)
+            {
+                Console.Out.WriteLine(tok);
+            }
         }
     }
 }

@@ -114,6 +114,7 @@
     <Compile Include="..\YaccLexTools\src\NuGet\YaccLexTools\content\GplexBuffers.cs">
       <Link>GplexBuffers.cs</Link>
     </Compile>
+    <Compile Include="parser\Scanner.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
